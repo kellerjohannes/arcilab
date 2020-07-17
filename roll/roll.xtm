@@ -1,8 +1,26 @@
+(define ROLL-SOURCE-PATH "../../Coding/extempore/arcilab/")
+(bind-val ROLL_WORKING_PATH String* (Str "../../Coding/extempore/arcilab/scores/guinea01/"))
+
 (bind-val ROLL_MAX_NUM_VOICES i64 128)
 
-(sys:load "../../Coding/extempore/arcilab/roll/logging.xtm")
-(bind-val rollErr RollError* (roll_create_logfile (Str "../../Coding/extempore/arcilab/roll/logfile-roll")))
 
-(sys:load "../../Coding/extempore/arcilab/roll/score.xtm")
+;(bind-val ROLL_SOURCE_PATH String* (Str ROLL-SOURCE-PATH))
+;(define ROLL-WORKING-PATH "../../Coding/extempore/arcilab/scores/guinea01/")
 
-;($ (roll_close_logfile err))
+(sys:load (string-append ROLL-SOURCE-PATH "roll/logging.xtm"))
+(bind-val rollErr RollError* (roll_create_logfile (cat2 ROLL_WORKING_PATH (Str "logfile-parser"))))
+
+(sys:load (string-append ROLL-SOURCE-PATH "roll/score.xtm"))
+(sys:load (string-append ROLL-SOURCE-PATH "roll/xml_import.xtm"))
+
+
+
+(bind-func parse_roll
+  (lambda ()
+    (set! rollErr (roll_create_logfile (cat2 ROLL_WORKING_PATH (Str "logfile-parser"))))
+    (let ((score (cScore)))
+      (import_xml score (cat2 ROLL_WORKING_PATH (Str "guinea01sibelius.xml")))
+      (print score)
+      (roll_close_logfile rollErr))))
+
+($ (parse_roll))

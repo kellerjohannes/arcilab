@@ -28,7 +28,7 @@
 (bind-func roll_close_logfile:[void,RollError*]*
   (lambda (re)
     (cond ((null? (id re)) (printf "Error: no logfile.\n") void)
-          (else (fprintf (id re) "End of logfile.")
+          (else (fprintf (id re) "End of logfile.\n")
                 (fclose (id re))
                 (printf "Logfile closed.\n")
                 void))))

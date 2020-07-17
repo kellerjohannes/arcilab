@@ -1,0 +1,13 @@
+(bind-func import_xml:[void,Score*,String*]*
+  (lambda (score filepath)
+    (let ((xmlFile (sys_slurp_file (cstring filepath))))
+      (cond
+        ((null? xmlFile) (roll_error rollErr
+                                     (Str "XML import module: xml file could not be opened. Aborting.")
+                                     ROLL_ERR_FLAG_FATAL
+                                     ROLL_ERR_DEST_ALL)
+                         void)
+        (else
+          (printf "converting ...\n")
+          void))
+    void)))
