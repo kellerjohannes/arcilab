@@ -273,6 +273,90 @@ auxiliary data:  %s\n"
 ; 2 note count
 ; 3 notes
 
+(bind-func number:[i64,Measure*]*
+  (lambda (m)
+    (tref m 0)))
+
+(bind-func setNumber:[void,Measure*,i64]*
+  (lambda (m n)
+    (cond ((>= n 0) (tset! m 0 n) void)
+          (else (roll_error rollErr
+                            (Str "Measure element: illegal bar numer received, needs to be 0 or higher. Set to 0.")
+                            ROLL_ERR_FLAG_WARNING
+                            ROLL_ERR_DEST_ALL)
+                (tset! m 0 0)
+                void))))
+
+(bind-func division:[i64,Measure*]*
+  (lambda (m)
+    (tref m 1)))
+
+(bind-func setDivision:[void,Measure*,i64]*
+  (lambda (m d)
+    (tset! m 1 d)
+    void))
+
+(bind-func noteCount:[i64,Measure*]*
+  (lambda (m)
+    (tref m 2)))
+
+(bind-func setNoteCount:[void,Measure*,i64]*
+  (lambda (m nc)
+    (cond ((>= nc 0) (tset! m 2 nc) void)
+          (else (roll_error rollErr
+                            (Str "Measure element: illegal value for note count received.  Set to 0. This will probably cause unintendet behaviour.")
+                            ROLL_ERR_FLAG_WARNING
+                            ROLL_ERR_DEST_ALL)
+                (tset! m 2 0)
+                void))))
+
+(bind-func get_note:[Note*,Measure*,i64]*
+  (lambda (m index)
+    (cond ((and (>= index 0) (< index (noteCount m))) (pref (tref m 3) index))
+          (else (roll_error rollErr
+                            (Str "Measure element: get Note*, index out of range. Return 'null', might crash everything.")
+                            ROLL_ERR_FLAG_FATAL
+                            ROLL_ERR_DEST_ALL)
+                null))))
+
+(bind-func push:[void,Measure*,Note*]*
+  (lambda (m n)
+    (let ((tmp:Note** (halloc (+ 1 (noteCount m))))
+          (i 0))
+      (dotimes (i (noteCount m))
+        (pset! tmp i (get_note m i)))
+      (pset! tmp (noteCount m) n)
+      (setNoteCount m (+ 1 (noteCount m)))
+      (free (tref m 3))
+      (tset! m 3 tmp)
+      void)))
+
+(bind-func print:[void,Measure*]*
+  (lambda (m)
+    (let ((i 0))
+      (printf "Measure: no = %lld, division = %lld, note count = %lld\n"
+              (number m)
+              (division m)
+              (noteCount m))
+      (dotimes (i (noteCount m))
+        (printf "--------------------------------------------------\n")
+        (print:[void,Note*]* (get_note m i)))
+      (printf "---------------------------------------------------\n
+---------------------------------------------------\nEnd of measure no %lld.\n" (number m))
+      void)))
+
+(bind-func cMeasure:[Measure*]*
+  (lambda ()
+    (let ((tmp:Note** (halloc 1)))
+      (set! tmp null)
+      (let ((res (Measure:[Measure*,i64,i64,i64,Note**]*
+                          0
+                          0
+                          0
+                          tmp)))
+        res))))
+
+
 (bind-type Score <i64,Measure**>)
 ; 0 measure count
 ; 1 measures
