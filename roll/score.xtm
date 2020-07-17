@@ -357,6 +357,72 @@ auxiliary data:  %s\n"
         res))))
 
 
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Measure element ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; This element stores data of the xml score, per measure, not per part. 
+
 (bind-type Score <i64,Measure**>)
 ; 0 measure count
 ; 1 measures
+
+(bind-func measureCount:[i64,Score*]*
+  (lambda (s)
+    (tref s 0)))
+
+(bind-func setMeasureCount:[void,Score*,i64]*
+  (lambda (s count)
+    (cond ((>= count 0) (tset! s 0 count) void)
+          (else (roll_error rollErr
+                            (Str "Score element: measureCount out of range received.  Return 0. This might cause unexpected behaviour.")
+                            ROLL_ERR_FLAG_WARNING
+                            ROLL_ERR_DEST_ALL)
+                (tset! s 0 0)
+                void))))
+                
+(bind-func get_measure:[Measure*,Score*,i64]*
+  (lambda (s index)
+    (cond ((and (>= index 0) (< index (measureCount s)))
+            (pref (tref s 1) index))
+          (else (roll_error rollErr
+                            (Str "Score element: get_measure, index out of range, returned 'null'. This might crash everything.")
+                            ROLL_ERR_FLAG_FATAL
+                            ROLL_ERR_DEST_ALL)
+                null))))
+
+(bind-func push:[void,Score*,Measure*]*
+  (lambda (s m)
+    (let ((tmp:Measure** (halloc (+ 1 (measureCount s))))
+          (i 0))
+      (dotimes (i (measureCount s))
+        (pset! tmp i (get_measure s i)))
+      (pset! tmp (measureCount s) m)
+      (setMeasureCount s (+ 1 (measureCount s)))
+      (free (tref s 1))
+      (tset! s 1 tmp)
+      void)))
+
+(bind-func print:[void,Score*]*
+  (lambda (s)
+    (let ((i 0))
+      (printf "Score: measure count = %lld\n" (measureCount s))
+      (dotimes (i (measureCount s)) 
+        (printf "==================================================\n")
+        (print:[void,Measure*]* (get_measure s i)))
+      (printf "==================================================\n
+==================================================\n")
+      void)))
+
+(bind-func cScore:[Score*]*
+  (lambda ()
+    (let ((tmp:Measure** (halloc 1)))
+      (set! tmp null)
+      (let ((res (Score:[Score*,i64,Measure**]*
+                         0
+                         tmp)))
+        res))))
+
+
