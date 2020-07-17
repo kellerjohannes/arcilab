@@ -12,7 +12,16 @@
 (bind-val ROLL_OUTPUT_HINT_MIDI i32 4)
 
 
-(bind-type Note <i64,i1,String*,String*,String*,i64,i32,String*,String*,String*,i32,i32,i8*>)
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Note element ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; this data type stores data of one musical event, representing the xml data of a note
+
+
+(bind-type Note <i64,i1,String*,String*,String*,i64,i32,String*,String*,String*,i32,i64,i32,i8*>)
 ; 0 start time (in ticks, relative to beginning of measure)
 ; 1 rest (boolean, 0 = note, 1 = rest)
 ; 2 root (note name, 'A'-'G')
@@ -24,70 +33,169 @@
 ; 8 articulation (comint from 'articulation' element)
 ; 9 command (command literal, coming from 'text' element)
 ; 10 event type (tabulature / pitch utopia / command literal)
-; 11 output hint (tacet / arciorgano / oscillators / sampler / MIDI out)
-; 12 auxiliary data
+; 11 voice assignment (for the polyphony managmenet of the player module, not representing the xml voice information necessarily)
+; 12 output hint (tacet / arciorgano / oscillators / sampler / MIDI out)
+; 13 auxiliary data
 
 (bind-func startTime:[i64,Note*]*
   (lambda (n)
     (tref n 0)))
 
+(bind-func setStarttime:[void,Note*,i64]*
+  (lambda (n st)
+    (tset! n 0 st)
+    void))
+
 (bind-func rest:[i1,Note*]*
   (lambda (n)
     (tref n 1)))
+
+(bind-func setRest:[void,Note*,i1]*
+  (lambda (n r)
+    (tset! n 1 r)
+    void))
 
 (bind-func root:[String*,Note*]*
   (lambda (n)
     (tref n 2)))
 
+(bind-func setRoot:[void,Note*,String*]*
+  (lambda (n r)
+    (tset! n 2 r)
+    void))
+
 (bind-func notehead:[String*,Note*]*
   (lambda (n)
     (tref n 3)))
+
+(bind-func setNotehead:[void,Note*,String*]*
+  (lambda (n nh)
+    (tset! n 3 nh)
+    void))
 
 (bind-func alteration:[String*,Note*]*
   (lambda (n)
     (tref n 4)))
 
+(bind-func setAlteration:[void,Note*,String*]*
+  (lambda (n a)
+    (tset! n 4 a)
+    void))
+
 (bind-func duration:[i64,Note*]*
   (lambda (n)
     (tref n 5)))
+
+(bind-func setDuration:[void,Note*,i64]*
+  (lambda (n d)
+    (tset! n 5 d)
+    void))
 
 (bind-func tie:[i32,Note*]*
   (lambda (n)
     (tref n 6)))
 
+(bind-func setTie:[void,Note*,i32]*
+  (lambda (n t)
+    (cond ((= t ROLL_TIE_NONE) (tset! n 6 ROLL_TIE_NONE))
+          ((= t ROLL_TIE_START) (tset! n 6 ROLL_TIE_START))
+          ((= t ROLL_TIE_END) (tset! n 6 ROLL_TIE_END))
+          ((= t ROLL_TIE_WITHIN) (tset! n 6 ROLL_TIE_WITHIN))
+          (else (roll_error rollErr
+                            (Str "Note element, set tie flag: unknwon tie flag. Set to 'none'.")
+                            ROLL_ERR_FLAG_WARNING
+                            ROLL_ERR_DEST_ALL)
+                (tset! n 6 ROLL_TIE_NONE)))
+     void))
+
 (bind-func pitchInfo:[String*,Note*]*
   (lambda (n)
     (tref n 7)))
+
+(bind-func setPitchInfo:[void,Note*,String*]*
+  (lambda (n pi)
+    (tset! n 7 pi)
+    void))
 
 (bind-func articulation:[String*,Note*]*
   (lambda (n)
     (tref n 8)))
 
+(bind-func setArticulation:[void,Note*,String*]*
+  (lambda (n a)
+    (tset! n 8 a)
+    void))
+
 (bind-func command:[String*,Note*]*
   (lambda (n)
     (tref n 9)))
+
+(bind-func setCommand:[void,Note*,String*]*
+  (lambda (n c)
+    (tset! n 9 c)
+    void))
 
 (bind-func eventType:[i32,Note*]*
   (lambda (n)
     (tref n 10)))
 
-(bind-func outputHint:[i32,Note*]*
+(bind-func setEventType:[void,Note*,i32]*
+  (lambda (n et)
+    (cond ((= et ROLL_EVENT_TYPE_TABULATURE) (tset! n 10 ROLL_EVENT_TYPE_TABULATURE))
+          ((= et ROLL_EVENT_TYPE_PITCH_UTOPIA) (tset! n 10 ROLL_EVENT_TYPE_PITCH_UTOPIA))
+          ((= et ROLL_EVENT_TYPE_COMMAND) (tset! n 10 ROLL_EVENT_TYPE_COMMAND))
+          (else (roll_error rollErr
+                            (Str "Note element: unknown event type received. Set to 'tabulature'.")
+                            ROLL_ERR_FLAG_WARNING
+                            ROLL_ERR_DEST_ALL)
+                (tset! n 10 ROLL_EVENT_TYPE_TABULATURE)))
+    void))
+
+(bind-func voice:[i64,Note*]*
   (lambda (n)
     (tref n 11)))
 
+(bind-func setVoice:[void,Note*,i64]*
+  (lambda (n v)
+    (cond ((and (>= v 0) (< v ROLL_MAX_NUM_VOICES))
+            (tset! n 11 v)
+            void)
+          (else (roll_error rollErr
+                            (Str "Note element: setVoice, out of range index received. Set to 0, might cause problems in polyphony management.")
+                            ROLL_ERR_FLAG_WARNING
+                            ROLL_ERR_DEST_ALL)))
+    void))
+
+(bind-func outputHint:[i32,Note*]*
+  (lambda (n)
+    (tref n 12)))
+
+(bind-func setOutputHint:[void,Note*,i32]*
+  (lambda (n oh)
+    (cond ((= oh ROLL_OUTPUT_HINT_TACET) (tset! n 12 ROLL_OUTPUT_HINT_TACET))
+          ((= oh ROLL_OUTPUT_HINT_ARCIORGANO) (tset! n 12 ROLL_OUTPUT_HINT_ARCIORGANO))
+          ((= oh ROLL_OUTPUT_HINT_OSC) (tset! n 12 ROLL_OUTPUT_HINT_OSC))
+          ((= oh ROLL_OUTPUT_HINT_SAMPLER) (tset! n 12 ROLL_OUTPUT_HINT_SAMPLER))
+          ((= oh ROLL_OUTPUT_HINT_MIDI) (tset! n 12 ROLL_OUTPUT_HINT_MIDI))
+          (else (roll_error rollErr
+                            (Str "Note element: unknown output hint received. Set to 'tacet'.")
+                            ROLL_ERR_FLAG_WARNING
+                            ROLL_ERR_DEST_ALL)
+                (tset! n 12 ROLL_OUTPUT_HINT_TACET)))
+    void))
+
 (bind-func auxData:[i8*,Note*]*
   (lambda (n)
-    (cond ((null? (tref n 12)) (roll_error rollErr 
+    (cond ((null? (tref n 13)) (roll_error rollErr 
                                            (Str "Note element: empty auxData requested. 'null' returned.") 
                                            ROLL_ERR_FLAG_WARNING 
                                            ROLL_ERR_DEST_ALL) 
                                 null)
-          (else (tref n 12)))))
-
+          (else (tref n 13)))))
 
 (bind-func cNote:[Note*]*
   (lambda ()
-    (let ((res (Note:[Note*,i64,i1,String*,String*,String*,i64,i32,String*,String*,String*,i32,i32,i8*]*
+    (let ((res (Note:[Note*,i64,i1,String*,String*,String*,i64,i32,String*,String*,String*,i32,i64,i32,i8*]*
                      0
                      #t
                      (Str "undef")
@@ -99,6 +207,7 @@
                      (Str "undef")
                      (Str "undef")
                      ROLL_EVENT_TYPE_TABULATURE
+                     0
                      ROLL_OUTPUT_HINT_TACET
                      null)))
        res)))
@@ -107,18 +216,18 @@
 (bind-func print:[void,Note*]*
   (lambda (n)
     (printf "start time:      %lld\n
-             rest:            %s\n
-             root:            '%s'\n
-             notehead:        '%s'\n
-             alteration:      '%s'\n
-             duration:        %lld\n
-             tie:             %s\n
-             pitch info:      '%s'\n
-             articulation:    '%s'\n
-             command literal: '%s'\n
-             event type:      %s\n
-             output hint:     %s\n
-             auxiliary data:  %s\n"
+rest:            %s\n
+root:            '%s'\n
+notehead:        '%s'\n
+alteration:      '%s'\n
+duration:        %lld\n
+tie:             %s\n
+pitch info:      '%s'\n
+articulation:    '%s'\n
+command literal: '%s'\n
+event type:      %s\n
+output hint:     %s\n
+auxiliary data:  %s\n"
                 (startTime n)
                 (if (rest n) "yes" "no")
                 (cstring (root n))
@@ -148,12 +257,15 @@
 
 
 
-(bind-func noteTest
-  (lambda ()
-    (let ((n (cNote)))
-      (print n))))
 
-($ (noteTest))
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Measure element ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; This element stores data of one measure, based on xml data. 
 
 (bind-type Measure <i64,i64,i64,Note**>)
 ; 0 bar number
