@@ -28,20 +28,27 @@
 (bind-func roll_close_logfile:[void,RollError*]*
   (lambda (re)
     (cond ((null? (id re)) (printf "Error: no logfile.\n") void)
-          (else (fclose (id re))
-          void))))
+          (else (fprintf (id re) "End of logfile.")
+                (fclose (id re))
+                (printf "Logfile closed.\n")
+                void))))
     
-(bind-func roll_error:[void,RollError*,String*,i64,i64]*
+(bind-func roll_error:[void,RollError*,String*,i32,i32]*
   (lambda (re message flag destination)
     (cond ((null? (id re)) (printf "Error: no logfile.\n") void)
           (else
-            (cond ((or (= destination ROLL_ERR_DEST_FILE)
-                       (= destination ROLL_ERR_DEST_ALL))
-                    (fprintf
-          
-          
-          (fprintf (id re) "%s\n" (cstring message)) void))))
+            (let ((type:String* (salloc)))
+              (cond ((= flag ROLL_ERR_FLAG_DEBUG) (set! type (Str "Debug")))
+                    ((= flag ROLL_ERR_FLAG_FATAL) (set! type (Str "Fatal error")))
+                    ((= flag ROLL_ERR_FLAG_WARNING) (set! type (Str "Warning")))
+                    ((= flag ROLL_ERR_FLAG_INFO) (set! type (Str "Information")))
+                    (else (set! type (Str "[unknown error type]"))))
+              (if (or (= destination ROLL_ERR_DEST_CONSOLE)
+                      (= destination ROLL_ERR_DEST_ALL))
+                (begin (printf "@%lld, %s: %s\n" (now) (cstring type) (cstring message))))
+              (if (or (= destination ROLL_ERR_DEST_FILE)
+                      (= destination ROLL_ERR_DEST_ALL))
+                (begin (fprintf (id re) "@%lld, %s: %s\n" (now) (cstring type) (cstring message))))
+              void)))))
 
-(bind-val err RollError* (roll_create_logfile (Str "logfile-roll")))
-($ (roll_error err (Str "shit happens.") 0 0))
-($ (roll_close_logfile err))
+

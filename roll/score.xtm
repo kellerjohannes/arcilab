@@ -1,0 +1,166 @@
+(bind-val ROLL_EVENT_TYPE_TABULATURE i32 0)
+(bind-val ROLL_EVENT_TYPE_PITCH_UTOPIA i32 1)
+(bind-val ROLL_EVENT_TYPE_COMMAND i32 2)
+(bind-val ROLL_TIE_NONE i32 0)
+(bind-val ROLL_TIE_START i32 1)
+(bind-val ROLL_TIE_END i32 2)
+(bind-val ROLL_TIE_WITHIN i32 3)
+(bind-val ROLL_OUTPUT_HINT_TACET i32 0)
+(bind-val ROLL_OUTPUT_HINT_ARCIORGANO i32 1)
+(bind-val ROLL_OUTPUT_HINT_OSC i32 2)
+(bind-val ROLL_OUTPUT_HINT_SAMPLER i32 3)
+(bind-val ROLL_OUTPUT_HINT_MIDI i32 4)
+
+
+(bind-type Note <i64,i1,String*,String*,String*,i64,i32,String*,String*,String*,i32,i32,i8*>)
+; 0 start time (in ticks, relative to beginning of measure)
+; 1 rest (boolean, 0 = note, 1 = rest)
+; 2 root (note name, 'A'-'G')
+; 3 notehead (shape of notehead)
+; 4 alteration (xml element 'accidental')
+; 5 duration (in ticks)
+; 6 tie (0 = no tie, 1 = start, 2 = end, 3 = within tie)
+; 7 pitch info (coming from 'text' element)
+; 8 articulation (comint from 'articulation' element)
+; 9 command (command literal, coming from 'text' element)
+; 10 event type (tabulature / pitch utopia / command literal)
+; 11 output hint (tacet / arciorgano / oscillators / sampler / MIDI out)
+; 12 auxiliary data
+
+(bind-func startTime:[i64,Note*]*
+  (lambda (n)
+    (tref n 0)))
+
+(bind-func rest:[i1,Note*]*
+  (lambda (n)
+    (tref n 1)))
+
+(bind-func root:[String*,Note*]*
+  (lambda (n)
+    (tref n 2)))
+
+(bind-func notehead:[String*,Note*]*
+  (lambda (n)
+    (tref n 3)))
+
+(bind-func alteration:[String*,Note*]*
+  (lambda (n)
+    (tref n 4)))
+
+(bind-func duration:[i64,Note*]*
+  (lambda (n)
+    (tref n 5)))
+
+(bind-func tie:[i32,Note*]*
+  (lambda (n)
+    (tref n 6)))
+
+(bind-func pitchInfo:[String*,Note*]*
+  (lambda (n)
+    (tref n 7)))
+
+(bind-func articulation:[String*,Note*]*
+  (lambda (n)
+    (tref n 8)))
+
+(bind-func command:[String*,Note*]*
+  (lambda (n)
+    (tref n 9)))
+
+(bind-func eventType:[i32,Note*]*
+  (lambda (n)
+    (tref n 10)))
+
+(bind-func outputHint:[i32,Note*]*
+  (lambda (n)
+    (tref n 11)))
+
+(bind-func auxData:[i8*,Note*]*
+  (lambda (n)
+    (cond ((null? (tref n 12)) (roll_error rollErr 
+                                           (Str "Note element: empty auxData requested. 'null' returned.") 
+                                           ROLL_ERR_FLAG_WARNING 
+                                           ROLL_ERR_DEST_ALL) 
+                                null)
+          (else (tref n 12)))))
+
+
+(bind-func cNote:[Note*]*
+  (lambda ()
+    (let ((res (Note:[Note*,i64,i1,String*,String*,String*,i64,i32,String*,String*,String*,i32,i32,i8*]*
+                     0
+                     #t
+                     (Str "undef")
+                     (Str "undef")
+                     (Str "undef")
+                     0
+                     ROLL_TIE_NONE
+                     (Str "undef")
+                     (Str "undef")
+                     (Str "undef")
+                     ROLL_EVENT_TYPE_TABULATURE
+                     ROLL_OUTPUT_HINT_TACET
+                     null)))
+       res)))
+
+
+(bind-func print:[void,Note*]*
+  (lambda (n)
+    (printf "start time:      %lld\n
+             rest:            %s\n
+             root:            '%s'\n
+             notehead:        '%s'\n
+             alteration:      '%s'\n
+             duration:        %lld\n
+             tie:             %s\n
+             pitch info:      '%s'\n
+             articulation:    '%s'\n
+             command literal: '%s'\n
+             event type:      %s\n
+             output hint:     %s\n
+             auxiliary data:  %s\n"
+                (startTime n)
+                (if (rest n) "yes" "no")
+                (cstring (root n))
+                (cstring (notehead n))
+                (cstring (alteration n))
+                (duration n)
+                (cond ((= (tie n) ROLL_TIE_NONE) "no")
+                      ((= (tie n) ROLL_TIE_START) "start")
+                      ((= (tie n) ROLL_TIE_END) "end")
+                      ((= (tie n) ROLL_TIE_WITHIN) "within")
+                      (else "unknown tie flag"))
+                (cstring (pitchInfo n))
+                (cstring (articulation n))
+                (cstring (command n))
+                (cond ((= (eventType n) ROLL_EVENT_TYPE_TABULATURE) "tabulature")
+                      ((= (eventType n) ROLL_EVENT_TYPE_PITCH_UTOPIA) "pitch utopia")
+                      ((= (eventType n) ROLL_EVENT_TYPE_COMMAND) "command literal")
+                      (else "unknwon event type"))
+                (cond ((= (outputHint n) ROLL_OUTPUT_HINT_TACET) "tacet")
+                      ((= (outputHint n) ROLL_OUTPUT_HINT_ARCIORGANO) "arciorgano")
+                      ((= (outputHint n) ROLL_OUTPUT_HINT_OSC) "oscillators")
+                      ((= (outputHint n) ROLL_OUTPUT_HINT_SAMPLER) "sampler")
+                      ((= (outputHint n) ROLL_OUTPUT_HINT_MIDI) "MIDI")
+                      (else "unknown output hint"))
+                (if (null? (auxData n)) "null" "yes"))
+      void))
+
+
+
+(bind-func noteTest
+  (lambda ()
+    (let ((n (cNote)))
+      (print n))))
+
+($ (noteTest))
+
+(bind-type Measure <i64,i64,i64,Note**>)
+; 0 bar number
+; 1 division
+; 2 note count
+; 3 notes
+
+(bind-type Score <i64,Measure**>)
+; 0 measure count
+; 1 measures

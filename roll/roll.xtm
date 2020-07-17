@@ -1,0 +1,24 @@
+
+(sys:load "../../Coding/extempore/arcilab/roll/logging.xtm")
+(sys:load "../../Coding/extempore/arcilab/roll/score.xtm")
+
+(bind-val rollErr RollError* (roll_create_logfile (Str "../../Coding/extempore/arcilab/roll/logfile-roll")))
+
+(bind-type Roll <RollError*>)
+
+(bind-func cRoll:[Roll*]*
+  (lambda ()
+    (let ((err (roll_create_logfile (Str "../../Coding/extempore/arcilab/roll/logfile-roll"))))
+      (roll_error err (Str "Let's start this.") ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_ALL)
+      (let ((res (Roll:[Roll*,RollError*]* err)))
+        res))))
+
+
+
+
+
+
+
+(bind-val roll Roll* (cRoll))
+
+($ (roll_close_logfile err))
