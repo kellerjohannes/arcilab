@@ -1,0 +1,22 @@
+; split until index (exclusive)
+(bind-func split_first:[String*,String*,i64]*
+  (lambda (s index)
+    (substring s 0 index)))
+
+(bind-func split_second:[String*,String*,i64]*
+  (lambda (s index)
+    (substring s index (length s))))
+
+(bind-func find_substring_loop:[i64,String*,String*,i64]*
+  (lambda (tbs sf index)
+    (cond ((= 0 (length tbs)) -1)
+          ((equal (substring tbs 0 (length sf)) sf) index)
+          (else (find_substring_loop (split_second tbs 1) sf (+ 1 index))))))
+
+(bind-func find_substring:[i64,String*,String*]*
+  (lambda (tbs sf)
+    (cond ((null? tbs) -1)
+          ((null? sf) -1)
+          ((= 0 (length sf)) -1)
+          (else (find_substring_loop tbs sf 0)))))
+

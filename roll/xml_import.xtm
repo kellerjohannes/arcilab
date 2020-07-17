@@ -1,6 +1,80 @@
+(bind-func xml_delete_until_left_bracket:[String*,String*]*
+  (lambda (xmlData)
+    (cond ((= 0 (length xmlData)) (Str ""))
+          (else (split_second xmlData (find_substring xmlData (Str "<")))))))
+
+(bind-func xml_skip_version_element:[String*,String*]*
+  (lambda (xmlData)
+    (xml_delete_until_left_bracket (split_second xmlData (+ 2 (find_substring xmlData (Str "?>")))))))
+
+(bind-func xml_skip_doctype_element:[String*,String*]*
+  (lambda (xmlData)
+    (xml_delete_until_left_bracket (split_second xmlData (+ 1 (find_substring xmlData (Str ">")))))))
+
+
+(bind-type XMLpair <String*,String*>)
+
+(bind-func xml_car:[String*,XMLpair*]*
+  (lambda (p)
+    (tref p 0)))
+
+(bind-func set_first:[void,XMLpair*,String*]*
+  (lambda (p s)
+    (tset! p 0 s)
+    void))
+
+(bind-func set_second:[void,XMLpair*,String*]*
+  (lambda (p s)
+    (tset! p 1 s)
+    void))
+
+(bind-func xml_cdr:[String*,XMLpair*]*
+  (lambda (p)
+    (tref p 1)))
+
+(bind-func cXMLpair:[XMLpair*,String*,String*]*
+  (lambda (first second)
+    (let ((res (XMLpair:[XMLpair*,String*,String*]* first second)))
+      res)))
+
+
+(bind-func xml_divide:[XMLpair*,String*]*
+  (lambda (xmlData)
+    (cond ((not (equal (split_first xmlData 1) (Str "<")))
+            (roll_error rollErr
+                        (Str "xml_read_element: first character is not '<', malformed xmlData. This will abort the parsing process.")
+                        ROLL_ERR_FLAG_FATAL
+                        ROLL_ERR_DEST_ALL))
+          (else 
+
+(bind-func parse_xml:[void,String*,Score*]*
+  (lambda (xmlData score)
+    (cond ((null? xmlData) (roll_error rollErr
+                                       (Str "End of xml data reached.")
+                                       ROLL_ERR_FLAG_INFO
+                                       ROLL_ERR_DEST_ALL)
+                           void)
+          (else
+            (let ((first (substring xmlData 0 2)))
+              (cond ((equal first (Str "<?"))
+                      ;(printf "xmlData:\n%s\n" (cstring (xml_skip_version_element xmlData)))
+                      (parse_xml (xml_skip_version_element xmlData) score))
+                    ((equal first (Str "<!"))
+                      (printf "xmlData:\n%s\n" (cstring (xml_skip_doctype_element xmlData)))
+                      (parse_xml (xml_skip_doctype_element xmlData) score))
+                    (else 
+                      (let ((pair (xml_divide xmlData)))
+                        (parse_xml (first pair) score)
+                        (parse_xml (second pair) score)))))))))
+        
+
+
+
+
+
 (bind-func import_xml:[void,Score*,String*]*
   (lambda (score filepath)
-    (let ((xmlFile (sys_slurp_file (cstring filepath))))
+    (let ((xmlFile (Str (sys_slurp_file (cstring filepath)))))
       (cond
         ((null? xmlFile) (roll_error rollErr
                                      (Str "XML import module: xml file could not be opened. Aborting.")
@@ -8,6 +82,10 @@
                                      ROLL_ERR_DEST_ALL)
                          void)
         (else
-          (printf "converting ...\n")
+          (roll_error rollErr
+                      (Str "XML file slurped.")
+                      ROLL_ERR_FLAG_INFO
+                      ROLL_ERR_DEST_ALL)
+          (parse_xml xmlFile score)
           void))
     void)))

@@ -10,6 +10,8 @@
 (sys:load (string-append ROLL-SOURCE-PATH "roll/logging.xtm"))
 (bind-val rollErr RollError* (roll_create_logfile (cat2 ROLL_WORKING_PATH (Str "logfile-parser"))))
 
+(sys:load (string-append ROLL-SOURCE-PATH "roll/strings.xtm"))
+
 (sys:load (string-append ROLL-SOURCE-PATH "roll/score.xtm"))
 (sys:load (string-append ROLL-SOURCE-PATH "roll/xml_import.xtm"))
 
