@@ -201,11 +201,13 @@
                                                            0)
           (else
             (let ((titleClose (find_substring xmlData (Str ">"))))
+              ;DEBUG: (printf "titleClose=%lld\n" titleClose)
               (cond ((equal (substring xmlData (- titleClose 1) titleClose) (Str "/"))
                       (find_substring_from xmlData (Str "<") titleClose))
                     (else (let* ((name (xml_extract_element_name xmlData))
                                  (endtag (xml_construct_endtag name))
                                  (endPos (+ (find_substring xmlData endtag) (length endtag))))
+                            ;DEBUG: (printf "name='%s', endtag='%s', endPos=%lld\n" (cstring name) (cstring endtag) endPos)
                             (find_substring_from xmlData (Str "<") endPos)))))))))
 
 ; takes xml data, returns a XMLpair, 'first' being the first xml element, 'second' being
@@ -220,6 +222,7 @@
             null)
           (else
             (let ((splitPoint (xml_find_element_separation xmlData)))
+              ;DEBUG: (printf "splitpoint: %lld\n" splitPoint)
               (cond ((<= splitPoint 0)
                       (let ((res (cXMLpair xmlData (Str "")))) 
                         res))
@@ -268,6 +271,8 @@
                                                              ROLL_ERR_FLAG_WARNING
                                                              ROLL_ERR_DEST_ALL)
                                                            void)
+          ((equal (substring xmlData (- (find_substring xmlData (Str ">")) 1) (find_substring xmlData (Str ">"))) (Str "/"))
+            (set_name xmlElement (substring xmlData 1 (find_substring_or xmlData (Str " ") (Str "/")))))
           (else 
             (let ((name (xml_extract_element_name xmlData)))
               (set_name xmlElement name)
@@ -275,9 +280,19 @@
               (xml_extract_body (split_second xmlData (+ 1 (find_substring xmlData (Str ">")))) xmlElement (xml_construct_endtag name))
               void)))))
 
+
+
 ; ParserState remembers things while reading through xml Data
-(bind-type ParserState <i64>)
+(bind-type ParserState <i64,i64,i64*,i64*,i64*,String*,i64*,i64*,i1>)
 ; 0 part count
+; 1 measure count
+; 2 divisions
+; 3 beats (meter numerator)
+; 4 beat-type (meter denominator)
+; 5 step (note name)
+; 6 octave
+; 7 duration
+; 8 rest
 
 (bind-func partCount:[i64,ParserState*]*
   (lambda (ps)
@@ -288,33 +303,181 @@
     (tset! ps 0 pc)
     void))
 
+(bind-func measureCount:[i64,ParserState*]*
+  (lambda (ps)
+    (tref ps 1)))
+
+(bind-func set_measureCount:[void,ParserState*,i64]*
+  (lambda (ps mc)
+    (tset! ps 1 mc)
+    void))
+
+(bind-func divisions:[i64,ParserState*]*
+  (lambda (ps)
+    (pref (tref ps 2) 0)))
+
+(bind-func divisionsPtr:[i64*,ParserState*]*
+  (lambda (ps)
+    (tref ps 2)))
+
+(bind-func set_divisions:[void,ParserState*,i64]*
+  (lambda (ps d)
+    (pset! (tref ps 2) 0 d)
+    void))
+    
+(bind-func beats:[i64,ParserState*]*
+  (lambda (ps)
+    (pref (tref ps 3) 0)))
+
+(bind-func beatsPtr:[i64*,ParserState*]*
+  (lambda (ps)
+    (tref ps 3)))
+
+(bind-func set_beats:[void,ParserState*,i64]*
+  (lambda (ps b)
+    (pset! (tref ps 3) 0 b)
+    void))
+
+(bind-func beatType:[i64,ParserState*]*
+  (lambda (ps)
+    (pref (tref ps 4) 0)))
+
+(bind-func beatTypePtr:[i64*,ParserState*]*
+  (lambda (ps)
+    (tref ps 4)))
+
+(bind-func set_beatType:[void,ParserState*,i64]*
+  (lambda (ps bt)
+    (pset! (tref ps 4) 0 bt)
+    void))
+
+(bind-func step:[String*,ParserState*]*
+  (lambda (ps)
+    (tref ps 5)))
+
+(bind-func set_step:[void,ParserState*,String*]*
+  (lambda (ps s)
+    (tset! ps 5 s)
+    void))
+
+(bind-func octave:[i64,ParserState*]*
+  (lambda (ps)
+    (pref (tref ps 6) 0)))
+
+(bind-func octavePtr:[i64*,ParserState*]*
+  (lambda (ps)
+    (tref ps 6)))
+
+(bind-func duration:[i64,ParserState*]*
+  (lambda (ps)
+    (pref (tref ps 7) 0)))
+
+(bind-func durationPtr:[i64*,ParserState*]*
+  (lambda (ps)
+    (tref ps 7)))
+
+(bind-func rest:[i1,ParserState*]*
+  (lambda (ps)
+    (tref ps 8)))
+
+(bind-func set_rest:[void,ParserState*,i1]*
+  (lambda (ps r)
+    (tset! ps 8 r)
+    void))
+
 (bind-func cParserState:[ParserState*]*
   (lambda ()
-    (let ((res (ParserState:[ParserState*,i64]* 0)))
-      res)))
+    (let ((divisionsPtr:i64* (halloc 1))
+          (beatsPtr:i64* (halloc 1))
+          (beatTypePtr:i64* (halloc 1))
+          (octavePtr:i64* (halloc 1))
+          (durationPtr:i64* (halloc 1)))
+      (pset! divisionsPtr 0 0)
+      (pset! beatsPtr 0 0)
+      (pset! beatTypePtr 0 0)
+      (pset! octavePtr 0 0)
+      (pset! durationPtr 0 0)
+        (let ((res (ParserState:[ParserState*,i64,i64,i64*,i64*,i64*,String*,i64*,i64*,i1]* 
+                                0 
+                                0
+                                divisionsPtr
+                                beatsPtr
+                                beatTypePtr
+                                (Str "")
+                                octavePtr
+                                durationPtr
+                                #f)))
+          res))))
 
 (bind-func print:[void,ParserState*]*
   (lambda (state)
-    (printf "Parser state printout:\npart count = %lld\n"
-            (partCount state))
+    (printf "Parser state printout:\npart count = %lld\nmeasure count = %lld\ndivisions = %lld\nbeats = %lld\nbeatType = %lld\nrest = %s\nstep = '%s'\noctave = %lld\nduration = %lld\n"
+            (partCount state)
+            (measureCount state)
+            (divisions state)
+            (beats state)
+            (beatType state)
+            (if (rest state) "yes" "no")
+            (cstring (step state))
+            (octave state)
+            (duration state))
     void))
 
 
 
 
 ; dummy, for compilation
-(bind-func xml_parse:[void,String*,Score*]* (lambda (a b) void))
+(bind-func xml_parse:[void,String*,Score*,ParserState*]* (lambda (a b c) void))
 
+; central parser unit: takes an XMLelement* storage, a Score* storage and a ParserState*
+; storage and reads through the data while filling the Score* object. the final product is
+; a complete Score* object
 (bind-func xml_interpret_element:[void,XMLelement*,Score*,ParserState*]*
   (lambda (xmlElement score state)
     (cond ((equal (name xmlElement) (Str "score-partwise"))
             (roll_error rollErr (Str "Parser: partwise score detected.") ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_ALL)
-            (xml_parse (body xmlElement) score))
+            (xml_parse (body xmlElement) score state))
           ((equal (name xmlElement) (Str "part"))
             (roll_error rollErr (cat2 (cat2 (Str "Parser: opening part '") (attribute xmlElement (Str "id"))) (Str "'."))
                                 ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_ALL)
             (set_partCount state (+ 1 (partCount state)))
-            (xml_parse (body xmlElement) score))
+            (set_measureCount state 0)
+            (xml_parse (body xmlElement) score state))
+          ((equal (name xmlElement) (Str "measure"))
+            (set_measureCount state (+ 1 (measureCount state)))
+            (xml_parse (body xmlElement) score state))
+          ((equal (name xmlElement) (Str "attributes"))
+            (xml_parse (body xmlElement) score state))
+          ((equal (name xmlElement) (Str "divisions"))
+            (sscanf (cstring (body xmlElement)) "%lld" (divisionsPtr state)) void)
+          ((equal (name xmlElement) (Str "time"))
+            (xml_parse (body xmlElement) score state))
+          ((equal (name xmlElement) (Str "beats"))
+            ; DEBUG: (printf "scanning beats body: '%s'\n" (cstring (body xmlElement)))
+            (sscanf (cstring (body xmlElement)) "%lld" (beatsPtr state)) void)
+          ((equal (name xmlElement) (Str "beat-type"))
+            ; DEBUG: (printf "scanning beat-type body: '%s'\n" (cstring (body xmlElement)))
+            (sscanf (cstring (body xmlElement)) "%lld" (beatTypePtr state)) void)
+          ((equal (name xmlElement) (Str "note"))
+            ; DEBUG: (printf "scanning note body: '%s'\n" (cstring (body xmlElement)))
+            (set_rest state #f)
+            (xml_parse (body xmlElement) score state)
+            ; write note to score
+            ; update time
+            void)
+          ((equal (name xmlElement) (Str "pitch"))
+            (xml_parse (body xmlElement) score state))
+          ((equal (name xmlElement) (Str "rest"))
+            (set_rest state #t))
+          ((equal (name xmlElement) (Str "step"))
+            ; DEBUG: (printf "scanning step body: '%s'\n" (cstring (body xmlElement)))
+            (set_step state (body xmlElement)) void)
+          ((equal (name xmlElement) (Str "octave"))
+            ; DEBUG: (printf "scanning octave body: '%s'\n" (cstring (body xmlElement)))
+            (sscanf (cstring (body xmlElement)) "%lld" (octavePtr state)) void)
+          ((equal (name xmlElement) (Str "duration"))
+            ; DEBUG: (printf "scanning duration body: '%s'\n" (cstring (body xmlElement)))
+            (sscanf (cstring (body xmlElement)) "%lld" (durationPtr state)) void)
           (else (roll_error rollErr
                             (cat2 (cat2 (Str "Roll, xml_interpret_element: ignoring element '") (name xmlElement)) (Str "' and its content and sub-elements."))
                             ROLL_ERR_FLAG_INFO
@@ -337,16 +500,17 @@
           (else
             (let ((first (substring xmlData 0 2)))
               (cond ((equal first (Str "<?"))
-                      ;(printf "xmlData:\n%s\n" (cstring (xml_skip_version_element xmlData)))
+                      ;DEBUG: (printf "xmlData:\n%s\n" (cstring (xml_skip_version_element xmlData)))
                       (xml_parse (xml_skip_version_element xmlData) score state))
                     ((equal first (Str "<!"))
-                      ;(printf "xmlData:\n%s\n" (cstring (xml_skip_doctype_element xmlData)))
+                      ;DEBUG: ;(printf "xmlData:\n%s\n" (cstring (xml_skip_doctype_element xmlData)))
                       (xml_parse (xml_skip_doctype_element xmlData) score state))
                     (else 
                       (let ((pair (xml_divide xmlData))
                             (xmlElement (cXMLelement)))
+                        ;DEBUG: (print pair)
                         (xml_read_element (xml_car pair) xmlElement)
-                        (xml_interpret_element xmlElement score)
+                        (xml_interpret_element xmlElement score state)
                         (xml_parse (xml_cdr pair) score state)))))))))
         
 
@@ -369,6 +533,10 @@
                         (Str "XML file slurped.")
                         ROLL_ERR_FLAG_INFO
                         ROLL_ERR_DEST_ALL)
+            ;DEBUG: (printf "file contents:\n%s\n" (cstring xmlFile))
             (xml_parse xmlFile score state)
+            ;DEBUG: (printf "this went well.\n")
+            ;DEBUG: 
+            (print state)
             void)))
     void)))

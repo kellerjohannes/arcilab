@@ -1,0 +1,8 @@
+<score-partwise>
+  <note att1="val1" att2="val2">
+    <pitch>C</pitch>
+    <duration>17</duration>
+  </note>
+</score-partwise>
+<shit-element>
+</shit-element>
