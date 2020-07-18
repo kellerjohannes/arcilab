@@ -1,18 +1,7 @@
-(bind-func xml_delete_until_left_bracket:[String*,String*]*
-  (lambda (xmlData)
-    (cond ((= 0 (length xmlData)) (Str ""))
-          (else (split_second xmlData (find_substring xmlData (Str "<")))))))
-
-(bind-func xml_skip_version_element:[String*,String*]*
-  (lambda (xmlData)
-    (xml_delete_until_left_bracket (split_second xmlData (+ 2 (find_substring xmlData (Str "?>")))))))
-
-(bind-func xml_skip_doctype_element:[String*,String*]*
-  (lambda (xmlData)
-    (xml_delete_until_left_bracket (split_second xmlData (+ 1 (find_substring xmlData (Str ">")))))))
-
-
+; XMLpair element, stores two strings, a first element, and the rest of the xml data
 (bind-type XMLpair <String*,String*>)
+; 0 xml data
+; 1 xml data
 
 (bind-func xml_car:[String*,XMLpair*]*
   (lambda (p)
@@ -22,7 +11,6 @@
   (lambda (p s)
     (tset! p 0 s)
     void))
-
 
 (bind-func xml_cdr:[String*,XMLpair*]*
   (lambda (p)
@@ -45,6 +33,126 @@
             (cstring (xml_cdr p)))
     void))
 
+
+
+; XMLelement, stores the content of an xml element
+(bind-type XMLelement <String*,i64,String**,String**,String*>)
+; 0 name
+; 1 attribute count
+; 2 attribute names
+; 3 attribute values
+; 4 body
+
+(bind-func name:[String*,XMLelement*]*
+  (lambda (xmlElement)
+    (tref xmlElement 0)))
+
+(bind-func set_name:[void,XMLelement*,String*]*
+  (lambda (xmlElement name)
+    (tset! xmlElement 0 name)
+    void))
+
+(bind-func count:[i64,XMLelement*]*
+  (lambda (xmlElement)
+    (tref xmlElement 1)))
+
+(bind-func set_count:[void,XMLelement*,i64]*
+  (lambda (xmlElement count)
+    (tset! xmlElement 1 count)
+    void))
+
+(bind-func attributeName:[String*,XMLelement*,i64]*
+  (lambda (xmlElement index)
+    (cond ((and (>= index 0) (< index (count xmlElement)))
+            (pref (tref xmlElement 2) index))
+          (else (roll_error rollErr
+                            (Str "Roll, XMLelement:attributeName: index out of range.")
+                            ROLL_ERR_FLAG_FATAL
+                            ROLL_ERR_DEST_ALL)
+                (Str "")))))
+
+(bind-func attributeValue:[String*,XMLelement*,i64]*
+  (lambda (xmlElement index)
+    (cond ((and (>= index 0) (< index (count xmlElement)))
+            (pref (tref xmlElement 3) index))
+          (else (roll_error rollErr
+                            (Str "Roll, XMLelement:attributeValue: index out of range.")
+                            ROLL_ERR_FLAG_FATAL
+                            ROLL_ERR_DEST_ALL)
+                (Str "")))))
+
+(bind-func body:[String*,XMLelement*]*
+  (lambda (xmlElement)
+    (tref xmlElement 4)))
+
+(bind-func set_body:[void,XMLelement*,String*]*
+  (lambda (xmlElement body)
+    (tset! xmlElement 4 body)
+    void))
+
+(bind-func push_attribute:[void,XMLelement*,String*,String*]*
+  (lambda (xmlElement name value)
+    (let ((tmpNamePtr:String** (halloc (+ 1 (count xmlElement))))
+          (tmpValuePtr:String** (halloc (+ 1 (count xmlElement))))
+          (i 0))
+      (dotimes (i (count xmlElement))
+        (pset! tmpNamePtr i (attributeName xmlElement i))
+        (pset! tmpValuePtr i (attributeValue xmlElement i)))
+      (pset! tmpNamePtr (count xmlElement) name)
+      (pset! tmpValuePtr (count xmlElement) value)
+      (set_count xmlElement (+ 1 (count xmlElement)))
+      (free (tref xmlElement 2))
+      (free (tref xmlElement 3))
+      (tset! xmlElement 2 tmpNamePtr)
+      (tset! xmlElement 3 tmpValuePtr)
+      void)))
+
+(bind-func cXMLelement:[XMLelement*]*
+  (lambda ()
+    (let ((namePtr:String** (halloc 1))
+          (valuePtr:String** (halloc 1)))
+      (set! namePtr null)
+      (set! valuePtr null)
+      (let ((res (XMLelement:[XMLelement*,String*,i64,String**,String**,String*]*
+                             (Str "")
+                             0
+                             namePtr
+                             valuePtr
+                             (Str ""))))
+         res))))
+
+(bind-func print:[void,XMLelement*]*
+  (lambda (xmlElement)
+    (printf "XML element:\nname = '%s'\n" (cstring (name xmlElement)))
+    (let ((i 0))
+      (dotimes (i (count xmlElement))
+        (printf "attribute #%lld: name = '%s', value = '%s'\n"
+                i
+                (cstring (attributeName xmlElement i))
+                (cstring (attributeValue xmlElement i))))
+      (printf "body:\n%s\n" (cstring (body xmlElement)))
+      void)))
+
+
+
+
+; takes xml data, returns xml data with everything removed until a first occurrence of '<'
+(bind-func xml_delete_until_left_bracket:[String*,String*]*
+  (lambda (xmlData)
+    (cond ((= 0 (length xmlData)) (Str ""))
+          (else (split_second xmlData (find_substring xmlData (Str "<")))))))
+
+; takes xml data, returns xml data without the '<?' element
+(bind-func xml_skip_version_element:[String*,String*]*
+  (lambda (xmlData)
+    (xml_delete_until_left_bracket (split_second xmlData (+ 2 (find_substring xmlData (Str "?>")))))))
+
+; takes xml data, returns xml data without the '<!' element
+(bind-func xml_skip_doctype_element:[String*,String*]*
+  (lambda (xmlData)
+    (xml_delete_until_left_bracket (split_second xmlData (+ 1 (find_substring xmlData (Str ">")))))))
+
+; takes xml data, returns a String* containing the name of the first xml element
 (bind-func xml_extract_element_name:[String*,String*]*
   (lambda (xmlData)
     (cond ((null? xmlData) (roll_error rollErr
@@ -58,12 +166,14 @@
                                                            ROLL_ERR_FLAG_FATAL
                                                            ROLL_ERR_DEST_ALL)
                                                            (Str ""))
-          (else (substring xmlData 1 (find_substring xmlData (Str " ")))))))
+          (else (substring xmlData 1 (find_substring_or xmlData (Str " ") (Str ">")))))))
 
+; takes a String* with a name (without '<>'), returns a String* with the corresponding endtag
 (bind-func xml_construct_endtag:[String*,String*]*
   (lambda (name)
     (cat2 (cat2 (Str "</") name) (Str ">"))))
 
+; takes xml data, returns the index of the second element on the highest level
 (bind-func xml_find_element_separation:[i64,String*]*
   (lambda (xmlData)
     (cond ((null? xmlData) (roll_error rollErr
@@ -85,25 +195,8 @@
                                  (endPos (+ (find_substring xmlData endtag) (length endtag))))
                             (find_substring_from xmlData (Str "<") endPos)))))))))
 
-
-
-
-
-; (bind-func stest2
-;   (lambda ()
-;     (let ((s1 (Str "<note color=...> <pitch/> </note> <note all the rest> <pitch/> </note>"))
-;           (s2 (Str "<")))
-;       (let ((p (xml_divide s1)))
-;         (print p)
-;         (printf "name = '%s'\n" (cstring (xml_construct_endtag (xml_extract_element_name
-;         s1))))))))
-; 
-; ($ (stest2))
-      
-
-
-
-
+; takes xml data, returns a XMLpair, 'first' being the first xml element, 'second' being
+; the rest of the xml data
 (bind-func xml_divide:[XMLpair*,String*]*
   (lambda (xmlData)
     (cond ((not (equal (split_first xmlData 1) (Str "<")))
@@ -114,12 +207,88 @@
             null)
           (else
             (let ((splitPoint (xml_find_element_separation xmlData)))
-              (cond ((= 0 splitPoint)
+              (cond ((<= splitPoint 0)
                       (let ((res (cXMLpair xmlData (Str "")))) 
                         res))
                     (else
                       (let ((res (cXMLpair (split_first xmlData splitPoint) (split_second xmlData splitPoint))))
                         res))))))))
+
+(bind-func test2
+  (lambda ()
+    (let ((data (Str (sys_slurp_file "/home/johannes/Coding/extempore/arcilab/scores/guinea01/dummy.xml"))))
+      ;(printf "%s\n" (cstring data))
+      ;(xml_find_element_separation data)
+      (find_substring data (Str "\n")))))
+
+;($ (test2))
+
+; takes a String* with the title data of an xml element (< ... >) and an XMLelement*,
+; extracts the attribute names and values and stores them in the XMLelement*
+(bind-func xml_extract_attribute:[void,String*,XMLelement*]*
+  (lambda (xmlData xmlElement)
+    (cond ((null? xmlData) (roll_error rollErr
+                                       (Str "Roll, xml_extract_attribute: empty xmlData pointer. Did nothing.")
+                                       ROLL_ERR_FLAG_WARNING
+                                       ROLL_ERR_DEST_ALL)
+                           void)
+          ((= 0 (length xmlData)) void)
+          (else (let ((name (split_first xmlData (find_substring xmlData (Str "="))))
+                      (value (substring xmlData (+ 2 (find_substring xmlData (Str "=")))
+                                                (find_substring_from xmlData (create_quotes) (+ 1 (find_substring xmlData (create_quotes))))))
+                      (leftover (split_second xmlData (+ 4 (length name) (length value)))))
+                  (push_attribute xmlElement name value)
+                  (xml_extract_attribute leftover xmlElement))))))
+
+; takes a String* starting with the body of an element, a XMLelement* and a String* with
+; the name of the element; extracts the body and stores it in the XMLelement*
+(bind-func xml_extract_body:[void,String*,XMLelement*,String*]*
+  (lambda (xmlData xmlElement endtag)
+    (cond ((null? xmlData) (roll_error rollErr
+                                       (Str "Roll, xml_extract_body: empty xmlData pointer. Did nothing.")
+                                       ROLL_ERR_FLAG_WARNING
+                                       ROLL_ERR_DEST_ALL)
+                           void)
+          ((= 0 (length xmlData)) void)
+          (else (set_body xmlElement (remove_initial_spaces (split_first xmlData (find_substring xmlData endtag))))
+                void))))
+
+; takes xml data and an XMLelement*, extracts name, attributes and body and stores this
+; data in the XMLelement*
+(bind-func xml_read_element:[void,String*,XMLelement*]*
+  (lambda (xmlData xmlElement)
+    (cond ((null? xmlData) (roll_error rollErr
+                                       (Str "Roll, xml_read_element: empty xmlData pointer. Did nothing.")
+                                       ROLL_ERR_FLAG_WARNING
+                                       ROLL_ERR_DEST_ALL)
+                           void)
+          ((= 0 (length xmlData)) void)
+          ((not (equal (substring xmlData 0 1) (Str "<"))) (roll_error rollErr
+                                                             (Str "Roll, xml_read_element: first character is not '<'.  Problem?")
+                                                             ROLL_ERR_FLAG_WARNING
+                                                             ROLL_ERR_DEST_ALL)
+                                                           void)
+          (else 
+            (let ((name (xml_extract_element_name xmlData)))
+              (set_name xmlElement name)
+              (xml_extract_attribute (substring xmlData (+ 2 (length name)) (find_substring xmlData (Str ">"))) xmlElement)
+              (xml_extract_body (split_second xmlData (+ 1 (find_substring xmlData (Str ">")))) xmlElement (xml_construct_endtag name))
+              void)))))
+
+; dummy, for compilation
+(bind-func xml_parse:[void,String*,Score*]* (lambda (a b) void))
+
+(bind-func xml_interpret_element:[void,XMLelement*,Score*]*
+  (lambda (xmlElement score)
+    (cond ((equal (name xmlElement) (Str "score-partwise"))
+            (printf "wow, working!\n")
+            (print xmlElement)
+            (xml_parse (body xmlElement) score))
+          (else (printf "boh?\n")
+                void))))
+
+
+
 
 
 
@@ -140,26 +309,28 @@
                       ;(printf "xmlData:\n%s\n" (cstring (xml_skip_doctype_element xmlData)))
                       (xml_parse (xml_skip_doctype_element xmlData) score))
                     (else 
-                      (let ((pair (xml_divide xmlData)))
-                        ;read-element
-                        ;interpret-element
-                        ;parse body of 'first' [xml_car pair]
+                      (let ((pair (xml_divide xmlData))
+                            (xmlElement (cXMLelement)))
+                        (print pair)
+                        (xml_read_element (xml_car pair) xmlElement)
+                        (xml_interpret_element xmlElement score)
+                        (printf "ok, so far so good, now the second member: %s\n" (cstring (xml_cdr pair)))
                         (xml_parse (xml_cdr pair) score)))))))))
         
-
-
-
-
 
 (bind-func xml_import:[void,Score*,String*]*
   (lambda (score filepath)
     (let ((xmlFile (Str (sys_slurp_file (cstring filepath)))))
       (cond
         ((null? xmlFile) (roll_error rollErr
-                                     (Str "XML import module: xml file could not be opened. Aborting.")
+                                     (Str "Roll, xml_import: xml file could not be opened. Aborting.")
                                      ROLL_ERR_FLAG_FATAL
                                      ROLL_ERR_DEST_ALL)
                          void)
+        ((= 0 (length xmlFile)) (roll_error rollErr
+                                            (Str "Roll, xml_import: xml data empty. No parsing.")
+                                            ROLL_ERR_FLAG_FATAL
+                                            ROLL_ERR_DEST_ALL))
         (else
           (roll_error rollErr
                       (Str "XML file slurped.")

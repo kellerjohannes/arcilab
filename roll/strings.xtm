@@ -25,8 +25,44 @@
     (cond ((null? tbs) -1)
           ((null? sf) -1)
           ((= 0 (length sf)) -1)
+          ((>= index (length tbs)) -1)
           (else (find_substring_loop (split_second tbs index) sf index)))))
 
+(bind-func find_substring_or_loop:[i64,String*,String*,String*,i64]*
+  (lambda (tbs sf1 sf2 index)
+    (cond ((= 0 (length tbs)) -1)
+          ((or (equal (substring tbs 0 (length sf1)) sf1)
+               (equal (substring tbs 0 (length sf2)) sf2)) index)
+          (else (find_substring_or_loop (split_second tbs 1) sf1 sf2 (+ 1 index))))))
 
+(bind-func find_substring_or:[i64,String*,String*,String*]*
+  (lambda (tbs sf1 sf2)
+    (cond ((null? tbs) -1)
+          ((null? sf1) -1)
+          ((null? sf2) -1)
+          ((= 0 (length sf1)) -1)
+          ((= 0 (length sf2)) -1)
+          (else (find_substring_or_loop tbs sf1 sf2 0)))))
 
+(bind-func find_substring_not_loop:[i64,String*,String*,i64]*
+  (lambda (tbs sf index)
+    (cond ((= 0 (length tbs)) -1)
+          ((not (equal (substring tbs 0 (length sf)) sf)) index)
+          (else (find_substring_not_loop (split_second tbs 1) sf (+ 1 index))))))
 
+(bind-func find_substring_not:[i64,String*,String*]*
+  (lambda (tbs sf)
+    (cond ((null? tbs) -1)
+          ((null? sf) -1)
+          ((= 0 (length sf)) -1)
+          (else (find_substring_not_loop tbs sf 0)))))
+
+(bind-func create_quotes:[String*]*
+  (lambda ()
+    (let ((cs:i8* (halloc 2)))
+      (pfill! cs 34 0)
+      (Str cs))))
+
+(bind-func remove_initial_spaces:[String*,String*]*
+  (lambda (s)
+    (split_second s (find_substring_not s (Str " ")))))
