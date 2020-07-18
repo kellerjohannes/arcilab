@@ -275,17 +275,45 @@
               (xml_extract_body (split_second xmlData (+ 1 (find_substring xmlData (Str ">")))) xmlElement (xml_construct_endtag name))
               void)))))
 
+; ParserState remembers things while reading through xml Data
+(bind-type ParserState <i64>)
+; 0 part count
+
+(bind-func partCount:[i64,ParserState*]*
+  (lambda (ps)
+    (tref ps 0)))
+
+(bind-func set_partCount:[void,ParserState*,i64]*
+  (lambda (ps pc)
+    (tset! ps 0 pc)
+    void))
+
+(bind-func cParserState:[ParserState*]*
+  (lambda ()
+    (let ((res (ParserState:[ParserState*,i64]* 0)))
+      res)))
+
+(bind-func print:[void,ParserState*]*
+  (lambda (state)
+    (printf "Parser state printout:\npart count = %lld\n"
+            (partCount state))
+    void))
+
+
+
+
 ; dummy, for compilation
 (bind-func xml_parse:[void,String*,Score*]* (lambda (a b) void))
 
-(bind-func xml_interpret_element:[void,XMLelement*,Score*]*
-  (lambda (xmlElement score)
+(bind-func xml_interpret_element:[void,XMLelement*,Score*,ParserState*]*
+  (lambda (xmlElement score state)
     (cond ((equal (name xmlElement) (Str "score-partwise"))
             (roll_error rollErr (Str "Parser: partwise score detected.") ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_ALL)
             (xml_parse (body xmlElement) score))
           ((equal (name xmlElement) (Str "part"))
             (roll_error rollErr (cat2 (cat2 (Str "Parser: opening part '") (attribute xmlElement (Str "id"))) (Str "'."))
                                 ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_ALL)
+            (set_partCount state (+ 1 (partCount state)))
             (xml_parse (body xmlElement) score))
           (else (roll_error rollErr
                             (cat2 (cat2 (Str "Roll, xml_interpret_element: ignoring element '") (name xmlElement)) (Str "' and its content and sub-elements."))
@@ -298,8 +326,8 @@
 
 
 
-(bind-func xml_parse:[void,String*,Score*]*
-  (lambda (xmlData score)
+(bind-func xml_parse:[void,String*,Score*,ParserState*]*
+  (lambda (xmlData score state)
     (cond ((null? xmlData) (roll_error rollErr
                                        (Str "Roll, xml_parse: undefined xmlData pointer.  No parsing possible.")
                                        ROLL_ERR_FLAG_FATAL
@@ -310,16 +338,16 @@
             (let ((first (substring xmlData 0 2)))
               (cond ((equal first (Str "<?"))
                       ;(printf "xmlData:\n%s\n" (cstring (xml_skip_version_element xmlData)))
-                      (xml_parse (xml_skip_version_element xmlData) score))
+                      (xml_parse (xml_skip_version_element xmlData) score state))
                     ((equal first (Str "<!"))
                       ;(printf "xmlData:\n%s\n" (cstring (xml_skip_doctype_element xmlData)))
-                      (xml_parse (xml_skip_doctype_element xmlData) score))
+                      (xml_parse (xml_skip_doctype_element xmlData) score state))
                     (else 
                       (let ((pair (xml_divide xmlData))
                             (xmlElement (cXMLelement)))
                         (xml_read_element (xml_car pair) xmlElement)
                         (xml_interpret_element xmlElement score)
-                        (xml_parse (xml_cdr pair) score)))))))))
+                        (xml_parse (xml_cdr pair) score state)))))))))
         
 
 (bind-func xml_import:[void,Score*,String*]*
@@ -336,10 +364,11 @@
                                             ROLL_ERR_FLAG_FATAL
                                             ROLL_ERR_DEST_ALL))
         (else
-          (roll_error rollErr
-                      (Str "XML file slurped.")
-                      ROLL_ERR_FLAG_INFO
-                      ROLL_ERR_DEST_ALL)
-          (xml_parse xmlFile score)
-          void))
+          (let ((state (cParserState)))
+            (roll_error rollErr
+                        (Str "XML file slurped.")
+                        ROLL_ERR_FLAG_INFO
+                        ROLL_ERR_DEST_ALL)
+            (xml_parse xmlFile score state)
+            void)))
     void)))
