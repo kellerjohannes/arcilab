@@ -81,6 +81,19 @@
                             ROLL_ERR_DEST_ALL)
                 (Str "")))))
 
+(bind-func attribute:[String*,XMLelement*,String*]*
+  (lambda (xmlElement name)
+    (let ((i 0)
+          (res (Str "")))
+      (dotimes (i (count xmlElement)) 
+        (if (equal (attributeName xmlElement i) name)
+          (set! res (attributeValue xmlElement i))))
+      res)))
+
+
+
+
+
 (bind-func body:[String*,XMLelement*]*
   (lambda (xmlElement)
     (tref xmlElement 4)))
@@ -214,24 +227,11 @@
                       (let ((res (cXMLpair (split_first xmlData splitPoint) (split_second xmlData splitPoint))))
                         res))))))))
 
-(bind-func test2
-  (lambda ()
-    (let ((data (Str (sys_slurp_file "/home/johannes/Coding/extempore/arcilab/scores/guinea01/dummy.xml"))))
-      ;(printf "%s\n" (cstring data))
-      ;(xml_find_element_separation data)
-      (find_substring data (Str "\n")))))
-
-;($ (test2))
-
 ; takes a String* with the title data of an xml element (< ... >) and an XMLelement*,
 ; extracts the attribute names and values and stores them in the XMLelement*
 (bind-func xml_extract_attribute:[void,String*,XMLelement*]*
   (lambda (xmlData xmlElement)
-    (cond ((null? xmlData) (roll_error rollErr
-                                       (Str "Roll, xml_extract_attribute: empty xmlData pointer. Did nothing.")
-                                       ROLL_ERR_FLAG_WARNING
-                                       ROLL_ERR_DEST_ALL)
-                           void)
+    (cond ((null? xmlData) void)
           ((= 0 (length xmlData)) void)
           (else (let ((name (split_first xmlData (find_substring xmlData (Str "="))))
                       (value (substring xmlData (+ 2 (find_substring xmlData (Str "=")))
@@ -281,11 +281,17 @@
 (bind-func xml_interpret_element:[void,XMLelement*,Score*]*
   (lambda (xmlElement score)
     (cond ((equal (name xmlElement) (Str "score-partwise"))
-            (printf "wow, working!\n")
-            (print xmlElement)
+            (roll_error rollErr (Str "Parser: partwise score detected.") ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_ALL)
             (xml_parse (body xmlElement) score))
-          (else (printf "boh?\n")
-                void))))
+          ((equal (name xmlElement) (Str "part"))
+            (roll_error rollErr (cat2 (cat2 (Str "Parser: opening part '") (attribute xmlElement (Str "id"))) (Str "'."))
+                                ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_ALL)
+            (xml_parse (body xmlElement) score))
+          (else (roll_error rollErr
+                            (cat2 (cat2 (Str "Roll, xml_interpret_element: ignoring element '") (name xmlElement)) (Str "' and its content and sub-elements."))
+                            ROLL_ERR_FLAG_INFO
+                            ROLL_ERR_DEST_ALL))
+                void)))
 
 
 
@@ -311,10 +317,8 @@
                     (else 
                       (let ((pair (xml_divide xmlData))
                             (xmlElement (cXMLelement)))
-                        (print pair)
                         (xml_read_element (xml_car pair) xmlElement)
                         (xml_interpret_element xmlElement score)
-                        (printf "ok, so far so good, now the second member: %s\n" (cstring (xml_cdr pair)))
                         (xml_parse (xml_cdr pair) score)))))))))
         
 
