@@ -444,7 +444,11 @@
             (set_measureCount state 0)
             (xml_parse (body xmlElement) score state))
           ((equal (name xmlElement) (Str "measure"))
+            ; ... reset measure specific state values
             (set_measureCount state (+ 1 (measureCount state)))
+            (if (< (measureCount score) (measureCount state))
+              (begin (push score (cMeasure))
+                     (set_number (get_measure score (- (measureCount score) 1)) (measureCount state))))
             (xml_parse (body xmlElement) score state))
           ((equal (name xmlElement) (Str "attributes"))
             (xml_parse (body xmlElement) score state))
@@ -461,8 +465,13 @@
           ((equal (name xmlElement) (Str "note"))
             ; DEBUG: (printf "scanning note body: '%s'\n" (cstring (body xmlElement)))
             (set_rest state #f)
+            ; ... reset note specific state values
             (xml_parse (body xmlElement) score state)
-            ; write note to score
+            (if (not (rest state))
+              (let ((currentMeasure (get_measure score (- (measureCount state) 1))))
+                (push currentMeasure (cNote))
+                ; write note specific data into score
+                void))
             ; update time
             void)
           ((equal (name xmlElement) (Str "pitch"))

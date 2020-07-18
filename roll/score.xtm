@@ -41,7 +41,7 @@
   (lambda (n)
     (tref n 0)))
 
-(bind-func setStarttime:[void,Note*,i64]*
+(bind-func set_starttime:[void,Note*,i64]*
   (lambda (n st)
     (tset! n 0 st)
     void))
@@ -50,7 +50,7 @@
   (lambda (n)
     (tref n 1)))
 
-(bind-func setRest:[void,Note*,i1]*
+(bind-func set_rest:[void,Note*,i1]*
   (lambda (n r)
     (tset! n 1 r)
     void))
@@ -59,7 +59,7 @@
   (lambda (n)
     (tref n 2)))
 
-(bind-func setRoot:[void,Note*,String*]*
+(bind-func set_root:[void,Note*,String*]*
   (lambda (n r)
     (tset! n 2 r)
     void))
@@ -68,7 +68,7 @@
   (lambda (n)
     (tref n 3)))
 
-(bind-func setNotehead:[void,Note*,String*]*
+(bind-func set_notehead:[void,Note*,String*]*
   (lambda (n nh)
     (tset! n 3 nh)
     void))
@@ -77,7 +77,7 @@
   (lambda (n)
     (tref n 4)))
 
-(bind-func setAlteration:[void,Note*,String*]*
+(bind-func set_alteration:[void,Note*,String*]*
   (lambda (n a)
     (tset! n 4 a)
     void))
@@ -86,7 +86,7 @@
   (lambda (n)
     (tref n 5)))
 
-(bind-func setDuration:[void,Note*,i64]*
+(bind-func set_duration:[void,Note*,i64]*
   (lambda (n d)
     (tset! n 5 d)
     void))
@@ -95,7 +95,7 @@
   (lambda (n)
     (tref n 6)))
 
-(bind-func setTie:[void,Note*,i32]*
+(bind-func set_tie:[void,Note*,i32]*
   (lambda (n t)
     (cond ((= t ROLL_TIE_NONE) (tset! n 6 ROLL_TIE_NONE))
           ((= t ROLL_TIE_START) (tset! n 6 ROLL_TIE_START))
@@ -112,7 +112,7 @@
   (lambda (n)
     (tref n 7)))
 
-(bind-func setPitchInfo:[void,Note*,String*]*
+(bind-func set_pitchInfo:[void,Note*,String*]*
   (lambda (n pi)
     (tset! n 7 pi)
     void))
@@ -121,7 +121,7 @@
   (lambda (n)
     (tref n 8)))
 
-(bind-func setArticulation:[void,Note*,String*]*
+(bind-func set_articulation:[void,Note*,String*]*
   (lambda (n a)
     (tset! n 8 a)
     void))
@@ -130,7 +130,7 @@
   (lambda (n)
     (tref n 9)))
 
-(bind-func setCommand:[void,Note*,String*]*
+(bind-func set_command:[void,Note*,String*]*
   (lambda (n c)
     (tset! n 9 c)
     void))
@@ -139,7 +139,7 @@
   (lambda (n)
     (tref n 10)))
 
-(bind-func setEventType:[void,Note*,i32]*
+(bind-func set_eventType:[void,Note*,i32]*
   (lambda (n et)
     (cond ((= et ROLL_EVENT_TYPE_TABULATURE) (tset! n 10 ROLL_EVENT_TYPE_TABULATURE))
           ((= et ROLL_EVENT_TYPE_PITCH_UTOPIA) (tset! n 10 ROLL_EVENT_TYPE_PITCH_UTOPIA))
@@ -155,7 +155,7 @@
   (lambda (n)
     (tref n 11)))
 
-(bind-func setVoice:[void,Note*,i64]*
+(bind-func set_voice:[void,Note*,i64]*
   (lambda (n v)
     (cond ((and (>= v 0) (< v ROLL_MAX_NUM_VOICES))
             (tset! n 11 v)
@@ -170,7 +170,7 @@
   (lambda (n)
     (tref n 12)))
 
-(bind-func setOutputHint:[void,Note*,i32]*
+(bind-func set_outputHint:[void,Note*,i32]*
   (lambda (n oh)
     (cond ((= oh ROLL_OUTPUT_HINT_TACET) (tset! n 12 ROLL_OUTPUT_HINT_TACET))
           ((= oh ROLL_OUTPUT_HINT_ARCIORGANO) (tset! n 12 ROLL_OUTPUT_HINT_ARCIORGANO))
@@ -189,7 +189,7 @@
     (cond ((null? (tref n 13)) (roll_error rollErr 
                                            (Str "Note element: empty auxData requested. 'null' returned.") 
                                            ROLL_ERR_FLAG_WARNING 
-                                           ROLL_ERR_DEST_ALL) 
+                                           ROLL_ERR_DEST_FILE) 
                                 null)
           (else (tref n 13)))))
 
@@ -215,7 +215,7 @@
 
 (bind-func print:[void,Note*]*
   (lambda (n)
-    (printf "start time:      %lld\n
+    (printf "start time:      %lld\r\n
 rest:            %s\n
 root:            '%s'\n
 notehead:        '%s'\n
@@ -277,7 +277,7 @@ auxiliary data:  %s\n"
   (lambda (m)
     (tref m 0)))
 
-(bind-func setNumber:[void,Measure*,i64]*
+(bind-func set_number:[void,Measure*,i64]*
   (lambda (m n)
     (cond ((>= n 0) (tset! m 0 n) void)
           (else (roll_error rollErr
@@ -291,7 +291,7 @@ auxiliary data:  %s\n"
   (lambda (m)
     (tref m 1)))
 
-(bind-func setDivision:[void,Measure*,i64]*
+(bind-func set_division:[void,Measure*,i64]*
   (lambda (m d)
     (tset! m 1 d)
     void))
@@ -300,7 +300,7 @@ auxiliary data:  %s\n"
   (lambda (m)
     (tref m 2)))
 
-(bind-func setNoteCount:[void,Measure*,i64]*
+(bind-func set_noteCount:[void,Measure*,i64]*
   (lambda (m nc)
     (cond ((>= nc 0) (tset! m 2 nc) void)
           (else (roll_error rollErr
@@ -361,7 +361,7 @@ auxiliary data:  %s\n"
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; Measure element ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Score element ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; This element stores data of the xml score, per measure, not per part. 
 
@@ -373,7 +373,7 @@ auxiliary data:  %s\n"
   (lambda (s)
     (tref s 0)))
 
-(bind-func setMeasureCount:[void,Score*,i64]*
+(bind-func set_measureCount:[void,Score*,i64]*
   (lambda (s count)
     (cond ((>= count 0) (tset! s 0 count) void)
           (else (roll_error rollErr
