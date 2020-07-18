@@ -23,19 +23,85 @@
     (tset! p 0 s)
     void))
 
-(bind-func set_second:[void,XMLpair*,String*]*
-  (lambda (p s)
-    (tset! p 1 s)
-    void))
 
 (bind-func xml_cdr:[String*,XMLpair*]*
   (lambda (p)
     (tref p 1)))
 
+(bind-func set_second:[void,XMLpair*,String*]*
+  (lambda (p s)
+    (tset! p 1 s)
+    void))
+
 (bind-func cXMLpair:[XMLpair*,String*,String*]*
   (lambda (first second)
     (let ((res (XMLpair:[XMLpair*,String*,String*]* first second)))
       res)))
+
+(bind-func print:[void,XMLpair*]*
+  (lambda (p)
+    (printf "Pair: first = \n%s\nPair: second = \n%s\n"
+            (cstring (xml_car p))
+            (cstring (xml_cdr p)))
+    void))
+
+(bind-func xml_extract_element_name:[String*,String*]*
+  (lambda (xmlData)
+    (cond ((null? xmlData) (roll_error rollErr
+                                       (Str "Roll, xml_extract_element_name: empty xmlData pointer. Problem.")
+                                       ROLL_ERR_FLAG_FATAL
+                                       ROLL_ERR_DEST_ALL)
+                           null)
+          ((= 0 (length xmlData)) (Str ""))
+          ((not (equal (substring xmlData 0 1) (Str "<"))) (roll_error rollErr
+                                                           (Str "Roll, xml_extract_element_name: first character is not '<', can't parse.")
+                                                           ROLL_ERR_FLAG_FATAL
+                                                           ROLL_ERR_DEST_ALL)
+                                                           (Str ""))
+          (else (substring xmlData 1 (find_substring xmlData (Str " ")))))))
+
+(bind-func xml_construct_endtag:[String*,String*]*
+  (lambda (name)
+    (cat2 (cat2 (Str "</") name) (Str ">"))))
+
+(bind-func find_element_separation:[i64,String*]*
+  (lambda (xmlData)
+    (cond ((null? xmlData) (roll_error rollErr
+                                       (Str "Roll, find_element_separation: undefined xmlData pointer. Problem.")
+                                       ROLL_ERR_FLAG_FATAL
+                                       ROLL_ERR_DEST_ALL)
+                           0)
+          ((= 0 (length xmlData)) 0)
+          ((not (equal (substring xmlData 0 1) (Str "<"))) (roll_error rollErr (Str "Roll, find_element_separation: first character is not a '<', stop parsing.")
+                                                                               ROLL_ERR_FLAG_FATAL
+                                                                               ROLL_ERR_DEST_ALL)
+                                                           0)
+          (else
+            (let ((titleClose (find_substring xmlData (Str ">"))))
+              (cond ((equal (substring xmlData (- titleClose 1) titleClose) (Str "/"))
+                      (find_substring_from xmlData (Str "<") titleClose))
+                    (else (let* ((name (xml_extract_element_name xmlData))
+                                 (endtag (xml_construct_endtag name))
+                                 (endPos (+ (find_substring xmlData endtag) (length endtag))))
+                            (find_substring_from xmlData (Str "<") endPos)))))))))
+
+
+
+
+
+(bind-func stest2
+  (lambda ()
+    (let ((s1 (Str "<note color=...> <pitch/> </note> <note all the rest> <pitch/> </note>"))
+          (s2 (Str "<")))
+      (let ((p (xml_divide s1)))
+        (print p)
+        (printf "name = '%s'\n" (cstring (xml_construct_endtag (xml_extract_element_name
+        s1))))))))
+
+($ (stest2))
+      
+
+
 
 
 (bind-func xml_divide:[XMLpair*,String*]*
@@ -44,28 +110,41 @@
             (roll_error rollErr
                         (Str "xml_read_element: first character is not '<', malformed xmlData. This will abort the parsing process.")
                         ROLL_ERR_FLAG_FATAL
-                        ROLL_ERR_DEST_ALL))
-          (else 
+                        ROLL_ERR_DEST_ALL)
+            null)
+          (else
+            (let ((splitPoint (find_element_separation xmlData)))
+              (cond ((= 0 splitPoint)
+                      (let ((res (cXMLpair xmlData (Str "")))) 
+                        res))
+                    (else
+                      (let ((res (cXMLpair (split_first xmlData splitPoint) (split_second xmlData splitPoint))))
+                        res))))))))
+
+
 
 (bind-func parse_xml:[void,String*,Score*]*
   (lambda (xmlData score)
     (cond ((null? xmlData) (roll_error rollErr
-                                       (Str "End of xml data reached.")
-                                       ROLL_ERR_FLAG_INFO
+                                       (Str "Roll, parse_xml: undefined xmlData pointer.  No parsing possible.")
+                                       ROLL_ERR_FLAG_FATAL
                                        ROLL_ERR_DEST_ALL)
                            void)
+          ((= 0 (length xmlData)) void)
           (else
             (let ((first (substring xmlData 0 2)))
               (cond ((equal first (Str "<?"))
                       ;(printf "xmlData:\n%s\n" (cstring (xml_skip_version_element xmlData)))
                       (parse_xml (xml_skip_version_element xmlData) score))
                     ((equal first (Str "<!"))
-                      (printf "xmlData:\n%s\n" (cstring (xml_skip_doctype_element xmlData)))
+                      ;(printf "xmlData:\n%s\n" (cstring (xml_skip_doctype_element xmlData)))
                       (parse_xml (xml_skip_doctype_element xmlData) score))
                     (else 
                       (let ((pair (xml_divide xmlData)))
-                        (parse_xml (first pair) score)
-                        (parse_xml (second pair) score)))))))))
+                        ;read-element
+                        ;interpret-element
+                        ;parse body of 'first' [xml_car pair]
+                        (parse_xml (xml_cdr pair) score)))))))))
         
 
 

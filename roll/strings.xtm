@@ -20,3 +20,13 @@
           ((= 0 (length sf)) -1)
           (else (find_substring_loop tbs sf 0)))))
 
+(bind-func find_substring_from:[i64,String*,String*,i64]*
+  (lambda (tbs sf index)
+    (cond ((null? tbs) -1)
+          ((null? sf) -1)
+          ((= 0 (length sf)) -1)
+          (else (find_substring_loop (split_second tbs index) sf index)))))
+
+
+
+
