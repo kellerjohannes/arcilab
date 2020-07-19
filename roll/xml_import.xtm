@@ -285,7 +285,7 @@
 
 
 ; ParserState remembers things while reading through xml Data
-(bind-type ParserState <i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,String*,float,i1,String*>)
+(bind-type ParserState <i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,i64,String*,float,i1,String*>)
 ; 0 part count
 ; 1 measure count
 ; 2 divisions
@@ -383,54 +383,63 @@
     (tset! ps 8 r)
     void))
 
-(bind-func noteCount:[i64,ParserState*]*
+(bind-func timer:[i64,ParserState*]*
   (lambda (ps)
     (tref ps 9)))
 
+(bind-func set_timer:[void,ParserState*,i64]*
+  (lambda (ps t)
+    (tset! ps 9 t)
+    void))
+
+(bind-func noteCount:[i64,ParserState*]*
+  (lambda (ps)
+    (tref ps 10)))
+
 (bind-func set_noteCount:[void,ParserState*,i64]*
   (lambda (ps nc)
-    (tset! ps 9 nc)
+    (tset! ps 10 nc)
     void))
 
 (bind-func accidental:[String*,ParserState*]*
   (lambda (ps)
-    (tref ps 10)))
-
-(bind-func set_accidental:[void,ParserState*,String*]*
-  (lambda (ps a)
-    (tset! ps 10 a)
-    void))
-
-(bind-func alter:[float,ParserState*]*
-  (lambda (ps)
     (tref ps 11)))
 
-(bind-func set_alter:[void,ParserState*,float]*
+(bind-func set_accidental:[void,ParserState*,String*]*
   (lambda (ps a)
     (tset! ps 11 a)
     void))
 
-(bind-func chord:[i1,ParserState*]*
+(bind-func alter:[float,ParserState*]*
   (lambda (ps)
     (tref ps 12)))
 
+(bind-func set_alter:[void,ParserState*,float]*
+  (lambda (ps a)
+    (tset! ps 12 a)
+    void))
+
+(bind-func chord:[i1,ParserState*]*
+  (lambda (ps)
+    (tref ps 13)))
+
 (bind-func set_chord:[void,ParserState*,i1]*
   (lambda (ps c)
-    (tset! ps 12 c)
+    (tset! ps 13 c)
     void))
 
 (bind-func tie:[String*,ParserState*]*
   (lambda (ps)
-    (tref ps 13)))
+    (tref ps 14)))
 
 (bind-func set_tie:[void,ParserState*,String*]*
   (lambda (ps t)
-    (tset! ps 13 t)
+    (tset! ps 14 t)
     void))
 
 (bind-func cParserState:[ParserState*]*
   (lambda ()
-    (let ((res (ParserState:[ParserState*,i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,String*,float,i1,String*]* 
+    (let ((res (ParserState:[ParserState*,i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,i64,String*,float,i1,String*]* 
                             0 
                             0
                             0
@@ -441,6 +450,7 @@
                             0
                             #f
                             0
+                            0
                             (Str "")
                             0.0
                             #f
@@ -449,13 +459,14 @@
   
 (bind-func print:[void,ParserState*]*
   (lambda (state)
-    (printf "Parser state printout:\npart count = %lld\nmeasure count = %lld\ndivisions = %lld\nbeats = %lld\nbeatType = %lld\nrest = %s\nstep = '%s'\noctave = %lld\nduration = %lld\nnoteCount = %lld\naccidental = '%s'\nalter = %f\nchord = %s\ntie = '%s'\n"
+    (printf "Parser state printout:\npart count = %lld\nmeasure count = %lld\ndivisions = %lld\nbeats = %lld\nbeatType = %lld\nrest = %s\ntimer = %lld\nstep = '%s'\noctave = %lld\nduration = %lld\nnoteCount = %lld\naccidental = '%s'\nalter = %f\nchord = %s\ntie = '%s'\n"
             (partCount state)
             (measureCount state)
             (divisions state)
             (beats state)
             (beatType state)
             (if (rest state) "yes" "no")
+            (timer state)
             (cstring (step state))
             (octave state)
             (duration state)
@@ -494,6 +505,7 @@
                      (set_number (get_measure score (- (measureCount score) 1)) (measureCount state))))
             ; reset measure specific state values
             (set_noteCount state 0)
+            ;(set_timer state 0)
             ; ...
             ; read body of <measure>
             (xml_parse (body xmlElement) score state))
