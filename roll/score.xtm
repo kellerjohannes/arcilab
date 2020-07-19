@@ -21,22 +21,23 @@
 ; this data type stores data of one musical event, representing the xml data of a note
 
 
-(bind-type Note <i64,i1,String*,i64,String*,String*,i64,i32,String*,String*,String*,i32,i64,i32,i8*>)
+(bind-type Note <i64,i1,String*,i64,String*,String*,float,i64,i32,String*,String*,String*,i32,i64,i32,i8*>)
 ; 0 start time (in ticks, relative to beginning of measure)
 ; 1 rest (boolean, 0 = note, 1 = rest)
 ; 2 root (note name, 'A'-'G')
 ; 3 octave
 ; 4 notehead (shape of notehead)
-; 5 alteration (xml element 'accidental')
-; 6 duration (in ticks)
-; 7 tie (0 = no tie, 1 = start, 2 = end, 3 = within tie)
-; 8 pitch info (coming from 'text' element)
-; 9 articulation (comint from 'articulation' element)
-; 10 command (command literal, coming from 'text' element)
-; 11 event type (tabulature / pitch utopia / command literal)
-; 12 voice assignment (for the polyphony managmenet of the player module, not representing the xml voice information necessarily)
-; 13 output hint (tacet / arciorgano / oscillators / sampler / MIDI out)
-; 14 auxiliary data
+; 5 accidental
+; 6 alteration (xml element <alter>)
+; 7 duration (in ticks)
+; 8 tie (0 = no tie, 1 = start, 2 = end, 3 = within tie)
+; 9 pitch info (coming from 'text' element)
+; 10 articulation (comint from 'articulation' element)
+; 11 command (command literal, coming from 'text' element)
+; 12 event type (tabulature / pitch utopia / command literal)
+; 13 voice assignment (for the polyphony managmenet of the player module, not representing the xml voice information necessarily)
+; 14 output hint (tacet / arciorgano / oscillators / sampler / MIDI out)
+; 15 auxiliary data
 
 (bind-func startTime:[i64,Note*]*
   (lambda (n)
@@ -83,92 +84,101 @@
     (tset! n 4 nh)
     void))
 
-(bind-func alteration:[String*,Note*]*
+(bind-func accidental:[String*,Note*]*
   (lambda (n)
     (tref n 5)))
 
-(bind-func set_alteration:[void,Note*,String*]*
+(bind-func set_accidental:[void,Note*,String*]*
   (lambda (n a)
     (tset! n 5 a)
     void))
 
-(bind-func duration:[i64,Note*]*
+(bind-func alter:[float,Note*]*
   (lambda (n)
     (tref n 6)))
 
+(bind-func set_alter:[void,Note*,float]*
+  (lambda (n a)
+    (tset! n 6 a)
+    void))
+
+(bind-func duration:[i64,Note*]*
+  (lambda (n)
+    (tref n 7)))
+
 (bind-func set_duration:[void,Note*,i64]*
   (lambda (n d)
-    (tset! n 6 d)
+    (tset! n 7 d)
     void))
 
 (bind-func tie:[i32,Note*]*
   (lambda (n)
-    (tref n 7)))
+    (tref n 8)))
 
 (bind-func set_tie:[void,Note*,i32]*
   (lambda (n t)
-    (cond ((= t ROLL_TIE_NONE) (tset! n 7 ROLL_TIE_NONE))
-          ((= t ROLL_TIE_START) (tset! n 7 ROLL_TIE_START))
-          ((= t ROLL_TIE_END) (tset! n 7 ROLL_TIE_END))
-          ((= t ROLL_TIE_WITHIN) (tset! n 7 ROLL_TIE_WITHIN))
+    (cond ((= t ROLL_TIE_NONE) (tset! n 8 ROLL_TIE_NONE))
+          ((= t ROLL_TIE_START) (tset! n 8 ROLL_TIE_START))
+          ((= t ROLL_TIE_END) (tset! n 8 ROLL_TIE_END))
+          ((= t ROLL_TIE_WITHIN) (tset! n 8 ROLL_TIE_WITHIN))
           (else (roll_error rollErr
                             (Str "Note element, set tie flag: unknwon tie flag. Set to 'none'.")
                             ROLL_ERR_FLAG_WARNING
                             ROLL_ERR_DEST_ALL)
-                (tset! n 7 ROLL_TIE_NONE)))
+                (tset! n 8 ROLL_TIE_NONE)))
      void))
 
 (bind-func pitchInfo:[String*,Note*]*
   (lambda (n)
-    (tref n 8)))
+    (tref n 9)))
 
 (bind-func set_pitchInfo:[void,Note*,String*]*
   (lambda (n pi)
-    (tset! n 8 pi)
+    (tset! n 9 pi)
     void))
 
 (bind-func articulation:[String*,Note*]*
   (lambda (n)
-    (tref n 9)))
+    (tref n 10)))
 
 (bind-func set_articulation:[void,Note*,String*]*
   (lambda (n a)
-    (tset! n 9 a)
+    (tset! n 10 a)
     void))
 
 (bind-func command:[String*,Note*]*
   (lambda (n)
-    (tref n 10)))
+    (tref n 11)))
 
 (bind-func set_command:[void,Note*,String*]*
   (lambda (n c)
-    (tset! n 10 c)
+    (tset! n 11 c)
     void))
 
 (bind-func eventType:[i32,Note*]*
   (lambda (n)
-    (tref n 11)))
+    (tref n 12)))
 
 (bind-func set_eventType:[void,Note*,i32]*
   (lambda (n et)
-    (cond ((= et ROLL_EVENT_TYPE_TABULATURE) (tset! n 11 ROLL_EVENT_TYPE_TABULATURE))
-          ((= et ROLL_EVENT_TYPE_PITCH_UTOPIA) (tset! n 11 ROLL_EVENT_TYPE_PITCH_UTOPIA))
-          ((= et ROLL_EVENT_TYPE_COMMAND) (tset! n 11 ROLL_EVENT_TYPE_COMMAND))
+    (cond ((= et ROLL_EVENT_TYPE_TABULATURE) (tset! n 12 ROLL_EVENT_TYPE_TABULATURE))
+          ((= et ROLL_EVENT_TYPE_PITCH_UTOPIA) (tset! n 12 ROLL_EVENT_TYPE_PITCH_UTOPIA))
+          ((= et ROLL_EVENT_TYPE_COMMAND) (tset! n 12 ROLL_EVENT_TYPE_COMMAND))
           (else (roll_error rollErr
                             (Str "Note element: unknown event type received. Set to 'tabulature'.")
                             ROLL_ERR_FLAG_WARNING
                             ROLL_ERR_DEST_ALL)
-                (tset! n 11 ROLL_EVENT_TYPE_TABULATURE)))
+                (tset! n 12 ROLL_EVENT_TYPE_TABULATURE)))
     void))
 
 (bind-func voice:[i64,Note*]*
   (lambda (n)
-    (tref n 12)))
+    (tref n 13)))
 
 (bind-func set_voice:[void,Note*,i64]*
   (lambda (n v)
     (cond ((and (>= v 0) (< v ROLL_MAX_NUM_VOICES))
-            (tset! n 12 v)
+            (tset! n 13 v)
             void)
           (else (roll_error rollErr
                             (Str "Note element: setVoice, out of range index received. Set to 0, might cause problems in polyphony management.")
@@ -178,40 +188,41 @@
 
 (bind-func outputHint:[i32,Note*]*
   (lambda (n)
-    (tref n 13)))
+    (tref n 14)))
 
 (bind-func set_outputHint:[void,Note*,i32]*
   (lambda (n oh)
-    (cond ((= oh ROLL_OUTPUT_HINT_TACET) (tset! n 13 ROLL_OUTPUT_HINT_TACET))
-          ((= oh ROLL_OUTPUT_HINT_ARCIORGANO) (tset! n 13 ROLL_OUTPUT_HINT_ARCIORGANO))
-          ((= oh ROLL_OUTPUT_HINT_OSC) (tset! n 13 ROLL_OUTPUT_HINT_OSC))
-          ((= oh ROLL_OUTPUT_HINT_SAMPLER) (tset! n 13 ROLL_OUTPUT_HINT_SAMPLER))
-          ((= oh ROLL_OUTPUT_HINT_MIDI) (tset! n 13 ROLL_OUTPUT_HINT_MIDI))
+    (cond ((= oh ROLL_OUTPUT_HINT_TACET) (tset! n 14 ROLL_OUTPUT_HINT_TACET))
+          ((= oh ROLL_OUTPUT_HINT_ARCIORGANO) (tset! n 14 ROLL_OUTPUT_HINT_ARCIORGANO))
+          ((= oh ROLL_OUTPUT_HINT_OSC) (tset! n 14 ROLL_OUTPUT_HINT_OSC))
+          ((= oh ROLL_OUTPUT_HINT_SAMPLER) (tset! n 14 ROLL_OUTPUT_HINT_SAMPLER))
+          ((= oh ROLL_OUTPUT_HINT_MIDI) (tset! n 14 ROLL_OUTPUT_HINT_MIDI))
           (else (roll_error rollErr
                             (Str "Note element: unknown output hint received. Set to 'tacet'.")
                             ROLL_ERR_FLAG_WARNING
                             ROLL_ERR_DEST_ALL)
-                (tset! n 13 ROLL_OUTPUT_HINT_TACET)))
+                (tset! n 14 ROLL_OUTPUT_HINT_TACET)))
     void))
 
 (bind-func auxData:[i8*,Note*]*
   (lambda (n)
-    (cond ((null? (tref n 14)) (roll_error rollErr 
+    (cond ((null? (tref n 15)) (roll_error rollErr 
                                            (Str "Note element: empty auxData requested. 'null' returned.") 
                                            ROLL_ERR_FLAG_WARNING 
                                            ROLL_ERR_DEST_FILE) 
                                 null)
-          (else (tref n 14)))))
+          (else (tref n 15)))))
 
 (bind-func cNote:[Note*]*
   (lambda ()
-    (let ((res (Note:[Note*,i64,i1,String*,i64,String*,String*,i64,i32,String*,String*,String*,i32,i64,i32,i8*]*
+    (let ((res (Note:[Note*,i64,i1,String*,i64,String*,String*,float,i64,i32,String*,String*,String*,i32,i64,i32,i8*]*
                      0
                      #t
                      (Str "undef")
                      0
                      (Str "undef")
                      (Str "undef")
+                     0.0
                      0
                      ROLL_TIE_NONE
                      (Str "undef")
@@ -226,12 +237,13 @@
 
 (bind-func print:[void,Note*]*
   (lambda (n)
-    (printf "start time:      %lld\r\nrest:            %s\nroot:            '%s'\noctave:          %lld\nnotehead:        '%s'\nalteration:      '%s'\nduration:        %lld\ntie:             %s\npitch info:      '%s'\narticulation:    '%s'\ncommand literal: '%s'\nevent type:      %s\noutput hint:     %s\nauxiliary data:  %s\n" (startTime n)
+    (printf "start time:      %lld\r\nrest:            %s\nroot:            '%s'\noctave:          %lld\nnotehead:        '%s'\accidental      '%s'\nalteration:       %f\nduration:        %lld\ntie:             %s\npitch info:      '%s'\narticulation:    '%s'\ncommand literal: '%s'\nevent type:      %s\noutput hint:     %s\nauxiliary data:  %s\n" (startTime n)
                 (if (rest n) "yes" "no")
                 (cstring (root n))
-                (cstring (notehead n))
                 (octave n)
-                (cstring (alteration n))
+                (cstring (notehead n))
+                (cstring (accidental n))
+                (ftod (alter n))
                 (duration n)
                 (cond ((= (tie n) ROLL_TIE_NONE) "no")
                       ((= (tie n) ROLL_TIE_START) "start")

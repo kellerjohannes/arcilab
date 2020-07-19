@@ -521,6 +521,7 @@
             ;   in case chord is true, set timer to starttime of previous note
             ;   ...
             ;   in case rest is false, push a new note into score and fill with data
+            ;      (rests are not written into Score*)
             (if (not (rest state))
               (let ((currentMeasure (get_measure score (- (measureCount state) 1))))
                 (push currentMeasure (cNote))
@@ -529,6 +530,7 @@
                   ; write note specific data into score:
                   (set_root currentNote (step state))
                   (set_octave currentNote (octave state))
+                  (set_duration currentNote (duration state))
                   ; ...
                   void)))
             ; update time
