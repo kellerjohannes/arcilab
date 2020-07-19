@@ -1,6 +1,168 @@
 Score: measure count = 5
 ==================================================
-Measure: no = 1, division = 0, note count = 17
+Measure: no = 1, division = 256, note count = 17
+--------------------------------------------------
+start time:      0
+rest:            no
+root:            'D'
+octave:          5
+notehead:        'undef'
+accidental       ''
+alteration:      0.000000
+duration:        256
+tie:             no
+pitch info:      'undef'
+articulation:    'undef'
+command literal: 'undef'
+event type:      tabulature
+part:            0
+voice:           0
+output hint:     tacet
+auxiliary data:  null
+--------------------------------------------------
+start time:      256
+rest:            no
+root:            'E'
+octave:          5
+notehead:        'undef'
+accidental       ''
+alteration:      0.000000
+duration:        256
+tie:             no
+pitch info:      'undef'
+articulation:    'undef'
+command literal: 'undef'
+event type:      tabulature
+part:            0
+voice:           0
+output hint:     tacet
+auxiliary data:  null
+--------------------------------------------------
+start time:      512
+rest:            no
+root:            'F'
+octave:          5
+notehead:        'undef'
+accidental       ''
+alteration:      0.000000
+duration:        256
+tie:             no
+pitch info:      'undef'
+articulation:    'undef'
+command literal: 'undef'
+event type:      tabulature
+part:            0
+voice:           0
+output hint:     tacet
+auxiliary data:  null
+--------------------------------------------------
+start time:      768
+rest:            no
+root:            'D'
+octave:          5
+notehead:        'undef'
+accidental       ''
+alteration:      0.000000
+duration:        256
+tie:             no
+pitch info:      'undef'
+articulation:    'undef'
+command literal: 'undef'
+event type:      tabulature
+part:            0
+voice:           0
+output hint:     tacet
+auxiliary data:  null
+--------------------------------------------------
+start time:      0
+rest:            no
+root:            'D'
+octave:          5
+notehead:        'undef'
+accidental       ''
+alteration:      0.000000
+duration:        512
+tie:             no
+pitch info:      'undef'
+articulation:    'undef'
+command literal: 'undef'
+event type:      tabulature
+part:            1
+voice:           0
+output hint:     tacet
+auxiliary data:  null
+--------------------------------------------------
+start time:      512
+rest:            no
+root:            'A'
+octave:          4
+notehead:        'undef'
+accidental       ''
+alteration:      0.000000
+duration:        512
+tie:             no
+pitch info:      'undef'
+articulation:    'undef'
+command literal: 'undef'
+event type:      tabulature
+part:            1
+voice:           0
+output hint:     tacet
+auxiliary data:  null
+--------------------------------------------------
+start time:      0
+rest:            no
+root:            'D'
+octave:          4
+notehead:        'undef'
+accidental       ''
+alteration:      0.000000
+duration:        1024
+tie:             start
+pitch info:      'undef'
+articulation:    'undef'
+command literal: 'undef'
+event type:      tabulature
+part:            2
+voice:           0
+output hint:     tacet
+auxiliary data:  null
+--------------------------------------------------
+start time:      0
+rest:            no
+root:            'D'
+octave:          3
+notehead:        'undef'
+accidental       ''
+alteration:      0.000000
+duration:        1024
+tie:             no
+pitch info:      'undef'
+articulation:    'undef'
+command literal: 'undef'
+event type:      tabulature
+part:            2
+voice:           0
+output hint:     tacet
+auxiliary data:  null
+--------------------------------------------------
+start time:      0
+rest:            no
+root:            'D'
+octave:          5
+notehead:        'undef'
+accidental       ''
+alteration:      0.000000
+duration:        1024
+tie:             no
+pitch info:      'undef'
+articulation:    'undef'
+command literal: 'undef'
+event type:      tabulature
+part:            2
+voice:           0
+output hint:     tacet
+auxiliary data:  null
 --------------------------------------------------
 start time:      0
 rest:            no
@@ -142,168 +304,6 @@ articulation:    'undef'
 command literal: 'undef'
 event type:      tabulature
 part:            3
-voice:           0
-output hint:     tacet
-auxiliary data:  null
---------------------------------------------------
-start time:      0
-rest:            no
-root:            'undef'
-octave:          0
-notehead:        'undef'
-accidental       'undef'
-alteration:      0.000000
-duration:        0
-tie:             no
-pitch info:      'undef'
-articulation:    'undef'
-command literal: 'undef'
-event type:      tabulature
-part:            0
-voice:           0
-output hint:     tacet
-auxiliary data:  null
---------------------------------------------------
-start time:      0
-rest:            no
-root:            'undef'
-octave:          0
-notehead:        'undef'
-accidental       'undef'
-alteration:      0.000000
-duration:        0
-tie:             no
-pitch info:      'undef'
-articulation:    'undef'
-command literal: 'undef'
-event type:      tabulature
-part:            0
-voice:           0
-output hint:     tacet
-auxiliary data:  null
---------------------------------------------------
-start time:      0
-rest:            no
-root:            'undef'
-octave:          0
-notehead:        'undef'
-accidental       'undef'
-alteration:      0.000000
-duration:        0
-tie:             no
-pitch info:      'undef'
-articulation:    'undef'
-command literal: 'undef'
-event type:      tabulature
-part:            0
-voice:           0
-output hint:     tacet
-auxiliary data:  null
---------------------------------------------------
-start time:      0
-rest:            no
-root:            'undef'
-octave:          0
-notehead:        'undef'
-accidental       'undef'
-alteration:      0.000000
-duration:        0
-tie:             no
-pitch info:      'undef'
-articulation:    'undef'
-command literal: 'undef'
-event type:      tabulature
-part:            0
-voice:           0
-output hint:     tacet
-auxiliary data:  null
---------------------------------------------------
-start time:      0
-rest:            no
-root:            'undef'
-octave:          0
-notehead:        'undef'
-accidental       'undef'
-alteration:      0.000000
-duration:        0
-tie:             no
-pitch info:      'undef'
-articulation:    'undef'
-command literal: 'undef'
-event type:      tabulature
-part:            0
-voice:           0
-output hint:     tacet
-auxiliary data:  null
---------------------------------------------------
-start time:      0
-rest:            no
-root:            'undef'
-octave:          0
-notehead:        'undef'
-accidental       'undef'
-alteration:      0.000000
-duration:        0
-tie:             no
-pitch info:      'undef'
-articulation:    'undef'
-command literal: 'undef'
-event type:      tabulature
-part:            0
-voice:           0
-output hint:     tacet
-auxiliary data:  null
---------------------------------------------------
-start time:      0
-rest:            no
-root:            'undef'
-octave:          0
-notehead:        'undef'
-accidental       'undef'
-alteration:      0.000000
-duration:        0
-tie:             no
-pitch info:      'undef'
-articulation:    'undef'
-command literal: 'undef'
-event type:      tabulature
-part:            0
-voice:           0
-output hint:     tacet
-auxiliary data:  null
---------------------------------------------------
-start time:      0
-rest:            no
-root:            'undef'
-octave:          0
-notehead:        'undef'
-accidental       'undef'
-alteration:      0.000000
-duration:        0
-tie:             no
-pitch info:      'undef'
-articulation:    'undef'
-command literal: 'undef'
-event type:      tabulature
-part:            0
-voice:           0
-output hint:     tacet
-auxiliary data:  null
---------------------------------------------------
-start time:      0
-rest:            no
-root:            'undef'
-octave:          0
-notehead:        'undef'
-accidental       'undef'
-alteration:      0.000000
-duration:        0
-tie:             no
-pitch info:      'undef'
-articulation:    'undef'
-command literal: 'undef'
-event type:      tabulature
-part:            0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -312,7 +312,133 @@ auxiliary data:  null
 ---------------------------------------------------
 End of measure no 1.
 ==================================================
-Measure: no = 2, division = 0, note count = 11
+Measure: no = 2, division = 256, note count = 11
+--------------------------------------------------
+start time:      0
+rest:            no
+root:            'D'
+octave:          5
+notehead:        'undef'
+accidental       ''
+alteration:      0.000000
+duration:        256
+tie:             no
+pitch info:      'undef'
+articulation:    'undef'
+command literal: 'undef'
+event type:      tabulature
+part:            0
+voice:           0
+output hint:     tacet
+auxiliary data:  null
+--------------------------------------------------
+start time:      256
+rest:            no
+root:            'E'
+octave:          5
+notehead:        'undef'
+accidental       ''
+alteration:      0.000000
+duration:        256
+tie:             no
+pitch info:      'undef'
+articulation:    'undef'
+command literal: 'undef'
+event type:      tabulature
+part:            0
+voice:           0
+output hint:     tacet
+auxiliary data:  null
+--------------------------------------------------
+start time:      512
+rest:            no
+root:            'F'
+octave:          5
+notehead:        'undef'
+accidental       ''
+alteration:      0.000000
+duration:        256
+tie:             no
+pitch info:      'undef'
+articulation:    'undef'
+command literal: 'undef'
+event type:      tabulature
+part:            0
+voice:           0
+output hint:     tacet
+auxiliary data:  null
+--------------------------------------------------
+start time:      768
+rest:            no
+root:            'D'
+octave:          5
+notehead:        'undef'
+accidental       ''
+alteration:      0.000000
+duration:        256
+tie:             no
+pitch info:      'undef'
+articulation:    'undef'
+command literal: 'undef'
+event type:      tabulature
+part:            0
+voice:           0
+output hint:     tacet
+auxiliary data:  null
+--------------------------------------------------
+start time:      0
+rest:            no
+root:            'D'
+octave:          5
+notehead:        'undef'
+accidental       ''
+alteration:      0.000000
+duration:        512
+tie:             no
+pitch info:      'undef'
+articulation:    'undef'
+command literal: 'undef'
+event type:      tabulature
+part:            1
+voice:           0
+output hint:     tacet
+auxiliary data:  null
+--------------------------------------------------
+start time:      512
+rest:            no
+root:            'A'
+octave:          4
+notehead:        'undef'
+accidental       ''
+alteration:      0.000000
+duration:        512
+tie:             no
+pitch info:      'undef'
+articulation:    'undef'
+command literal: 'undef'
+event type:      tabulature
+part:            1
+voice:           0
+output hint:     tacet
+auxiliary data:  null
+--------------------------------------------------
+start time:      0
+rest:            no
+root:            'D'
+octave:          4
+notehead:        'undef'
+accidental       ''
+alteration:      0.000000
+duration:        1024
+tie:             end
+pitch info:      'undef'
+articulation:    'undef'
+command literal: 'undef'
+event type:      tabulature
+part:            2
+voice:           0
+output hint:     tacet
+auxiliary data:  null
 --------------------------------------------------
 start time:      0
 rest:            no
@@ -385,150 +511,24 @@ part:            3
 voice:           0
 output hint:     tacet
 auxiliary data:  null
---------------------------------------------------
-start time:      0
-rest:            no
-root:            'undef'
-octave:          0
-notehead:        'undef'
-accidental       'undef'
-alteration:      0.000000
-duration:        0
-tie:             no
-pitch info:      'undef'
-articulation:    'undef'
-command literal: 'undef'
-event type:      tabulature
-part:            0
-voice:           0
-output hint:     tacet
-auxiliary data:  null
---------------------------------------------------
-start time:      0
-rest:            no
-root:            'undef'
-octave:          0
-notehead:        'undef'
-accidental       'undef'
-alteration:      0.000000
-duration:        0
-tie:             no
-pitch info:      'undef'
-articulation:    'undef'
-command literal: 'undef'
-event type:      tabulature
-part:            0
-voice:           0
-output hint:     tacet
-auxiliary data:  null
---------------------------------------------------
-start time:      0
-rest:            no
-root:            'undef'
-octave:          0
-notehead:        'undef'
-accidental       'undef'
-alteration:      0.000000
-duration:        0
-tie:             no
-pitch info:      'undef'
-articulation:    'undef'
-command literal: 'undef'
-event type:      tabulature
-part:            0
-voice:           0
-output hint:     tacet
-auxiliary data:  null
---------------------------------------------------
-start time:      0
-rest:            no
-root:            'undef'
-octave:          0
-notehead:        'undef'
-accidental       'undef'
-alteration:      0.000000
-duration:        0
-tie:             no
-pitch info:      'undef'
-articulation:    'undef'
-command literal: 'undef'
-event type:      tabulature
-part:            0
-voice:           0
-output hint:     tacet
-auxiliary data:  null
---------------------------------------------------
-start time:      0
-rest:            no
-root:            'undef'
-octave:          0
-notehead:        'undef'
-accidental       'undef'
-alteration:      0.000000
-duration:        0
-tie:             no
-pitch info:      'undef'
-articulation:    'undef'
-command literal: 'undef'
-event type:      tabulature
-part:            0
-voice:           0
-output hint:     tacet
-auxiliary data:  null
---------------------------------------------------
-start time:      0
-rest:            no
-root:            'undef'
-octave:          0
-notehead:        'undef'
-accidental       'undef'
-alteration:      0.000000
-duration:        0
-tie:             no
-pitch info:      'undef'
-articulation:    'undef'
-command literal: 'undef'
-event type:      tabulature
-part:            0
-voice:           0
-output hint:     tacet
-auxiliary data:  null
---------------------------------------------------
-start time:      0
-rest:            no
-root:            'undef'
-octave:          0
-notehead:        'undef'
-accidental       'undef'
-alteration:      0.000000
-duration:        0
-tie:             no
-pitch info:      'undef'
-articulation:    'undef'
-command literal: 'undef'
-event type:      tabulature
-part:            0
-voice:           0
-output hint:     tacet
-auxiliary data:  null
 ---------------------------------------------------
 
 ---------------------------------------------------
 End of measure no 2.
 ==================================================
-Measure: no = 3, division = 0, note count = 0
+Measure: no = 3, division = 256, note count = 0
 ---------------------------------------------------
 
 ---------------------------------------------------
 End of measure no 3.
 ==================================================
-Measure: no = 4, division = 0, note count = 0
+Measure: no = 4, division = 256, note count = 0
 ---------------------------------------------------
 
 ---------------------------------------------------
 End of measure no 4.
 ==================================================
-Measure: no = 5, division = 0, note count = 0
+Measure: no = 5, division = 256, note count = 0
 ---------------------------------------------------
 
 ---------------------------------------------------

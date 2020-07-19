@@ -514,13 +514,15 @@
             (set_measureCount state (+ 1 (measureCount state)))
             (if (< (measureCount score) (measureCount state))
               (begin (push score (cMeasure))
-                     (set_number (get_measure score (- (measureCount score) 1)) (measureCount state))))
+                     (set_number (get_measure score (- (measureCount score) 1)) (measureCount state))
+                     (set_noteCount state 0))
+              (begin (set_noteCount state (- (noteCount (get_measure score (- (measureCount state) 1))) 0))))
             ; reset measure specific state values
-            (set_noteCount state 0)
             (set_timer state 0)
             ; ...
             ; read body of <measure>
-            (xml_parse (body xmlElement) score state))
+            (xml_parse (body xmlElement) score state)
+            (set_division (get_measure score (- (measureCount state) 1)) (divisions state)))
           ((equal (name xmlElement) (Str "attributes"))
             (xml_parse (body xmlElement) score state))
           ((equal (name xmlElement) (Str "divisions"))
