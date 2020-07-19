@@ -502,7 +502,6 @@
   (lambda (xmlElement score state)
     (cond ((equal (name xmlElement) (Str "score-partwise"))
             (roll_error rollErr (Str "Parser: partwise score detected.") ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_ALL)
-            (set_parent state (name xmlElement))
             (xml_parse (body xmlElement) score state))
           ((equal (name xmlElement) (Str "part"))
             (roll_error rollErr (cat2 (cat2 (Str "Parser: opening part '") (attribute xmlElement (Str "id"))) (Str "'."))
@@ -543,6 +542,7 @@
             (set_chord state #f)
             (set_tie state (Str ""))
             ; read body of <note>:
+            (set_parent state (name xmlElement))
             (xml_parse (body xmlElement) score state)
             ; act on data in ParserState*:
             ;   in case chord is true, set timer to starttime of previous note
@@ -567,6 +567,7 @@
                         ((equal (tie state) (Str "stop")) (set_tie currentNote ROLL_TIE_END))
                         ((equal (tie state) (Str "both")) (set_tie currentNote ROLL_TIE_WITHIN))
                         (else (set_tie currentNote -1)))
+                  (set_part currentNote (- (partCount state) 1))
                   ; ...
                   void)))
             ; update time
@@ -591,11 +592,24 @@
           ((equal (name xmlElement) (Str "octave"))
             (set_octave state (extract_i64 (body xmlElement))))
           ((equal (name xmlElement) (Str "duration"))
-            (set_duration state (extract_i64 (body xmlElement))))
+            (cond ((equal (parent state) (Str "note"))
+                    ; DEBUG: (printf "duration detected and extracted! %lld\n" (extract_i64 (body xmlElement)))
+                    (set_duration state (extract_i64 (body xmlElement))))
+                  ((equal (parent state) (Str "backup"))
+                    (set_timer state (- (timer state) (extract_i64 (body xmlElement)))))
+                  ((equal (parent state) (Str "forward"))
+                    (set_timer state (+ (timer state) (extract_i64 (body xmlElement)))))
+                  (else (roll_error rollErr (Str "Roll, xml_parse: unknown parent of <duration>.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)) void))
           ((equal (name xmlElement) (Str "accidental"))
             (set_accidental state (body xmlElement)))
           ((equal (name xmlElement) (Str "alter"))
             (set_alter state (extract_float (body xmlElement))))
+          ((equal (name xmlElement) (Str "backup"))
+            (set_parent state (name xmlElement))
+            (xml_parse (body xmlElement) score state))
+          ((equal (name xmlElement) (Str "forward"))
+            (set_parent state (name xmlElement))
+            (xml_parse (body xmlElement) score state))
           (else (roll_error rollErr
                             (cat2 (cat2 (Str "Roll, xml_interpret_element: ignoring element '") (name xmlElement)) (Str "' and its content and sub-elements."))
                             ROLL_ERR_FLAG_INFO
