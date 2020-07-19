@@ -283,7 +283,7 @@
 
 
 ; ParserState remembers things while reading through xml Data
-(bind-type ParserState <i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,String*,i64,i1,String*>)
+(bind-type ParserState <i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,String*,float,i1,String*>)
 ; 0 part count
 ; 1 measure count
 ; 2 divisions
@@ -399,11 +399,11 @@
     (tset! ps 10 a)
     void))
 
-(bind-func alter:[i64,ParserState*]*
+(bind-func alter:[float,ParserState*]*
   (lambda (ps)
     (tref ps 11)))
 
-(bind-func set_alter:[void,ParserState*,i64]*
+(bind-func set_alter:[void,ParserState*,float]*
   (lambda (ps a)
     (tset! ps 11 a)
     void))
@@ -428,7 +428,7 @@
 
 (bind-func cParserState:[ParserState*]*
   (lambda ()
-    (let ((res (ParserState:[ParserState*,i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,String*,i64,i1,String*]* 
+    (let ((res (ParserState:[ParserState*,i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,String*,float,i1,String*]* 
                             0 
                             0
                             0
@@ -440,14 +440,14 @@
                             #f
                             0
                             (Str "")
-                            0
+                            0.0
                             #f
                             (Str ""))))
           res)))
   
 (bind-func print:[void,ParserState*]*
   (lambda (state)
-    (printf "Parser state printout:\npart count = %lld\nmeasure count = %lld\ndivisions = %lld\nbeats = %lld\nbeatType = %lld\nrest = %s\nstep = '%s'\noctave = %lld\nduration = %lld\nnoteCount = %lld\naccidental = '%s'\nalter = %lld\nchord = %s\ntie = '%s'\n"
+    (printf "Parser state printout:\npart count = %lld\nmeasure count = %lld\ndivisions = %lld\nbeats = %lld\nbeatType = %lld\nrest = %s\nstep = '%s'\noctave = %lld\nduration = %lld\nnoteCount = %lld\naccidental = '%s'\nalter = %f\nchord = %s\ntie = '%s'\n"
             (partCount state)
             (measureCount state)
             (divisions state)
@@ -459,7 +459,7 @@
             (duration state)
             (noteCount state)
             (cstring (accidental state))
-            (alter state)
+            (ftod (alter state))
             (if (chord state) "yes" "no")
             (cstring (tie state)))
     void))
@@ -512,7 +512,7 @@
             (set_duration state 0)
             (set_rest state #f)
             (set_accidental state (Str ""))
-            (set_alter state 0)
+            (set_alter state 0.0)
             (set_chord state #f)
             (set_tie state (Str ""))
             ; read body of <note>:
@@ -531,6 +531,9 @@
                   (set_root currentNote (step state))
                   (set_octave currentNote (octave state))
                   (set_duration currentNote (duration state))
+                  (set_accidental currentNote (accidental state))
+                  (set_alter currentNote (alter state))
+                  (set_tie currentNote (tie state))
                   ; ...
                   void)))
             ; update time
@@ -553,7 +556,7 @@
           ((equal (name xmlElement) (Str "accidental"))
             (set_accidental state (body xmlElement)))
           ((equal (name xmlElement) (Str "alter"))
-            (set_alter state (extract_i64 (body xmlElement))))
+            (set_alter state (extract_float (body xmlElement))))
           (else (roll_error rollErr
                             (cat2 (cat2 (Str "Roll, xml_interpret_element: ignoring element '") (name xmlElement)) (Str "' and its content and sub-elements."))
                             ROLL_ERR_FLAG_INFO

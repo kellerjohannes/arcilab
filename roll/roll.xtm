@@ -1,5 +1,5 @@
 (define ROLL-SOURCE-PATH "../../Coding/extempore/arcilab/")
-(bind-val ROLL_WORKING_PATH String* (Str "../../Coding/extempore/arcilab/scores/guinea01/"))
+(bind-val ROLL_WORKING_PATH String* (Str "../../Coding/extempore/arcilab/scores/"))
 
 (bind-val ROLL_MAX_NUM_VOICES i64 128)
 
@@ -21,7 +21,7 @@
   (lambda ()
     (set! rollErr (roll_create_logfile (cat2 ROLL_WORKING_PATH (Str "logfile-parser"))))
     (let ((score (cScore)))
-      (xml_import score (cat2 ROLL_WORKING_PATH (Str "guinea01sibelius.xml")))
+      (xml_import score (cat2 ROLL_WORKING_PATH (Str "guinea02/guinea02sibelius.xml")))
       (print score)
       (roll_close_logfile rollErr))))
 

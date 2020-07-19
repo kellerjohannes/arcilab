@@ -237,7 +237,7 @@
 
 (bind-func print:[void,Note*]*
   (lambda (n)
-    (printf "start time:      %lld\r\nrest:            %s\nroot:            '%s'\noctave:          %lld\nnotehead:        '%s'\accidental      '%s'\nalteration:       %f\nduration:        %lld\ntie:             %s\npitch info:      '%s'\narticulation:    '%s'\ncommand literal: '%s'\nevent type:      %s\noutput hint:     %s\nauxiliary data:  %s\n" (startTime n)
+    (printf "start time:      %lld\r\nrest:            %s\nroot:            '%s'\noctave:         %lld\nnotehead:        '%s'\naccidental      '%s'\nalteration:       %f\nduration:        %lld\ntie:             %s\npitch info:      '%s'\narticulation:    '%s'\ncommand literal: '%s'\nevent type:      %s\noutput hint:     %s\nauxiliary data:  %s\n" (startTime n)
                 (if (rest n) "yes" "no")
                 (cstring (root n))
                 (octave n)
