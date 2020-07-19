@@ -1,75 +1,75 @@
 Logfile roll module of ArciLab software.
-@112536576, Information: XML file slurped.
-@112539648, Information: Parser: partwise score detected.
-@112539648, Information: Roll, xml_interpret_element: ignoring element 'work' and its content and sub-elements.
-@112539648, Information: Roll, xml_interpret_element: ignoring element 'identification' and its content and sub-elements.
-@112539648, Information: Roll, xml_interpret_element: ignoring element 'defaults' and its content and sub-elements.
-@112540672, Information: Roll, xml_interpret_element: ignoring element 'part-list' and its content and sub-elements.
-@112541696, Information: Parser: opening part 'P1'.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'print' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'key' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'staves' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'clef' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'clef' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'staff-details' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'staff-details' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'instrument' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'voice' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'type' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'staff' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'backup' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'instrument' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'voice' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'type' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'stem' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'staff' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'instrument' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'voice' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'type' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'stem' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'staff' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'instrument' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'voice' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'type' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'stem' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'staff' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'instrument' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'voice' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'type' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'stem' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'staff' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'instrument' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'voice' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'type' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'staff' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'barline' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'backup' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'instrument' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'voice' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'type' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'stem' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'staff' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'instrument' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'voice' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'type' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'stem' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'staff' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'instrument' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'voice' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'type' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'stem' and its content and sub-elements.
-@112541696, Information: Roll, xml_interpret_element: ignoring element 'staff' and its content and sub-elements.
-@112542720, Information: Roll, xml_interpret_element: ignoring element 'instrument' and its content and sub-elements.
-@112542720, Information: Roll, xml_interpret_element: ignoring element 'voice' and its content and sub-elements.
-@112542720, Information: Roll, xml_interpret_element: ignoring element 'type' and its content and sub-elements.
-@112542720, Information: Roll, xml_interpret_element: ignoring element 'stem' and its content and sub-elements.
-@112542720, Information: Roll, xml_interpret_element: ignoring element 'staff' and its content and sub-elements.
-@112542720, Warning: Note element: empty auxData requested. 'null' returned.
-@112542720, Warning: Note element: empty auxData requested. 'null' returned.
-@112542720, Warning: Note element: empty auxData requested. 'null' returned.
-@112542720, Warning: Note element: empty auxData requested. 'null' returned.
-@112542720, Warning: Note element: empty auxData requested. 'null' returned.
-@112542720, Warning: Note element: empty auxData requested. 'null' returned.
-@112542720, Warning: Note element: empty auxData requested. 'null' returned.
-@112542720, Warning: Note element: empty auxData requested. 'null' returned.
+@7170048, Information: XML file slurped.
+@7173120, Information: Parser: partwise score detected.
+@7173120, Information: Roll, xml_interpret_element: ignoring element 'work' and its content and sub-elements.
+@7173120, Information: Roll, xml_interpret_element: ignoring element 'identification' and its content and sub-elements.
+@7173120, Information: Roll, xml_interpret_element: ignoring element 'defaults' and its content and sub-elements.
+@7173120, Information: Roll, xml_interpret_element: ignoring element 'part-list' and its content and sub-elements.
+@7175168, Information: Parser: opening part 'P1'.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'print' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'key' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'staves' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'clef' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'clef' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'staff-details' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'staff-details' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'instrument' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'voice' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'type' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'staff' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'backup' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'instrument' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'voice' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'type' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'stem' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'staff' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'instrument' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'voice' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'type' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'stem' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'staff' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'instrument' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'voice' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'type' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'stem' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'staff' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'instrument' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'voice' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'type' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'stem' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'staff' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'instrument' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'voice' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'type' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'staff' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'barline' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'backup' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'instrument' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'voice' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'type' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'stem' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'staff' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'instrument' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'voice' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'type' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'stem' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'staff' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'instrument' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'voice' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'type' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'stem' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'staff' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'instrument' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'voice' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'type' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'stem' and its content and sub-elements.
+@7175168, Information: Roll, xml_interpret_element: ignoring element 'staff' and its content and sub-elements.
+@7175168, Warning: Note element: empty auxData requested. 'null' returned.
+@7175168, Warning: Note element: empty auxData requested. 'null' returned.
+@7175168, Warning: Note element: empty auxData requested. 'null' returned.
+@7175168, Warning: Note element: empty auxData requested. 'null' returned.
+@7175168, Warning: Note element: empty auxData requested. 'null' returned.
+@7175168, Warning: Note element: empty auxData requested. 'null' returned.
+@7175168, Warning: Note element: empty auxData requested. 'null' returned.
+@7175168, Warning: Note element: empty auxData requested. 'null' returned.
 End of logfile.

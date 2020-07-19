@@ -283,7 +283,7 @@
 
 
 ; ParserState remembers things while reading through xml Data
-(bind-type ParserState <i64,i64,i64*,i64*,i64*,String*,i64*,i64*,i1>)
+(bind-type ParserState <i64,i64,i64,i64,i64,String*,i64,i64,i1>)
 ; 0 part count
 ; 1 measure count
 ; 2 divisions
@@ -314,41 +314,29 @@
 
 (bind-func divisions:[i64,ParserState*]*
   (lambda (ps)
-    (pref (tref ps 2) 0)))
-
-(bind-func divisionsPtr:[i64*,ParserState*]*
-  (lambda (ps)
     (tref ps 2)))
 
 (bind-func set_divisions:[void,ParserState*,i64]*
   (lambda (ps d)
-    (pset! (tref ps 2) 0 d)
+    (tset! ps 2 d)
     void))
     
 (bind-func beats:[i64,ParserState*]*
-  (lambda (ps)
-    (pref (tref ps 3) 0)))
-
-(bind-func beatsPtr:[i64*,ParserState*]*
   (lambda (ps)
     (tref ps 3)))
 
 (bind-func set_beats:[void,ParserState*,i64]*
   (lambda (ps b)
-    (pset! (tref ps 3) 0 b)
+    (tset! ps 3 b)
     void))
 
 (bind-func beatType:[i64,ParserState*]*
-  (lambda (ps)
-    (pref (tref ps 4) 0)))
-
-(bind-func beatTypePtr:[i64*,ParserState*]*
   (lambda (ps)
     (tref ps 4)))
 
 (bind-func set_beatType:[void,ParserState*,i64]*
   (lambda (ps bt)
-    (pset! (tref ps 4) 0 bt)
+    (tset! ps 4 bt)
     void))
 
 (bind-func step:[String*,ParserState*]*
@@ -362,19 +350,21 @@
 
 (bind-func octave:[i64,ParserState*]*
   (lambda (ps)
-    (pref (tref ps 6) 0)))
-
-(bind-func octavePtr:[i64*,ParserState*]*
-  (lambda (ps)
     (tref ps 6)))
+
+(bind-func set_octave:[void,ParserState*,i64]*
+  (lambda (ps o)
+    (tset! ps 6 o)
+    void))
 
 (bind-func duration:[i64,ParserState*]*
   (lambda (ps)
-    (pref (tref ps 7) 0)))
-
-(bind-func durationPtr:[i64*,ParserState*]*
-  (lambda (ps)
     (tref ps 7)))
+
+(bind-func set_duration:[void,ParserState*,i64]*
+  (lambda (ps d)
+    (tset! ps 7 d)
+    void))
 
 (bind-func rest:[i1,ParserState*]*
   (lambda (ps)
@@ -387,28 +377,18 @@
 
 (bind-func cParserState:[ParserState*]*
   (lambda ()
-    (let ((divisionsPtr:i64* (halloc 1))
-          (beatsPtr:i64* (halloc 1))
-          (beatTypePtr:i64* (halloc 1))
-          (octavePtr:i64* (halloc 1))
-          (durationPtr:i64* (halloc 1)))
-      (pset! divisionsPtr 0 0)
-      (pset! beatsPtr 0 0)
-      (pset! beatTypePtr 0 0)
-      (pset! octavePtr 0 0)
-      (pset! durationPtr 0 0)
-        (let ((res (ParserState:[ParserState*,i64,i64,i64*,i64*,i64*,String*,i64*,i64*,i1]* 
-                                0 
-                                0
-                                divisionsPtr
-                                beatsPtr
-                                beatTypePtr
-                                (Str "")
-                                octavePtr
-                                durationPtr
-                                #f)))
-          res))))
-
+    (let ((res (ParserState:[ParserState*,i64,i64,i64,i64,i64,String*,i64,i64,i1]* 
+                            0 
+                            0
+                            0
+                            0
+                            0
+                            (Str "")
+                            0
+                            0
+                            #f)))
+          res)))
+  
 (bind-func print:[void,ParserState*]*
   (lambda (state)
     (printf "Parser state printout:\npart count = %lld\nmeasure count = %lld\ndivisions = %lld\nbeats = %lld\nbeatType = %lld\nrest = %s\nstep = '%s'\noctave = %lld\nduration = %lld\n"
@@ -453,15 +433,15 @@
           ((equal (name xmlElement) (Str "attributes"))
             (xml_parse (body xmlElement) score state))
           ((equal (name xmlElement) (Str "divisions"))
-            (sscanf (cstring (body xmlElement)) "%lld" (divisionsPtr state)) void)
+            (set_divisions state (extract_i64 (body xmlElement))))
           ((equal (name xmlElement) (Str "time"))
             (xml_parse (body xmlElement) score state))
           ((equal (name xmlElement) (Str "beats"))
             ; DEBUG: (printf "scanning beats body: '%s'\n" (cstring (body xmlElement)))
-            (sscanf (cstring (body xmlElement)) "%lld" (beatsPtr state)) void)
+            (set_beats state (extract_i64 (body xmlElement))))
           ((equal (name xmlElement) (Str "beat-type"))
             ; DEBUG: (printf "scanning beat-type body: '%s'\n" (cstring (body xmlElement)))
-            (sscanf (cstring (body xmlElement)) "%lld" (beatTypePtr state)) void)
+            (set_beatType state (extract_i64 (body xmlElement))))
           ((equal (name xmlElement) (Str "note"))
             ; DEBUG: (printf "scanning note body: '%s'\n" (cstring (body xmlElement)))
             (set_rest state #f)
@@ -483,10 +463,10 @@
             (set_step state (body xmlElement)) void)
           ((equal (name xmlElement) (Str "octave"))
             ; DEBUG: (printf "scanning octave body: '%s'\n" (cstring (body xmlElement)))
-            (sscanf (cstring (body xmlElement)) "%lld" (octavePtr state)) void)
+            (set_octave state (extract_i64 (body xmlElement))))
           ((equal (name xmlElement) (Str "duration"))
             ; DEBUG: (printf "scanning duration body: '%s'\n" (cstring (body xmlElement)))
-            (sscanf (cstring (body xmlElement)) "%lld" (durationPtr state)) void)
+            (set_duration state (extract_i64 (body xmlElement))))
           (else (roll_error rollErr
                             (cat2 (cat2 (Str "Roll, xml_interpret_element: ignoring element '") (name xmlElement)) (Str "' and its content and sub-elements."))
                             ROLL_ERR_FLAG_INFO

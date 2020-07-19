@@ -69,3 +69,10 @@
 (bind-func remove_initial_spaces:[String*,String*]*
   (lambda (s)
     (split_second s (find_substring_not_or s (Str " ") (Str "\n")))))
+
+(bind-func extract_i64:[i64,String*]*
+  (lambda (s)
+    (let ((res:i64* (salloc 1)))
+      (sscanf (cstring s) "%lld" res)
+      (pref res 0))))
+
