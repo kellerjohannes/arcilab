@@ -43,7 +43,7 @@
   (lambda (n)
     (tref n 0)))
 
-(bind-func set_starttime:[void,Note*,i64]*
+(bind-func set_startTime:[void,Note*,i64]*
   (lambda (n st)
     (tset! n 0 st)
     void))
