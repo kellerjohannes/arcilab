@@ -283,7 +283,7 @@
 
 
 ; ParserState remembers things while reading through xml Data
-(bind-type ParserState <i64,i64,i64,i64,i64,String*,i64,i64,i1>)
+(bind-type ParserState <i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,String*,i64,i1,String*>)
 ; 0 part count
 ; 1 measure count
 ; 2 divisions
@@ -293,6 +293,12 @@
 ; 6 octave
 ; 7 duration
 ; 8 rest
+; 9 timer (within measure)
+; 10 note count
+; 11 accidental
+; 12 alter
+; 13 chord
+; 14 tie (string)
 
 (bind-func partCount:[i64,ParserState*]*
   (lambda (ps)
@@ -375,9 +381,54 @@
     (tset! ps 8 r)
     void))
 
+(bind-func noteCount:[i64,ParserState*]*
+  (lambda (ps)
+    (tref ps 9)))
+
+(bind-func set_noteCount:[void,ParserState*,i64]*
+  (lambda (ps nc)
+    (tset! ps 9 nc)
+    void))
+
+(bind-func accidental:[String*,ParserState*]*
+  (lambda (ps)
+    (tref ps 10)))
+
+(bind-func set_accidental:[void,ParserState*,String*]*
+  (lambda (ps a)
+    (tset! ps 10 a)
+    void))
+
+(bind-func alter:[i64,ParserState*]*
+  (lambda (ps)
+    (tref ps 11)))
+
+(bind-func set_alter:[void,ParserState*,i64]*
+  (lambda (ps a)
+    (tset! ps 11 a)
+    void))
+
+(bind-func chord:[i1,ParserState*]*
+  (lambda (ps)
+    (tref ps 12)))
+
+(bind-func set_chord:[void,ParserState*,i1]*
+  (lambda (ps c)
+    (tset! ps 12 c)
+    void))
+
+(bind-func tie:[String*,ParserState*]*
+  (lambda (ps)
+    (tref ps 13)))
+
+(bind-func set_tie:[void,ParserState*,String*]*
+  (lambda (ps t)
+    (tset! ps 13 t)
+    void))
+
 (bind-func cParserState:[ParserState*]*
   (lambda ()
-    (let ((res (ParserState:[ParserState*,i64,i64,i64,i64,i64,String*,i64,i64,i1]* 
+    (let ((res (ParserState:[ParserState*,i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,String*,i64,i1,String*]* 
                             0 
                             0
                             0
@@ -386,12 +437,17 @@
                             (Str "")
                             0
                             0
-                            #f)))
+                            #f
+                            0
+                            (Str "")
+                            0
+                            #f
+                            (Str ""))))
           res)))
   
 (bind-func print:[void,ParserState*]*
   (lambda (state)
-    (printf "Parser state printout:\npart count = %lld\nmeasure count = %lld\ndivisions = %lld\nbeats = %lld\nbeatType = %lld\nrest = %s\nstep = '%s'\noctave = %lld\nduration = %lld\n"
+    (printf "Parser state printout:\npart count = %lld\nmeasure count = %lld\ndivisions = %lld\nbeats = %lld\nbeatType = %lld\nrest = %s\nstep = '%s'\noctave = %lld\nduration = %lld\nnoteCount = %lld\naccidental = '%s'\nalter = %lld\nchord = %s\ntie = '%s'\n"
             (partCount state)
             (measureCount state)
             (divisions state)
@@ -400,7 +456,12 @@
             (if (rest state) "yes" "no")
             (cstring (step state))
             (octave state)
-            (duration state))
+            (duration state)
+            (noteCount state)
+            (cstring (accidental state))
+            (alter state)
+            (if (chord state) "yes" "no")
+            (cstring (tie state)))
     void))
 
 
@@ -424,11 +485,15 @@
             (set_measureCount state 0)
             (xml_parse (body xmlElement) score state))
           ((equal (name xmlElement) (Str "measure"))
-            ; ... reset measure specific state values
+            ; push a new measure into Score*
             (set_measureCount state (+ 1 (measureCount state)))
             (if (< (measureCount score) (measureCount state))
               (begin (push score (cMeasure))
                      (set_number (get_measure score (- (measureCount score) 1)) (measureCount state))))
+            ; reset measure specific state values
+            (set_noteCount state 0)
+            ; ...
+            ; read body of <measure>
             (xml_parse (body xmlElement) score state))
           ((equal (name xmlElement) (Str "attributes"))
             (xml_parse (body xmlElement) score state))
@@ -437,36 +502,56 @@
           ((equal (name xmlElement) (Str "time"))
             (xml_parse (body xmlElement) score state))
           ((equal (name xmlElement) (Str "beats"))
-            ; DEBUG: (printf "scanning beats body: '%s'\n" (cstring (body xmlElement)))
             (set_beats state (extract_i64 (body xmlElement))))
           ((equal (name xmlElement) (Str "beat-type"))
-            ; DEBUG: (printf "scanning beat-type body: '%s'\n" (cstring (body xmlElement)))
             (set_beatType state (extract_i64 (body xmlElement))))
           ((equal (name xmlElement) (Str "note"))
-            ; DEBUG: (printf "scanning note body: '%s'\n" (cstring (body xmlElement)))
+            ; reset note specific data:
+            (set_step state (Str ""))
+            (set_octave state 0)
+            (set_duration state 0)
             (set_rest state #f)
-            ; ... reset note specific state values
+            (set_accidental state (Str ""))
+            (set_alter state 0)
+            (set_chord state #f)
+            (set_tie state (Str ""))
+            ; read body of <note>:
             (xml_parse (body xmlElement) score state)
+            ; act on data in ParserState*:
+            ;   in case chord is true, set timer to starttime of previous note
+            ;   ...
+            ;   in case rest is false, push a new note into score and fill with data
             (if (not (rest state))
               (let ((currentMeasure (get_measure score (- (measureCount state) 1))))
                 (push currentMeasure (cNote))
-                ; write note specific data into score
-                void))
+                (set_noteCount state (+ (noteCount state) 1))
+                (let ((currentNote (get_note currentMeasure (- (noteCount state) 1))))
+                  ; write note specific data into score:
+                  (set_root currentNote (step state))
+                  (set_octave currentNote (octave state))
+                  ; ...
+                  void)))
             ; update time
+            ; ...
             void)
           ((equal (name xmlElement) (Str "pitch"))
             (xml_parse (body xmlElement) score state))
           ((equal (name xmlElement) (Str "rest"))
             (set_rest state #t))
+          ((equal (name xmlElement) (Str "chord"))
+            (set_chord state #t))
+          ((equal (name xmlElement) (Str "tie"))
+            (set_tie state (body xmlElement)) void)
           ((equal (name xmlElement) (Str "step"))
-            ; DEBUG: (printf "scanning step body: '%s'\n" (cstring (body xmlElement)))
             (set_step state (body xmlElement)) void)
           ((equal (name xmlElement) (Str "octave"))
-            ; DEBUG: (printf "scanning octave body: '%s'\n" (cstring (body xmlElement)))
             (set_octave state (extract_i64 (body xmlElement))))
           ((equal (name xmlElement) (Str "duration"))
-            ; DEBUG: (printf "scanning duration body: '%s'\n" (cstring (body xmlElement)))
             (set_duration state (extract_i64 (body xmlElement))))
+          ((equal (name xmlElement) (Str "accidental"))
+            (set_accidental state (body xmlElement)))
+          ((equal (name xmlElement) (Str "alter"))
+            (set_alter state (extract_i64 (body xmlElement))))
           (else (roll_error rollErr
                             (cat2 (cat2 (Str "Roll, xml_interpret_element: ignoring element '") (name xmlElement)) (Str "' and its content and sub-elements."))
                             ROLL_ERR_FLAG_INFO
