@@ -248,7 +248,7 @@
 
 (bind-func print:[void,Note*]*
   (lambda (n)
-    (printf "start time:      %lld\r\nrest:            %s\nroot:            '%s'\noctave:          %lld\nnotehead:        '%s'\naccidental       '%s'\nalteration:      %f\nduration:        %lld\ntie:             %s\npitch info:      '%s'\narticulation:    '%s'\ncommand literal: '%s'\nevent type:      %s\npart:            %lld\nvoice:           %lld\noutput hint:     %s\nauxiliary data:  %s\n" (startTime n)
+    (printf "start time:      %lld\nrest:            %s\nroot:            '%s'\noctave:          %lld\nnotehead:        '%s'\naccidental       '%s'\nalteration:      %f\nduration:        %lld\ntie:             %s\npitch info:      '%s'\narticulation:    '%s'\ncommand literal: '%s'\nevent type:      %s\npart:            %lld\nvoice:           %lld\noutput hint:     %s\nauxiliary data:  %s\n" (startTime n)
                 (if (rest n) "yes" "no")
                 (cstring (root n))
                 (octave n)
@@ -280,6 +280,38 @@
       void))
 
 
+(bind-func write_to_file:[void,Note*,i8*]*
+  (lambda (n file)
+    (fprintf file "start time:      %lld\nrest:            %s\nroot:            '%s'\noctave:          %lld\nnotehead:        '%s'\naccidental       '%s'\nalteration:      %f\nduration:        %lld\ntie:             %s\npitch info:      '%s'\narticulation:    '%s'\ncommand literal: '%s'\nevent type:      %s\npart:            %lld\nvoice:           %lld\noutput hint:     %s\nauxiliary data:  %s\n" (startTime n)
+                (if (rest n) "yes" "no")
+                (cstring (root n))
+                (octave n)
+                (cstring (notehead n))
+                (cstring (accidental n))
+                (ftod (alter n))
+                (duration n)
+                (cond ((= (tie n) ROLL_TIE_NONE) "no")
+                      ((= (tie n) ROLL_TIE_START) "start")
+                      ((= (tie n) ROLL_TIE_END) "end")
+                      ((= (tie n) ROLL_TIE_WITHIN) "within")
+                      (else "unknown tie flag"))
+                (cstring (pitchInfo n))
+                (cstring (articulation n))
+                (cstring (command n))
+                (cond ((= (eventType n) ROLL_EVENT_TYPE_TABULATURE) "tabulature")
+                      ((= (eventType n) ROLL_EVENT_TYPE_PITCH_UTOPIA) "pitch utopia")
+                      ((= (eventType n) ROLL_EVENT_TYPE_COMMAND) "command literal")
+                      (else "unknwon event type"))
+                (part n)
+                (voice n)
+                (cond ((= (outputHint n) ROLL_OUTPUT_HINT_TACET) "tacet")
+                      ((= (outputHint n) ROLL_OUTPUT_HINT_ARCIORGANO) "arciorgano")
+                      ((= (outputHint n) ROLL_OUTPUT_HINT_OSC) "oscillators")
+                      ((= (outputHint n) ROLL_OUTPUT_HINT_SAMPLER) "sampler")
+                      ((= (outputHint n) ROLL_OUTPUT_HINT_MIDI) "MIDI")
+                      (else "unknown output hint"))
+                (if (null? (auxData n)) "null" "yes"))
+      void))
 
 
 
@@ -369,6 +401,20 @@
 ---------------------------------------------------\nEnd of measure no %lld.\n" (number m))
       void)))
 
+(bind-func write_to_file:[void,Measure*,i8*]*
+  (lambda (m file)
+    (let ((i 0))
+      (fprintf file "Measure: no = %lld, division = %lld, note count = %lld\n"
+              (number m)
+              (division m)
+              (noteCount m))
+      (dotimes (i (noteCount m))
+        (fprintf file "--------------------------------------------------\n")
+        (write_to_file:[void,Note*,i8*]* (get_note m i) file))
+      (fprintf file "---------------------------------------------------\n
+---------------------------------------------------\nEnd of measure no %lld.\n" (number m))
+      void)))
+
 (bind-func cMeasure:[Measure*]*
   (lambda ()
     (let ((tmp:Note** (halloc 1)))
@@ -440,6 +486,19 @@
 ==================================================\n")
       void)))
 
+(bind-func write_to_file:[void,Score*,String*]*
+  (lambda (s filepath)
+    (let ((file (fopen (cstring (cat2 ROLL_WORKING_PATH filepath)) "w" ))
+          (i 0))
+      (fprintf file "Score: measure count = %lld\n" (measureCount s))
+      (dotimes (i (measureCount s)) 
+        (fprintf file "==================================================\n")
+        (write_to_file:[void,Measure*,i8*]* (get_measure s i) file))
+      (fprintf file "==================================================\n
+==================================================\n")
+      (fclose file)
+      void)))
+
 (bind-func cScore:[Score*]*
   (lambda ()
     (let ((tmp:Measure** (halloc 1)))
@@ -448,5 +507,4 @@
                          0
                          tmp)))
         res))))
-
 

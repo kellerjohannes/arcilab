@@ -21,8 +21,8 @@
   (lambda ()
     (set! rollErr (roll_create_logfile (cat2 ROLL_WORKING_PATH (Str "logfile-parser"))))
     (let ((score (cScore)))
-      (xml_import score (cat2 ROLL_WORKING_PATH (Str "guinea03/guinea03sibelius.xml")))
-      (print score)
+      (xml_import score (cat2 ROLL_WORKING_PATH (Str "guinea04/guinea04sibelius.xml")))
+      (write_to_file score (Str "guinea04/score-object"))
       (roll_close_logfile rollErr))))
 
 ($ (parse_roll))

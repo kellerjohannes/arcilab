@@ -668,7 +668,6 @@
             ;DEBUG: (printf "file contents:\n%s\n" (cstring xmlFile))
             (xml_parse xmlFile score state)
             ;DEBUG: (printf "this went well.\n")
-            ;DEBUG: 
-            (print state)
+            ;DEBUG: (print state)
             void)))
     void)))
