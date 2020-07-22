@@ -16,7 +16,7 @@ articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            0
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -35,7 +35,7 @@ articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            0
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -54,7 +54,7 @@ articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            0
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -73,7 +73,7 @@ articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            0
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -92,7 +92,7 @@ articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            1
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -111,7 +111,7 @@ articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            1
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -130,7 +130,7 @@ articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            2
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -149,7 +149,7 @@ articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            2
-xml voice: 0
+xml voice: 2
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -168,7 +168,7 @@ articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            2
-xml voice: 0
+xml voice: 3
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -187,7 +187,7 @@ articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            3
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -225,7 +225,7 @@ articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            3
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -263,7 +263,7 @@ articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            3
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -301,7 +301,7 @@ articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            3
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -345,7 +345,7 @@ articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            0
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -364,7 +364,7 @@ articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            0
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -383,7 +383,7 @@ articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            0
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -402,7 +402,7 @@ articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            0
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -421,7 +421,7 @@ articulation: 'tenuto'
 command literal: 'undef'
 event type:      tabulature
 part:            1
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -440,7 +440,7 @@ articulation: 'tenuto'
 command literal: 'undef'
 event type:      tabulature
 part:            1
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -459,7 +459,7 @@ articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            2
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -478,7 +478,7 @@ articulation: 'staccato'
 command literal: 'undef'
 event type:      tabulature
 part:            3
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -497,7 +497,7 @@ articulation: 'accent'
 command literal: 'undef'
 event type:      tabulature
 part:            3
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -516,7 +516,7 @@ articulation: 'tenuto'
 command literal: 'undef'
 event type:      tabulature
 part:            3
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -535,7 +535,7 @@ articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            3
-xml voice: 0
+xml voice: 1
 voice:           0
 output hint:     tacet
 auxiliary data:  null
