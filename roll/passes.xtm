@@ -15,15 +15,13 @@
 ; transforms timing information in 'score' based on configuration file in 'filepath'
 (bind-func roll_pass2:[void,Score*,String*]*
   (lambda (score filepath)
-    (let ((maxDivision (find_highest_division score)))
-      (recalculate_times score maxDivision)
-    ;find highest division
-    ;recalculate startTime and duration values
+    ;(rewrite_time_global score)
+    ;rewrite time information, all relative to beginning of piece instead of measure
     ;find and resolve tied notes
     ;read default config
     ;overwrite with custom time configuration, if available
     ;calculate absolute timings based on tempo markings (using absoluteStartTime and absoluteDuration in Note*)
-      void)))
+      void))
 
 ; transforms pitch information in 'score' based on configuaration file in 'filepath'
 (bind-func roll_pass3:[void,Score*,String*]*
