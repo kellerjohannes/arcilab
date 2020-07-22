@@ -77,11 +77,11 @@
   (lambda ()
     (set! rollErr (roll_create_logfile (cat2 ROLL_WORKING_PATH (Str "logfile-parser"))))
     (let ((score (cScore)))
-      (roll_pass1 score (cat2 ROLL_WORKING_PATH (Str "guinea04/guinea04sibelius_mod.xml")))
+      (roll_pass1 score (cat2 ROLL_WORKING_PATH (Str "guinea05/guinea05sibelius.xml")))
       (roll_pass2 score (Str ""))
       (roll_pass3 score (Str ""))
       (roll_pass4 score (Str ""))
-      (write_to_file score (Str "guinea04/score-object"))
+      (write_to_file score (Str "guinea05/score-object"))
       (roll_close_logfile rollErr))))
 
 ($ (parse_roll))

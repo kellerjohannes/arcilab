@@ -25,3 +25,58 @@
                             timeCursor))))
     void)))
 
+
+(bind-func resolve_ties_from
+  (lambda (score:Score* r:String* o:i64 a:String* v:i64 newDuration:i64* measureCursor:i64 noteCursor:i64)
+    (cond ((>= measureCursor (measureCount score))
+            (roll_error rollErr (Str "Roll, resolve_ties_from: end of score reached without finding matching end of tie.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
+            void)
+          ((= (noteCount (get_measure score measureCursor)) 0)
+            (resolve_ties_from score r o a v newDuration (+ measureCursor 1) 0))
+          ((>= noteCursor (noteCount (get_measure score measureCursor)))
+            (resolve_ties_from score r o a v newDuration (+ measureCursor 1) 0))
+          ((and (equal r (root (get_note (get_measure score measureCursor) noteCursor)))
+                (= o (octave (get_note (get_measure score measureCursor) noteCursor)))
+                (equal a (accidental (get_note (get_measure score measureCursor) noteCursor)))
+                (= v (xmlVoice (get_note (get_measure score measureCursor) noteCursor))))
+            ; DEBUG: (printf "tie candidate discovered.\n")
+            (if (= (tie (get_note (get_measure score measureCursor) noteCursor)) ROLL_TIE_WITHIN)
+              (begin
+                ; DEBUG: (printf "within note detected.\n")
+                (set_rest (get_note (get_measure score measureCursor) noteCursor) #t)
+                (pset! newDuration 0 (+ (pref newDuration 0) (duration (get_note (get_measure score measureCursor) noteCursor))))
+                (resolve_ties_from score r o a v newDuration measureCursor (+ noteCursor 1)))
+              void)
+            (if (= (tie (get_note (get_measure score measureCursor) noteCursor)) ROLL_TIE_END)
+              (begin
+                ; DEBUG: (printf "this is a tie end\n")
+                (set_rest (get_note (get_measure score measureCursor) noteCursor) #t)
+                (pset! newDuration 0 (+ (pref newDuration 0) (duration (get_note (get_measure score measureCursor) noteCursor))))
+                void) 
+              void))
+           (else (resolve_ties_from score r o a v newDuration measureCursor (+ noteCursor 1))))))
+
+
+(bind-func resolve_ties:[void,Score*]*
+  (lambda (score)
+    (let ((newDuration:i64* (salloc 1))
+          (measureCursor 0)
+          (noteCursor 0))
+      (pset! newDuration 0 0)
+      (dotimes (measureCursor (measureCount score))
+        (dotimes (noteCursor (noteCount (get_measure score measureCursor)))
+          (if (= (tie (get_note (get_measure score measureCursor) noteCursor)) 
+                 ROLL_TIE_START)
+            (begin
+              ; DEBUG: (printf "start search for end tie.\n")
+              (pset! newDuration 0 (duration (get_note (get_measure score measureCursor) noteCursor)))
+              (resolve_ties_from score
+                                 (root (get_note (get_measure score measureCursor) noteCursor))
+                                 (octave (get_note (get_measure score measureCursor) noteCursor))
+                                 (accidental (get_note (get_measure score measureCursor) noteCursor))
+                                 (xmlVoice (get_note (get_measure score measureCursor) noteCursor))
+                                 newDuration
+                                 measureCursor
+                                 (+ 1 noteCursor))
+              (set_duration (get_note (get_measure score measureCursor) noteCursor)
+                            (pref newDuration 0)))))))))

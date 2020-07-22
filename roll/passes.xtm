@@ -16,7 +16,7 @@
 (bind-func roll_pass2:[void,Score*,String*]*
   (lambda (score filepath)
     (rewrite_time_global score)
-    ;find and resolve tied notes
+    (resolve_ties score)
     ;read default config
     ;overwrite with custom time configuration, if available
     ;calculate absolute timings based on tempo markings (using absoluteStartTime and absoluteDuration in Note*)
