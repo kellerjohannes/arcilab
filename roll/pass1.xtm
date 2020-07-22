@@ -598,6 +598,7 @@
             (set_notehead state (Str "normal"))
             (set_articulation state (Str "normal"))
             (set_text state (Str "x"))
+            (set_xmlVoice state 0)
             ; read body of <note>:
             (set_parent state (name xmlElement))
             (xml_parse (body xmlElement) score state)
@@ -627,6 +628,7 @@
                   (set_part currentNote (- (partCount state) 1))
                   (set_notehead currentNote (notehead state))
                   (set_articulation currentNote (articulation state))
+                  (set_xmlVoice currentNote (xmlVoice state))
                   (if (not (equal (text state) (Str "x")))
                     (begin 
                     (printf "wohohooooo\n")
@@ -732,6 +734,7 @@
                         (xml_interpret_element xmlElement score state)
                         (xml_parse (xml_cdr pair) score state)))))))))
         
+
 
 (bind-func xml_import:[void,Score*,String*]*
   (lambda (score filepath)

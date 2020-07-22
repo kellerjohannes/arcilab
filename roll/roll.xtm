@@ -35,7 +35,7 @@
 
 ; Wish list:
 ; - pass 1 (read and store XML data):
-;   - implementation xml voice data (necessary for tie detection, useful for polyphony
+;   + implementation xml voice data (necessary for tie detection, useful for polyphony
 ;     management)
 ;   - substitute replacement strings in commands with Note* data
 ;   - find a solution for text (pitch info / command literals): pitch info note related
@@ -64,7 +64,7 @@
 (sys:load (string-append ROLL-SOURCE-PATH "roll/strings.xtm"))
 
 (sys:load (string-append ROLL-SOURCE-PATH "roll/score.xtm"))
-(sys:load (string-append ROLL-SOURCE-PATH "roll/xml_import.xtm"))
+(sys:load (string-append ROLL-SOURCE-PATH "roll/passes.xtm"))
 
 
 
@@ -72,7 +72,10 @@
   (lambda ()
     (set! rollErr (roll_create_logfile (cat2 ROLL_WORKING_PATH (Str "logfile-parser"))))
     (let ((score (cScore)))
-      (xml_import score (cat2 ROLL_WORKING_PATH (Str "guinea04/guinea04sibelius.xml")))
+      (roll_pass1 score (cat2 ROLL_WORKING_PATH (Str "guinea04/guinea04sibelius.xml")))
+      (roll_pass2 score (Str ""))
+      (roll_pass3 score (Str ""))
+      (roll_pass4 score (Str ""))
       (write_to_file score (Str "guinea04/score-object"))
       (roll_close_logfile rollErr))))
 
