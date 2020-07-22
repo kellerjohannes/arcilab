@@ -1,1 +1,28 @@
 ; Pass 2
+
+(bind-func find_highest_division:[i64,Score*]*
+  (lambda (score)
+    (let ((i 0)
+          (res 0))
+      (dotimes (i (measureCount score))
+        (if (> (division (get_measure score i)) res)
+          (set! res (division (get_measure score i)))))
+      res)))
+
+(bind-func recalculate_times:[void,Score*,i64]*
+  (lambda (score maxDivision)
+    (let ((measureCursor 0)
+          (noteCursor 0))
+      (dotimes (measureCursor (measureCount score))
+        (dotimes (noteCursor (noteCount (get_measure score measureCursor)))
+          (set_startTime (get_note (get_measure score measureCursor) noteCursor)
+                         (* (/ (startTime (get_note (get_measure score measureCursor) noteCursor)) 
+                               (division (get_measure score measureCursor)))
+                            maxDivision))
+          (set_duration  (get_note (get_measure score measureCursor) noteCursor)
+                         (* (/ (duration (get_note (get_measure score measureCursor) noteCursor)) 
+                               (division (get_measure score measureCursor)))
+                            maxDivision)))
+        (set_division (get_measure score measureCursor) maxDivision))
+      void)))
+
