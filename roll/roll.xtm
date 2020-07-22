@@ -85,4 +85,3 @@
       (roll_close_logfile rollErr))))
 
 ($ (parse_roll))
-

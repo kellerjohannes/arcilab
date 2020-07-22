@@ -578,7 +578,9 @@
             ; ...
             ; read body of <measure>
             (xml_parse (body xmlElement) score state)
-            (set_division (get_measure score (- (measureCount state) 1)) (divisions state)))
+            (set_division (get_measure score (- (measureCount state) 1)) (division score))
+            (set_beats (get_measure score (- (measureCount state) 1)) (beats state))
+            (set_beatType (get_measure score (- (measureCount state) 1)) (beatType state)))
           ((equal (name xmlElement) (Str "attributes"))
             (xml_parse (body xmlElement) score state))
           ((equal (name xmlElement) (Str "divisions"))

@@ -450,9 +450,10 @@
 (bind-func write_to_file:[void,Measure*,i8*]*
   (lambda (m file)
     (let ((i 0))
-      (fprintf file "Measure: no = %lld, division = %lld, duration = %lld, time signature = %lld, note count = %lld\n"
+      (fprintf file "Measure: no = %lld, division = %lld, duration = %lld, time signature = %lld / %lld, note count = %lld\n"
               (number m)
               (division m)
+              (duration m)
               (beats m)
               (beatType m)
               (noteCount m))

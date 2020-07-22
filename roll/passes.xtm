@@ -15,8 +15,7 @@
 ; transforms timing information in 'score' based on configuration file in 'filepath'
 (bind-func roll_pass2:[void,Score*,String*]*
   (lambda (score filepath)
-    ;(rewrite_time_global score)
-    ;rewrite time information, all relative to beginning of piece instead of measure
+    (rewrite_time_global score)
     ;find and resolve tied notes
     ;read default config
     ;overwrite with custom time configuration, if available

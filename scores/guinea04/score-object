@@ -1,6 +1,6 @@
 Score: measure count = 5, division = 1024
 ==================================================
-Measure: no = 1, division = 256, note count = 17
+Measure: no = 1, division = 1024, duration = 4096, time signature = 4 / 4, note count = 17
 --------------------------------------------------
 start time:      0
 rest:            no
@@ -329,9 +329,9 @@ auxiliary data:  null
 ---------------------------------------------------
 End of measure no 1.
 ==================================================
-Measure: no = 2, division = 256, note count = 11
+Measure: no = 2, division = 1024, duration = 4096, time signature = 4 / 4, note count = 11
 --------------------------------------------------
-start time:      0
+start time:      4096
 rest:            no
 root: 'D'
 octave:          5
@@ -350,7 +350,7 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      1024
+start time:      5120
 rest:            no
 root: 'E'
 octave:          5
@@ -369,7 +369,7 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      2048
+start time:      6144
 rest:            no
 root: 'F'
 octave:          5
@@ -388,7 +388,7 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      3072
+start time:      7168
 rest:            no
 root: 'D'
 octave:          5
@@ -407,7 +407,7 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      0
+start time:      4096
 rest:            no
 root: 'D'
 octave:          5
@@ -426,7 +426,7 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      2048
+start time:      6144
 rest:            no
 root: 'A'
 octave:          4
@@ -445,7 +445,7 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      0
+start time:      4096
 rest:            no
 root: 'D'
 octave:          4
@@ -464,7 +464,7 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      0
+start time:      4096
 rest:            no
 root: 'D'
 octave:          3
@@ -483,7 +483,7 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      1024
+start time:      5120
 rest:            no
 root: 'D'
 octave:          4
@@ -502,7 +502,7 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      2048
+start time:      6144
 rest:            no
 root: 'D'
 octave:          3
@@ -521,7 +521,7 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      3072
+start time:      7168
 rest:            no
 root: 'D'
 octave:          4
@@ -544,19 +544,19 @@ auxiliary data:  null
 ---------------------------------------------------
 End of measure no 2.
 ==================================================
-Measure: no = 3, division = 256, note count = 0
+Measure: no = 3, division = 1024, duration = 4096, time signature = 4 / 4, note count = 0
 ---------------------------------------------------
 
 ---------------------------------------------------
 End of measure no 3.
 ==================================================
-Measure: no = 4, division = 256, note count = 0
+Measure: no = 4, division = 1024, duration = 4096, time signature = 4 / 4, note count = 0
 ---------------------------------------------------
 
 ---------------------------------------------------
 End of measure no 4.
 ==================================================
-Measure: no = 5, division = 256, note count = 0
+Measure: no = 5, division = 1024, duration = 4096, time signature = 4 / 4, note count = 0
 ---------------------------------------------------
 
 ---------------------------------------------------
