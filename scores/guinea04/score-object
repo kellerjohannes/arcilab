@@ -9,7 +9,7 @@ octave:          5
 notehead:        'normal'
 accidental       ''
 alteration: 0.000000
-duration:        256
+duration:        1024
 tie:             no
 pitch info:      'undef'
 articulation: 'normal'
@@ -21,14 +21,14 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      256
+start time:      1024
 rest:            no
 root: 'E'
 octave:          5
 notehead:        'normal'
 accidental       ''
 alteration: 0.000000
-duration:        256
+duration:        1024
 tie:             no
 pitch info:      'undef'
 articulation: 'normal'
@@ -40,14 +40,14 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      512
+start time:      2048
 rest:            no
 root: 'F'
 octave:          5
 notehead:        'normal'
 accidental       ''
 alteration: 0.000000
-duration:        256
+duration:        1024
 tie:             no
 pitch info:      'undef'
 articulation: 'normal'
@@ -59,14 +59,14 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      768
+start time:      3072
 rest:            no
 root: 'D'
 octave:          5
 notehead:        'normal'
 accidental       ''
 alteration: 0.000000
-duration:        256
+duration:        1024
 tie:             no
 pitch info:      'undef'
 articulation: 'normal'
@@ -85,7 +85,7 @@ octave:          5
 notehead:        'normal'
 accidental       ''
 alteration: 0.000000
-duration:        512
+duration:        2048
 tie:             no
 pitch info:      'undef'
 articulation: 'normal'
@@ -97,14 +97,14 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      512
+start time:      2048
 rest:            no
 root: 'A'
 octave:          4
 notehead:        'normal'
 accidental       ''
 alteration: 0.000000
-duration:        512
+duration:        2048
 tie:             no
 pitch info:      'undef'
 articulation: 'normal'
@@ -180,7 +180,7 @@ octave:          2
 notehead:        'normal'
 accidental       ''
 alteration: 0.000000
-duration:        256
+duration:        1024
 tie:             no
 pitch info:      'undef'
 articulation: 'normal'
@@ -199,7 +199,7 @@ octave:          3
 notehead:        'normal'
 accidental       ''
 alteration: 0.000000
-duration:        256
+duration:        1024
 tie:             no
 pitch info:      'undef'
 articulation: 'normal'
@@ -211,14 +211,14 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      256
+start time:      1024
 rest:            no
 root: 'D'
 octave:          3
 notehead:        'normal'
 accidental       ''
 alteration: 0.000000
-duration:        256
+duration:        1024
 tie:             no
 pitch info:      'undef'
 articulation: 'normal'
@@ -230,14 +230,14 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      256
+start time:      1024
 rest:            no
 root: 'D'
 octave:          4
 notehead:        'normal'
 accidental       ''
 alteration: 0.000000
-duration:        256
+duration:        1024
 tie:             no
 pitch info:      'undef'
 articulation: 'normal'
@@ -249,14 +249,14 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      512
+start time:      2048
 rest:            no
 root: 'D'
 octave:          2
 notehead:        'normal'
 accidental       ''
 alteration: 0.000000
-duration:        256
+duration:        1024
 tie:             no
 pitch info:      'undef'
 articulation: 'normal'
@@ -268,14 +268,14 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      512
+start time:      2048
 rest:            no
 root: 'D'
 octave:          3
 notehead:        'normal'
 accidental       ''
 alteration: 0.000000
-duration:        256
+duration:        1024
 tie:             no
 pitch info:      'undef'
 articulation: 'normal'
@@ -287,14 +287,14 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      768
+start time:      3072
 rest:            no
 root: 'D'
 octave:          3
 notehead:        'normal'
 accidental       ''
 alteration: 0.000000
-duration:        256
+duration:        1024
 tie:             no
 pitch info:      'undef'
 articulation: 'normal'
@@ -306,14 +306,14 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      768
+start time:      3072
 rest:            no
 root: 'D'
 octave:          4
 notehead:        'normal'
 accidental       ''
 alteration: 0.000000
-duration:        256
+duration:        1024
 tie:             no
 pitch info:      'undef'
 articulation: 'normal'
@@ -338,7 +338,7 @@ octave:          5
 notehead:        'triangle'
 accidental       ''
 alteration: 0.000000
-duration:        256
+duration:        1024
 tie:             no
 pitch info:      'undef'
 articulation: 'normal'
@@ -350,14 +350,14 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      256
+start time:      1024
 rest:            no
 root: 'E'
 octave:          5
 notehead:        'triangle'
 accidental       ''
 alteration: 0.000000
-duration:        256
+duration:        1024
 tie:             no
 pitch info:      'undef'
 articulation: 'normal'
@@ -369,14 +369,14 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      512
+start time:      2048
 rest:            no
 root: 'F'
 octave:          5
 notehead:        'triangle'
 accidental       ''
 alteration: 0.000000
-duration:        256
+duration:        1024
 tie:             no
 pitch info:      'undef'
 articulation: 'normal'
@@ -388,14 +388,14 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      768
+start time:      3072
 rest:            no
 root: 'D'
 octave:          5
 notehead:        'triangle'
 accidental       ''
 alteration: 0.000000
-duration:        256
+duration:        1024
 tie:             no
 pitch info:      'undef'
 articulation: 'normal'
@@ -414,7 +414,7 @@ octave:          5
 notehead:        'normal'
 accidental       ''
 alteration: 0.000000
-duration:        512
+duration:        2048
 tie:             no
 pitch info:      'undef'
 articulation: 'tenuto'
@@ -426,14 +426,14 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      512
+start time:      2048
 rest:            no
 root: 'A'
 octave:          4
 notehead:        'normal'
 accidental       ''
 alteration: 0.000000
-duration:        512
+duration:        2048
 tie:             no
 pitch info:      'undef'
 articulation: 'tenuto'
@@ -471,7 +471,7 @@ octave:          3
 notehead:        'normal'
 accidental       ''
 alteration: 0.000000
-duration:        256
+duration:        1024
 tie:             no
 pitch info:      'undef'
 articulation: 'staccato'
@@ -483,14 +483,14 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      256
+start time:      1024
 rest:            no
 root: 'D'
 octave:          4
 notehead:        'normal'
 accidental       ''
 alteration: 0.000000
-duration:        256
+duration:        1024
 tie:             no
 pitch info:      'undef'
 articulation: 'accent'
@@ -502,14 +502,14 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      512
+start time:      2048
 rest:            no
 root: 'D'
 octave:          3
 notehead:        'normal'
 accidental       ''
 alteration: 0.000000
-duration:        256
+duration:        1024
 tie:             no
 pitch info:      'undef'
 articulation: 'tenuto'
@@ -521,14 +521,14 @@ voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
-start time:      768
+start time:      3072
 rest:            no
 root: 'D'
 octave:          4
 notehead:        'normal'
 accidental       ''
 alteration: 0.000000
-duration:        256
+duration:        1024
 tie:             no
 pitch info:      'undef'
 articulation: 'normal'

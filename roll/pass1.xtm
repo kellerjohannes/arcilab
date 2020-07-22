@@ -542,6 +542,10 @@
     void))
 
 
+; transform time value in 'local ticks' (<divisions> of <measure>) into 'global ticks'
+(bind-func recalculate_time:[i64,i64,i64,i64]*
+  (lambda (value globalDivision localDivision)
+     (* (/ value localDivision) globalDivision)))
 
 
 ; dummy, for compilation
@@ -631,6 +635,7 @@
                   (set_xmlVoice currentNote (xmlVoice state))
                   (if (not (equal (text state) (Str "x")))
                     (begin 
+                    ; to be reworked!
                     (printf "wohohooooo\n")
                     (cond ((equal (substring (text state) 0 1) (Str "!"))
                             (set_command currentNote (split_second (text state) 1)))
@@ -665,11 +670,11 @@
           ((equal (name xmlElement) (Str "duration"))
             (cond ((equal (parent state) (Str "note"))
                     ; DEBUG: (printf "duration detected and extracted! %lld\n" (extract_i64 (body xmlElement)))
-                    (set_duration state (extract_i64 (body xmlElement))))
+                    (set_duration state (recalculate_time (extract_i64 (body xmlElement)) (division score) (divisions state))))
                   ((equal (parent state) (Str "backup"))
-                    (set_timer state (- (timer state) (extract_i64 (body xmlElement)))))
+                    (set_timer state (- (timer state) (recalculate_time (extract_i64 (body xmlElement)) (division score) (divisions state)))))
                   ((equal (parent state) (Str "forward"))
-                    (set_timer state (+ (timer state) (extract_i64 (body xmlElement)))))
+                    (set_timer state (+ (timer state) (recalculate_time (extract_i64 (body xmlElement)) (division score) (divisions state)))))
                   (else (roll_error rollErr (Str "Roll, xml_parse: unknown parent of <duration>.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)) void))
           ((equal (name xmlElement) (Str "accidental"))
             (set_accidental state (body xmlElement)))

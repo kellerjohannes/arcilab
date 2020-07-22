@@ -34,9 +34,8 @@
 
 
 ; Wish list:
-; - pre-parse xml file to determine highest division, store in Score*
-; - remove division value from ParserState and Measure
-; - integrate recalculation of timing info (StartTime and Duration) based on highest division in the score
+; + pre-parse xml file to determine highest division, store in Score*
+; + integrate recalculation of timing info (StartTime and Duration) based on highest division in the score
 ; - pass 1 (read and store XML data):
 ;   + implementation xml voice data (necessary for tie detection, useful for polyphony
 ;     management)
@@ -46,7 +45,10 @@
 ;   - read and store tempo markings
 ; - pass 2
 
-
+; redundant stuff:
+; - division value for Measure* object (is globalised while reading xml data)
+; - 'rest' value in Note* object -> can be used to mute notes. rests in xml data are
+;   ignored while parsing xml
 
 
 
@@ -83,3 +85,4 @@
       (roll_close_logfile rollErr))))
 
 ($ (parse_roll))
+
