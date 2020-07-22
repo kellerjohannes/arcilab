@@ -4,306 +4,323 @@ Measure: no = 1, division = 256, note count = 17
 --------------------------------------------------
 start time:      0
 rest:            no
-root:            'D'
+root: 'D'
 octave:          5
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        256
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            0
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      256
 rest:            no
-root:            'E'
+root: 'E'
 octave:          5
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        256
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            0
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      512
 rest:            no
-root:            'F'
+root: 'F'
 octave:          5
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        256
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            0
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      768
 rest:            no
-root:            'D'
+root: 'D'
 octave:          5
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        256
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            0
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      0
 rest:            no
-root:            'D'
+root: 'D'
 octave:          5
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        512
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            1
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      512
 rest:            no
-root:            'A'
+root: 'A'
 octave:          4
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        512
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            1
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      0
 rest:            no
-root:            'D'
+root: 'D'
 octave:          4
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        1024
 tie:             start
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            2
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      0
 rest:            no
-root:            'D'
+root: 'D'
 octave:          3
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        1024
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            2
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      0
 rest:            no
-root:            'D'
+root: 'D'
 octave:          5
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        1024
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            2
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      0
 rest:            no
-root:            'D'
+root: 'D'
 octave:          2
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        256
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            3
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      0
 rest:            no
-root:            'D'
+root: 'D'
 octave:          3
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        256
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            3
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      256
 rest:            no
-root:            'D'
+root: 'D'
 octave:          3
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        256
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            3
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      256
 rest:            no
-root:            'D'
+root: 'D'
 octave:          4
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        256
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            3
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      512
 rest:            no
-root:            'D'
+root: 'D'
 octave:          2
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        256
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            3
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      512
 rest:            no
-root:            'D'
+root: 'D'
 octave:          3
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        256
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            3
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      768
 rest:            no
-root:            'D'
+root: 'D'
 octave:          3
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        256
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            3
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      768
 rest:            no
-root:            'D'
+root: 'D'
 octave:          4
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        256
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            3
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
@@ -316,198 +333,209 @@ Measure: no = 2, division = 256, note count = 11
 --------------------------------------------------
 start time:      0
 rest:            no
-root:            'D'
+root: 'D'
 octave:          5
-notehead:        'undef'
+notehead:        'triangle'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        256
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            0
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      256
 rest:            no
-root:            'E'
+root: 'E'
 octave:          5
-notehead:        'undef'
+notehead:        'triangle'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        256
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            0
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      512
 rest:            no
-root:            'F'
+root: 'F'
 octave:          5
-notehead:        'undef'
+notehead:        'triangle'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        256
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            0
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      768
 rest:            no
-root:            'D'
+root: 'D'
 octave:          5
-notehead:        'undef'
+notehead:        'triangle'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        256
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            0
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      0
 rest:            no
-root:            'D'
+root: 'D'
 octave:          5
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        512
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'tenuto'
 command literal: 'undef'
 event type:      tabulature
 part:            1
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      512
 rest:            no
-root:            'A'
+root: 'A'
 octave:          4
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        512
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'tenuto'
 command literal: 'undef'
 event type:      tabulature
 part:            1
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      0
 rest:            no
-root:            'D'
+root: 'D'
 octave:          4
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        1024
 tie:             end
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            2
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      0
 rest:            no
-root:            'D'
+root: 'D'
 octave:          3
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        256
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'staccato'
 command literal: 'undef'
 event type:      tabulature
 part:            3
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      256
 rest:            no
-root:            'D'
+root: 'D'
 octave:          4
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        256
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'accent'
 command literal: 'undef'
 event type:      tabulature
 part:            3
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      512
 rest:            no
-root:            'D'
+root: 'D'
 octave:          3
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        256
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'tenuto'
 command literal: 'undef'
 event type:      tabulature
 part:            3
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null
 --------------------------------------------------
 start time:      768
 rest:            no
-root:            'D'
+root: 'D'
 octave:          4
-notehead:        'undef'
+notehead:        'normal'
 accidental       ''
-alteration:      0.000000
+alteration: 0.000000
 duration:        256
 tie:             no
 pitch info:      'undef'
-articulation:    'undef'
+articulation: 'normal'
 command literal: 'undef'
 event type:      tabulature
 part:            3
+xml voice: 0
 voice:           0
 output hint:     tacet
 auxiliary data:  null

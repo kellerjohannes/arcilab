@@ -1,3 +1,54 @@
+; Roll, part of ArciLab, offers the following functionality:
+; - reading and parsing of musicXML files
+; - storing the musical data of the XML file in a custom data structure (Score*)
+; - transforming this data in a way that it becomes compatible with the ArciLab player module
+; - interpreting complex pitch information in various ways
+
+; Pass 1: naked data
+; - read xml data, no interpretation happening, no configuration necessary. Score*
+;   represents the identical information that is stored in the XML data
+; - read tempo markings, list them separately with timing markers relative to measures
+; - find a method to deal with acc. and rit.
+
+; Pass 2: time
+; - find highest measure division value and recalculate all duration values accordingly
+; - recalculate the startTime values of all Note* objects as relative to the beginning of
+;   the score (not the beginning of a measure)
+; - resolve tied notes by prolonging the first note to span over all tied notes and
+;   removing the other notes from the score (mark them as 'rest')
+; - apply tempo markings, transform time codes from ticks (based on division) into SR
+
+; Pass 3: pitch
+; - assign event types based on configuration file: tabulature, pitch utopia, commands
+; - parse tabulature events based on config
+; - parse pitch utopia information as far as possible (glissando for later?)
+; - parse command literals, substitute replacement strings with Note* values
+
+; Pass 4: rewrite
+; - assign voice distribution for player module
+; - transform the Score* data into an event table, chronologically ordered
+
+; Pass 5: real time
+; - send event messages to the real time player module, in flexible speed, forward and
+;   reverse 
+
+
+; Wish list:
+; - pass 1 (read and store XML data):
+;   - implementation xml voice data (necessary for tie detection, useful for polyphony
+;     management)
+;   - substitute replacement strings in commands with Note* data
+;   - find a solution for text (pitch info / command literals): pitch info note related
+;     (lyrics?), commands generic text (timing?)
+;   - read and store tempo markings
+; - pass 2
+
+
+
+
+
+
+
 (define ROLL-SOURCE-PATH "../../Coding/extempore/arcilab/")
 (bind-val ROLL_WORKING_PATH String* (Str "../../Coding/extempore/arcilab/scores/"))
 

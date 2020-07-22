@@ -285,7 +285,7 @@
 
 
 ; ParserState remembers things while reading through xml Data
-(bind-type ParserState <i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,i64,String*,float,i1,String*,String*>)
+(bind-type ParserState <i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,i64,String*,float,i1,String*,String*,String*,String*,String*,i64>)
 ; 0 part count
 ; 1 measure count
 ; 2 divisions
@@ -302,6 +302,10 @@
 ; 13 chord
 ; 14 tie (string)
 ; 15 parent (name of enclosing xml element)
+; 16 notehead
+; 17 articulation
+; 18 text
+; 19 xml voice assignment
 
 (bind-func partCount:[i64,ParserState*]*
   (lambda (ps)
@@ -447,9 +451,45 @@
     (tset! ps 15 p)
     void))
 
+(bind-func notehead:[String*,ParserState*]*
+  (lambda (ps)
+    (tref ps 16)))
+    
+(bind-func set_notehead:[void,ParserState*,String*]*
+  (lambda (ps nh)
+    (tset! ps 16 nh)
+    void))
+
+(bind-func articulation:[String*,ParserState*]*
+  (lambda (ps)
+    (tref ps 17)))
+
+(bind-func set_articulation:[void,ParserState*,String*]*
+  (lambda (ps a)
+    (tset! ps 17 a)
+    void))
+
+(bind-func text:[String*,ParserState*]*
+  (lambda (ps)
+    (tref ps 18)))
+
+(bind-func set_text:[void,ParserState*,String*]*
+  (lambda (ps t)
+    (tset! ps 18 t)
+    void))
+
+(bind-func xmlVoice:[i64,ParserState*]*
+  (lambda (ps)
+    (tref ps 19)))
+
+(bind-func set_xmlVoice:[void,ParserState*,i64]*
+  (lambda (ps v)
+    (tset! ps 19 v)
+    void))
+
 (bind-func cParserState:[ParserState*]*
   (lambda ()
-    (let ((res (ParserState:[ParserState*,i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,i64,String*,float,i1,String*,String*]* 
+    (let ((res (ParserState:[ParserState*,i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,i64,String*,float,i1,String*,String*,String*,String*,String*,i64]* 
                             0 
                             0
                             0
@@ -465,12 +505,20 @@
                             0.0
                             #f
                             (Str "")
-                            (Str ""))))
+                            (Str "")
+                            (Str "")
+                            (Str "")
+                            (Str "")
+                            0)))
           res)))
 
 (bind-func print:[void,ParserState*]*
   (lambda (state)
-    (printf "Parser state printout:\npart count = %lld\nmeasure count = %lld\ndivisions = %lld\nbeats = %lld\nbeatType = %lld\nrest = %s\ntimer = %lld\nstep = '%s'\noctave = %lld\nduration = %lld\nnoteCount = %lld\naccidental = '%s'\nalter = %f\nchord = %s\ntie = '%s'\nparent = '%s'\n"
+    (printf "Parser state printout:\npart count = %lld\nmeasure count = %lld\ndivisions =
+    %lld\nbeats = %lld\nbeatType = %lld\nrest = %s\ntimer = %lld\nstep = '%s'\noctave =
+    %lld\nduration = %lld\nnoteCount = %lld\naccidental = '%s'\nalter = %f\nchord =
+    %s\ntie = '%s'\nparent = '%s'\nnotehead = '%s'\narticulation = '%s'\ntext = '%s'\nxml
+    %voice = %lld\n"
             (partCount state)
             (measureCount state)
             (divisions state)
@@ -486,7 +534,11 @@
             (ftod (alter state))
             (if (chord state) "yes" "no")
             (cstring (tie state))
-            (cstring (parent state)))
+            (cstring (parent state))
+            (cstring (notehead state))
+            (cstring (articulation state))
+            (cstring (text state))
+            (xmlVoice state))
     void))
 
 
@@ -543,6 +595,9 @@
             (set_alter state 0.0)
             (set_chord state #f)
             (set_tie state (Str ""))
+            (set_notehead state (Str "normal"))
+            (set_articulation state (Str "normal"))
+            (set_text state (Str "x"))
             ; read body of <note>:
             (set_parent state (name xmlElement))
             (xml_parse (body xmlElement) score state)
@@ -570,6 +625,16 @@
                         ((equal (tie state) (Str "both")) (set_tie currentNote ROLL_TIE_WITHIN))
                         (else (set_tie currentNote -1)))
                   (set_part currentNote (- (partCount state) 1))
+                  (set_notehead currentNote (notehead state))
+                  (set_articulation currentNote (articulation state))
+                  (if (not (equal (text state) (Str "x")))
+                    (begin 
+                    (printf "wohohooooo\n")
+                    (cond ((equal (substring (text state) 0 1) (Str "!"))
+                            (set_command currentNote (split_second (text state) 1)))
+                          ((equal (substring (text state) 0 1) (Str "p"))
+                            (set_pitchInfo currentNote (text state)))  
+                          (else (roll_error rollErr (Str "Roll, xml_parse: textfield prefix unknown.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)))))
                   ; ...
                   void)))
             ; update time
@@ -591,6 +656,8 @@
                   (else (set_tie state (attribute xmlElement (Str "type"))))))
           ((equal (name xmlElement) (Str "step"))
             (set_step state (body xmlElement)) void)
+          ((equal (name xmlElement) (Str "voice"))
+            (set_xmlVoice state (extract_i64 (body xmlElement))))
           ((equal (name xmlElement) (Str "octave"))
             (set_octave state (extract_i64 (body xmlElement))))
           ((equal (name xmlElement) (Str "duration"))
@@ -604,6 +671,18 @@
                   (else (roll_error rollErr (Str "Roll, xml_parse: unknown parent of <duration>.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)) void))
           ((equal (name xmlElement) (Str "accidental"))
             (set_accidental state (body xmlElement)))
+          ((equal (name xmlElement) (Str "notehead"))
+            (set_notehead state (body xmlElement)))
+          ((equal (name xmlElement) (Str "articulations"))
+            (xml_parse (body xmlElement) score state))
+          ((equal (name xmlElement) (Str "notations"))
+            (xml_parse (body xmlElement) score state))
+          ((or (equal (name xmlElement) (Str "tenuto"))
+               (equal (name xmlElement) (Str "staccato"))
+               (equal (name xmlElement) (Str "accent")))
+            (if (equal (articulation state) (Str "normal"))
+              (set_articulation state (name xmlElement))
+              (set_articulation state (cat2 (articulation state) (name xmlElement)))))
           ((equal (name xmlElement) (Str "alter"))
             (set_alter state (extract_float (body xmlElement))))
           ((equal (name xmlElement) (Str "backup"))
@@ -612,15 +691,21 @@
           ((equal (name xmlElement) (Str "forward"))
             (set_parent state (name xmlElement))
             (xml_parse (body xmlElement) score state))
-          (else (roll_error rollErr
-                            (cat2 (cat2 (Str "Roll, xml_interpret_element: ignoring element '") (name xmlElement)) (Str "' and its content and sub-elements."))
-                            ROLL_ERR_FLAG_INFO
-                            ROLL_ERR_DEST_ALL))
+          (else 
+               ; (roll_error rollErr
+               ;             (cat2 (cat2 (Str "Roll, xml_interpret_element: ignoring element '") (name xmlElement)) (Str "' and its content and sub-elements."))
+               ;             ROLL_ERR_FLAG_INFO
+               ;             ROLL_ERR_DEST_ALL))
+               void)
                 void)))
 
 
+(bind-func test
+  (lambda ()
+    (let ((s (Str "abcde")))
+      (substring s 0 1))))
 
-
+($ (test))
 
 
 (bind-func xml_parse:[void,String*,Score*,ParserState*]*
