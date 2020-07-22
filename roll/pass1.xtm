@@ -702,13 +702,6 @@
                 void)))
 
 
-(bind-func test
-  (lambda ()
-    (let ((s (Str "abcde")))
-      (substring s 0 1))))
-
-($ (test))
-
 
 (bind-func xml_parse:[void,String*,Score*,ParserState*]*
   (lambda (xmlData score state)
@@ -736,6 +729,73 @@
         
 
 
+
+
+
+
+; dummy, for compiler
+(bind-func xml_pre_parse:[void,String*,i64*,i64*]* (lambda (a b c) void))
+
+; reads through xml data to extract all <divisions> elements in order to determine the highest
+(bind-func xml_pre_interpret_element:[void,XMLelement*,i64*,i64*]*
+  (lambda (xmlElement maxDivision currentDivision)
+    (cond ((equal (name xmlElement) (Str "score-partwise"))
+            (roll_error rollErr (Str "Parser: partwise score detected.") ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_ALL)
+            (xml_pre_parse (body xmlElement) maxDivision currentDivision))
+          ((equal (name xmlElement) (Str "part"))
+            (roll_error rollErr (cat2 (cat2 (Str "Parser: opening part '") (attribute xmlElement (Str "id"))) (Str "'."))
+                                ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_ALL)
+            (xml_pre_parse (body xmlElement) maxDivision currentDivision))
+          ((equal (name xmlElement) (Str "measure"))
+            (pset! currentDivision 0 0)
+            (xml_pre_parse (body xmlElement) maxDivision currentDivision)
+            (if (> (pref currentDivision 0) (pref maxDivision 0))
+              (begin 
+                (pset! maxDivision 0 (pref currentDivision 0))
+                void)))
+          ((equal (name xmlElement) (Str "attributes"))
+            (xml_pre_parse (body xmlElement) maxDivision currentDivision))
+          ((equal (name xmlElement) (Str "divisions"))
+            (pset! currentDivision 0 (extract_i64 (body xmlElement)))
+            void)
+          (else 
+               ; (roll_error rollErr
+               ;             (cat2 (cat2 (Str "Roll, xml_interpret_element: ignoring element '") (name xmlElement)) (Str "' and its content and sub-elements."))
+               ;             ROLL_ERR_FLAG_INFO
+               ;             ROLL_ERR_DEST_ALL))
+               void))
+                void))
+
+; scans the xml score for all measure divisions, writes highest value in maxDivision
+(bind-func xml_pre_parse:[void,String*,i64*,i64*]*
+  (lambda (xmlData maxDivision currentDivision)
+    (cond ((null? xmlData) (roll_error rollErr
+                                       (Str "Roll, xml_pre_parse: undefined xmlData pointer.  No parsing possible.")
+                                       ROLL_ERR_FLAG_FATAL
+                                       ROLL_ERR_DEST_ALL)
+                           void)
+          ((= 0 (length xmlData)) void)
+          (else
+            (let ((first (substring xmlData 0 2)))
+              (cond ((equal first (Str "<?"))
+                      ;DEBUG: (printf "xmlData:\n%s\n" (cstring (xml_skip_version_element xmlData)))
+                      (xml_pre_parse (xml_skip_version_element xmlData) maxDivision currentDivision))
+                    ((equal first (Str "<!"))
+                      ;DEBUG: ;(printf "xmlData:\n%s\n" (cstring (xml_skip_doctype_element xmlData)))
+                      (xml_pre_parse (xml_skip_doctype_element xmlData) maxDivision currentDivision))
+                    (else 
+                      (let ((pair (xml_divide xmlData))
+                            (xmlElement (cXMLelement)))
+                        ;DEBUG: (print pair)
+                        (xml_read_element (xml_car pair) xmlElement)
+                        (xml_pre_interpret_element xmlElement maxDivision currentDivision)
+                        (xml_pre_parse (xml_cdr pair) maxDivision currentDivision)))))))))
+    
+
+
+
+
+
 (bind-func xml_import:[void,Score*,String*]*
   (lambda (score filepath)
     (let ((xmlFile (Str (sys_slurp_file (cstring filepath)))))
@@ -750,12 +810,19 @@
                                             ROLL_ERR_FLAG_FATAL
                                             ROLL_ERR_DEST_ALL))
         (else
-          (let ((state (cParserState)))
+          (let ((maxDivision:i64* (salloc 1))
+                (currentDivision:i64* (salloc 1))
+                (state (cParserState)))
+            (pset! maxDivision 0 0)
+            (pset! currentDivision 0 0)
             (roll_error rollErr
                         (Str "XML file slurped.")
                         ROLL_ERR_FLAG_INFO
                         ROLL_ERR_DEST_ALL)
             ;DEBUG: (printf "file contents:\n%s\n" (cstring xmlFile))
+            (xml_pre_parse xmlFile maxDivision currentDivision)
+            (set_division score (pref maxDivision 0))
+            (roll_error rollErr (Str "Pre parse done: score division = ") ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_ALL)
             (xml_parse xmlFile score state)
             ;DEBUG: (printf "this went well.\n")
             ;DEBUG: (print state)

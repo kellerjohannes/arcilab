@@ -448,9 +448,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; This element stores data of the xml score, per measure, not per part. 
 
-(bind-type Score <i64,Measure**>)
+(bind-type Score <i64,i64,Measure**>)
 ; 0 measure count
-; 1 measures
+; 1 division
+; 2 measures
 
 (bind-func measureCount:[i64,Score*]*
   (lambda (s)
@@ -469,12 +470,21 @@
 (bind-func get_measure:[Measure*,Score*,i64]*
   (lambda (s index)
     (cond ((and (>= index 0) (< index (measureCount s)))
-            (pref (tref s 1) index))
+            (pref (tref s 2) index))
           (else (roll_error rollErr
                             (Str "Score element: get_measure, index out of range, returned 'null'. This might crash everything.")
                             ROLL_ERR_FLAG_FATAL
                             ROLL_ERR_DEST_ALL)
                 null))))
+
+(bind-func division:[i64,Score*]*
+  (lambda (s)
+    (tref s 1)))
+
+(bind-func set_division:[void,Score*,i64]*
+  (lambda (s d)
+    (tset! s 1 d)
+    void))
 
 (bind-func push:[void,Score*,Measure*]*
   (lambda (s m)
@@ -484,14 +494,14 @@
         (pset! tmp i (get_measure s i)))
       (pset! tmp (measureCount s) m)
       (set_measureCount s (+ 1 (measureCount s)))
-      (free (tref s 1))
-      (tset! s 1 tmp)
+      (free (tref s 2))
+      (tset! s 2 tmp)
       void)))
 
 (bind-func print:[void,Score*]*
   (lambda (s)
     (let ((i 0))
-      (printf "Score: measure count = %lld\n" (measureCount s))
+      (printf "Score: measure count = %lld, division = %lld\n" (measureCount s) (division s))
       (dotimes (i (measureCount s)) 
         (printf "==================================================\n")
         (print:[void,Measure*]* (get_measure s i)))
@@ -503,7 +513,7 @@
   (lambda (s filepath)
     (let ((file (fopen (cstring (cat2 ROLL_WORKING_PATH filepath)) "w" ))
           (i 0))
-      (fprintf file "Score: measure count = %lld\n" (measureCount s))
+      (fprintf file "Score: measure count = %lld, division = %lld\n" (measureCount s) (division s))
       (dotimes (i (measureCount s)) 
         (fprintf file "==================================================\n")
         (write_to_file:[void,Measure*,i8*]* (get_measure s i) file))
@@ -516,7 +526,8 @@
   (lambda ()
     (let ((tmp:Measure** (halloc 1)))
       (set! tmp null)
-      (let ((res (Score:[Score*,i64,Measure**]*
+      (let ((res (Score:[Score*,i64,i64,Measure**]*
+                         0
                          0
                          tmp)))
         res))))

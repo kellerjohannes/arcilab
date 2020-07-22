@@ -479,7 +479,7 @@
     </staff-layout>
    </print>
    <attributes>
-    <divisions>1024</divisions>
+    <divisions>256</divisions>
     <key color="#000000">
      <fifths>0</fifths>
      <mode>major</mode>
