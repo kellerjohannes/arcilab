@@ -597,7 +597,7 @@
             (set_octave state 0)
             (set_duration state 0)
             (set_rest state #f)
-            (set_accidental state (Str ""))
+            (set_accidental state (Str "natural"))
             (set_alter state 0.0)
             (set_chord state #f)
             (set_tie state (Str ""))
