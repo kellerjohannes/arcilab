@@ -196,7 +196,7 @@
     (let ((loc:|6,i64|* (salloc))
           (i 0))
       (aset! loc 0 (find_substring data (Str "'")))
-      (dotimes (i 6)
+      (dotimes (i 5)
         (aset! loc (+ 1 i) (find_substring_from data (Str "'") (+ 1 (aref loc i)))))
       (dotimes (i 6)
         (if (< (aref loc i) 0) (roll_error rollErr (Str "Roll, extract_notename (Tabulature*): syntax error in tabulature file. Might destroy everything.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL)))
@@ -241,18 +241,87 @@
 
 
 
+
 ; Config* object, stores all the configuration options for passes 2-5
 
-(bind-type Config <Tabulature*>)
-; 0 tabulature object, mapping between notated pitches and keys
+(bind-type Config <String*,Tabulature*>)
+; 0 filepath of tabulature file
+; 1 tabulature object, mapping between notated pitches and keys
+
+(bind-func tabulatureFilePath:[String*,Config*]*
+  (lambda (conf)
+    (tref conf 0)))
+
+(bind-func set_tabulatureFilePath:[void,Config*,String*]*
+  (lambda (conf f)
+    (tset! conf 0 f)
+    void))
 
 (bind-func get_tabulature:[Tabulature*,Config*]*
-  (lambda (c)
-    (tref c 0)))
+  (lambda (conf)
+    (tref conf 1)))
 
 (bind-func set_tabulature:[void,Config*,Tabulature*]*
-  (lambda (c tab)
-    (tset! c 0 tab)
+  (lambda (conf tab)
+    (tset! conf 1 tab)
     void))
     
+(bind-func print:[void,Config*]*
+  (lambda (conf)
+    (printf "Configuration:\ntabulatureFilePath = '%s'\n"
+            (tabulatureFilePath conf))
+    void))
 
+(bind-func cConfig:[Config*]*
+  (lambda ()
+    (let ((tab (cTabulature)))
+      (let ((res (Config:[Config*,String*,Tabulature*]* 
+                         (Str "")
+                         tab)))
+        res))))
+
+; needs change:
+(bind-func extract_value:[<String*,String*>,String*]*
+  (lambda (data)
+    (let ((loc:|4,i64|* (salloc))
+          (i 0))
+      (aset! loc 0 (find_substring data (Str "'")))
+      (dotimes (i 3)
+        (aset! loc (+ 1 i) (find_substring_from data (Str "'") (+ 1 (aref loc i)))))
+      (dotimes (i 4)
+        (if (< (aref loc i) 0) (roll_error rollErr (Str "Roll, extract_value (Config*): syntax error in configuration file. Might destroy everything.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL)))
+      (let ((res:<String*,String*> (cKey (extract_i64 (substring data (+ 1 (aref loc 0)) (aref loc 1))) 
+                       (extract_i64 (substring data (+ 1 (aref loc 2)) (aref loc 3)))
+                       (extract_i64 (substring data (+ 1 (aref loc 4)) (aref loc 5))))))
+        res))))
+
+(bind-func read_lines:[void,Config*,String*]*
+  (lambda (conf data)
+    (cond ((= 0 (length data)) void)
+          (else (let ((line (remove_initial_spaces (substring data 0 (find_substring data (Str "\n"))))))
+            (cond ((equal (substring line 0 11) (Str "(set-value "))
+                    (printf "line: '%s'\n" (cstring line))
+                    ; ... 
+                    (read_lines conf (split_second data (+ 1 (find_substring data (Str "\n"))))))
+                  (else (read_lines conf (split_second data (+ 1 (find_substring data (Str "\n"))))))))))))
+
+(bind-func read_config_from_file:[void,Config*,String*]*
+  (lambda (conf filepath)
+    (let ((fileData (sys_slurp_file (cstring filepath))))
+      (cond ((null? fileData) (roll_error rollErr (Str "Roll, read_config_from_file: invalid file.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL) void)
+            (else
+              (read_lines conf (Str fileData))
+              void)))))
+
+(bind-func import_configuration:[void,Config*]*
+  (lambda (conf)
+    ;(read_config_from_file conf {default})
+    ;(read_config_from_file conf {local})
+    ;import tabulature
+(bind-func test
+  (lambda ()
+    (let ((conf (cConfig)))
+      (read_config_from_file conf (Str "../../Coding/extempore/arcilab/configuration/roll-default/default001"))
+      (print conf))))
+
+($ (test))
