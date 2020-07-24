@@ -193,7 +193,6 @@
 
 (bind-func extract_notename:[Notename*,String*]*
   (lambda (data)
-    ;DEBUG: (printf "extracting notename: %s\n" (cstring (split_first data (find_substring data (Str ")")))))
     (let ((loc:|6,i64|* (salloc))
           (i 0))
       (aset! loc 0 (find_substring data (Str "'")))
@@ -204,12 +203,10 @@
       (let ((res (cNotename (substring data (+ 1 (aref loc 0)) (aref loc 1)) 
                             (extract_i64 (substring data (+ 1 (aref loc 2)) (aref loc 3)))
                             (substring data (+ 1 (aref loc 4)) (aref loc 5)))))
-        ;DEBUG (printf "result notename:") (print res)
         res))))
 
 (bind-func extract_key:[Key*,String*]*
   (lambda (data)
-    ;DEBUG: (printf "extracting notename: %s\n" (cstring (split_first data (find_substring data (Str ")")))))
     (let ((loc:|6,i64|* (salloc))
           (i 0))
       (aset! loc 0 (find_substring data (Str "'")))
@@ -220,21 +217,14 @@
       (let ((res (cKey (extract_i64 (substring data (+ 1 (aref loc 0)) (aref loc 1))) 
                        (extract_i64 (substring data (+ 1 (aref loc 2)) (aref loc 3)))
                        (extract_i64 (substring data (+ 1 (aref loc 4)) (aref loc 5))))))
-        ; DEBUG: (printf "result key:") (print res)
         res))))
 
 (bind-func read_lines:[void,Tabulature*,String*]*
   (lambda (tab data)
-    ; DEBUG: (printf "%s\n" (cstring data))
     (cond ((= 0 (length data)) void)
           (else
             (let ((newData (split_second data (find_substring data (Str "(")))))
-            (cond ;((equal (remove_initial_spaces (substring data 0 1)) (Str "#"))
-                    ;DEBUG:
-                  ;  (printf "aha, comment detected, ignoring\n")
-                  ;  (read_lines tab (split_second data (+ 1 (find_substring data (Str "\n"))))))
-                  ((equal (substring newData 0 27) (Str "(define-mapping (notename '"))
-                    ;DEBUG: (printf "aha, mapping detected, starting parsing\n") (printf "data = '%s'\n" (cstring (substring newData 0 (+ 1 (find_substring newData (Str ")"))))))
+            (cond ((equal (substring newData 0 27) (Str "(define-mapping (notename '"))
                     (let ((nn (extract_notename (substring newData 0 (+ 1 (find_substring newData (Str ")"))))))
                           (ky (extract_key (substring newData (+ 0 (find_substring newData (Str "arci-location '"))) (+ 1 (find_substring newData (Str "))")))))))
                       (push tab nn ky)
