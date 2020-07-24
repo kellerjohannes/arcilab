@@ -1,3 +1,14 @@
+
+(define ROLL-SOURCE-PATH "../../Coding/extempore/arcilab/")
+(bind-val ROLL_WORKING_PATH String* (Str "../../Coding/extempore/arcilab/scores/"))
+
+
+(sys:load (string-append ROLL-SOURCE-PATH "roll/logging.xtm"))
+(bind-val rollErr RollError* (roll_create_logfile (cat2 ROLL_WORKING_PATH (Str "logfile-parser"))))
+
+(sys:load (string-append ROLL-SOURCE-PATH "roll/strings.xtm"))
+
+
 ; configuration.xtm
 ; 
 ; loads and reads default and custom configuration files and stores values in a Config*
@@ -127,61 +138,117 @@
 (bind-func get_notename:[Notename*,Tabulature*,i64]*
   (lambda (t index)
     (cond ((and (>= index 0) (< index (count t)))
-            (tref t 1 index))
+            (pref (tref t 1) index))
           (else (roll_error rollErr (Str "Roll, get_notename (Tabulature*): index out of range. Returned 'null', might crash everything.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL)
           null))))
 
 (bind-func get_key:[Key*,Tabulature*,i64]*
   (lambda (t index)
     (cond ((and (>= index 0) (< index (count t)))
-            (tref t 2 index))
+            (pref (tref t 2) index))
           (else (roll_error rollErr (Str "Roll, get_key (Tabulature*): index out of range. Returned 'null', might crash everything.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL)
           null))))
 
 (bind-func push:[void,Tabulature*,Notename*,Key*]*
   (lambda (tab nn k)
-    (let ((tmpNotename:Notename** (halloc (+ 1 (count tab))))
-          (tmpKey:Key** (halloc (+ 1 (count tab))))
+    (let ((tmpNotenames:Notename** (halloc (+ 1 (count tab))))
+          (tmpKeys:Key** (halloc (+ 1 (count tab))))
           (i 0))
       (dotimes (i (count tab))
-        (pset! tmpNotename i (get_notename tab i))
-        (pset! tmpKey i (get_key tab i)))
+        (pset! tmpNotenames i (get_notename tab i))
+        (pset! tmpKeys i (get_key tab i)))
+      (pset! tmpNotenames (count tab) nn)
+      (pset! tmpKeys (count tab) k)
+      (set_count tab (+ (count tab) 1))
       (free (tref tab 1))
       (free (tref tab 2))
-      (pset! tmpNotename (count tab) nn)
-      (pset! tmpKey (count tab) k)
-      (set_count tab (+ (count tab) 1))
+      (tset! tab 1 tmpNotenames)
+      (tset! tab 2 tmpKeys)
       void)))
-      
-
-(bind-func test
-  (lambda ()
-    (let ((nn (cNotename (Str "C") 2 (Str "flat")))
-          (k (cKey 0 1 0))
-          (t (cTabulature)))
-      (push t nn k)
-      (print (get_notename t 0)))))
-
-($ (test))
-
 
 (bind-func print:[void,Tabulature*]*
   (lambda (tab)
+    (if (= 0 (count tab))
+      (begin (printf "Empty Tabulature!\n") void))
     (let ((i 0))
-      (printf "Tabulature (count = %lld)\n" (count tab))
+      (printf "Tabulature (count = %lld):\n" (count tab))
       (dotimes (i (count tab))
-        (print (get_notename tab i))
-        (print (get_key tab i)))
+        (printf "notename '%s' %lld '%s'  ->  %lld %lld %lld\n"
+                (cstring (root (get_notename tab i)))
+                (octave (get_notename tab i))
+                (cstring (accidental (get_notename tab i)))
+                (pitchclass (get_key tab i))
+                (octave (get_key tab i))
+                (manual (get_key tab i))))
       void)))
 
 (bind-func cTabulature:[Tabulature*]*
   (lambda ()
     (let ((tmpNotenames:Notename** (halloc 1))
           (tmpKeys:Key** (halloc 1)))
-      (pset! tmpNotenames 0 null)
-      (pset! tmpKeys 0 null)
+      (set! tmpNotenames null)
+      (set! tmpKeys null)
       (let ((res (Tabulature:[Tabulature*,i64,Notename**,Key**]* 0 tmpNotenames tmpKeys)))
         res))))
+
+(bind-func extract_notename:[Notename*,String*]*
+  (lambda (data)
+    ;DEBUG: (printf "extracting notename: %s\n" (cstring (split_first data (find_substring data (Str ")")))))
+    (let ((loc:|6,i64|* (salloc))
+          (i 0))
+      (aset! loc 0 (find_substring data (Str "'")))
+      (dotimes (i 6)
+        (aset! loc (+ 1 i) (find_substring_from data (Str "'") (+ 1 (aref loc i)))))
+      (dotimes (i 6)
+        (if (< (aref loc i) 0) (roll_error rollErr (Str "Roll, extract_notename (Tabulature*): syntax error in tabulature file. Might destroy everything.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL)))
+      (let ((res (cNotename (substring data (+ 1 (aref loc 0)) (aref loc 1)) 
+                            (extract_i64 (substring data (+ 1 (aref loc 2)) (aref loc 3)))
+                            (substring data (+ 1 (aref loc 4)) (aref loc 5)))))
+        ;DEBUG (printf "result notename:") (print res)
+        res))))
+
+(bind-func extract_key:[Key*,String*]*
+  (lambda (data)
+    ;DEBUG: (printf "extracting notename: %s\n" (cstring (split_first data (find_substring data (Str ")")))))
+    (let ((loc:|6,i64|* (salloc))
+          (i 0))
+      (aset! loc 0 (find_substring data (Str "'")))
+      (dotimes (i 6)
+        (aset! loc (+ 1 i) (find_substring_from data (Str "'") (+ 1 (aref loc i)))))
+      (dotimes (i 6)
+        (if (< (aref loc i) 0) (roll_error rollErr (Str "Roll, extract_key (Tabulature*): syntax error in tabulature file. Might destroy everything.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL)))
+      (let ((res (cKey (extract_i64 (substring data (+ 1 (aref loc 0)) (aref loc 1))) 
+                       (extract_i64 (substring data (+ 1 (aref loc 2)) (aref loc 3)))
+                       (extract_i64 (substring data (+ 1 (aref loc 4)) (aref loc 5))))))
+        ; DEBUG: (printf "result key:") (print res)
+        res))))
+
+(bind-func read_lines:[void,Tabulature*,String*]*
+  (lambda (tab data)
+    ; DEBUG: (printf "%s\n" (cstring data))
+    (cond ((= 0 (length data)) void)
+          (else
+            (let ((newData (split_second data (find_substring data (Str "(")))))
+            (cond ;((equal (remove_initial_spaces (substring data 0 1)) (Str "#"))
+                    ;DEBUG:
+                  ;  (printf "aha, comment detected, ignoring\n")
+                  ;  (read_lines tab (split_second data (+ 1 (find_substring data (Str "\n"))))))
+                  ((equal (substring newData 0 27) (Str "(define-mapping (notename '"))
+                    ;DEBUG: (printf "aha, mapping detected, starting parsing\n") (printf "data = '%s'\n" (cstring (substring newData 0 (+ 1 (find_substring newData (Str ")"))))))
+                    (let ((nn (extract_notename (substring newData 0 (+ 1 (find_substring newData (Str ")"))))))
+                          (ky (extract_key (substring newData (+ 0 (find_substring newData (Str "arci-location '"))) (+ 1 (find_substring newData (Str "))")))))))
+                      (push tab nn ky)
+                      (read_lines tab (split_second newData (+ 1 (find_substring newData (Str "\n")))))))
+                  (else (read_lines tab (split_second newData (+ 1 (find_substring newData (Str "\n"))))))))))))
+
+(bind-func load_tabulature:[void,Tabulature*,String*]*
+  (lambda (tab filepath)
+    (let ((filedata (sys_slurp_file (cstring filepath))))
+      (cond ((null? filedata) (roll_error rollErr (Str "Roll, load_tabulature: invalid file. Terrible thing.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL) void)
+            (else (let ((data (Str filedata)))
+                    (read_lines tab data))))
+      void)))
+
 
 
 ; Config* object, stores all the configuration options for passes 2-5
@@ -189,4 +256,13 @@
 (bind-type Config <Tabulature*>)
 ; 0 tabulature object, mapping between notated pitches and keys
 
+(bind-func get_tabulature:[Tabulature*,Config*]*
+  (lambda (c)
+    (tref c 0)))
+
+(bind-func set_tabulature:[void,Config*,Tabulature*]*
+  (lambda (c tab)
+    (tset! c 0 tab)
+    void))
+    
 

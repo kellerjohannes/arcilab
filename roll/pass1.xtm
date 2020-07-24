@@ -805,19 +805,16 @@
 
 (bind-func xml_import:[void,Score*,String*]*
   (lambda (score filepath)
-    (let ((xmlFile (Str (sys_slurp_file (cstring filepath)))))
+    (let ((fileData (sys_slurp_file (cstring filepath))))
       (cond
-        ((null? xmlFile) (roll_error rollErr
-                                     (Str "Roll, xml_import: xml file could not be opened. Aborting.")
-                                     ROLL_ERR_FLAG_FATAL
-                                     ROLL_ERR_DEST_ALL)
-                         void)
-        ((= 0 (length xmlFile)) (roll_error rollErr
-                                            (Str "Roll, xml_import: xml data empty. No parsing.")
-                                            ROLL_ERR_FLAG_FATAL
-                                            ROLL_ERR_DEST_ALL))
+        ((null? fileData) (roll_error rollErr
+                                      (Str "Roll, xml_import: xml file could not be opened. Aborting.")
+                                      ROLL_ERR_FLAG_FATAL
+                                      ROLL_ERR_DEST_ALL)
+                          void)
         (else
-          (let ((maxDivision:i64* (salloc 1))
+          (let ((xmlFile (Str fileData))
+                (maxDivision:i64* (salloc 1))
                 (currentDivision:i64* (salloc 1))
                 (state (cParserState)))
             (pset! maxDivision 0 0)

@@ -1,12 +1,8 @@
-; mapping 'vicentino-enharmonic', using the 'dot' accidental to indicate raising the pitch
-; by a diesis
+# mapping 'vicentino-enharmonic', using the 'dot' accidental to indicate raising the pitch
+# by a diesis
 
-; 'notename' convention: musicXML
-; 'arci-location' convention: see file 'keyboard-layouts' in documentation
-
-
-(define-mapping (notename 'D' '4' '') (arci-location '0' '0' '0'))
-
+# 'notename' convention: musicXML
+# 'arci-location' convention: see file 'keyboard-layouts' in documentation
 
 (define-mapping (notename 'C' '2' 'natural') (arci-location '-2' '0' '0'))
 (define-mapping (notename 'C' '3' 'natural') (arci-location '-2' '1' '0'))
@@ -150,7 +146,7 @@
 
 
 
-; fb and cb as enharmonic equivalents, located on the upper manual
+# fb and cb as enharmonic equivalents, located on the upper manual
 (define-mapping (notename 'F' '3' 'flat') (arci-location '2' '1' '1'))
 (define-mapping (notename 'F' '4' 'flat') (arci-location '2' '2' '1'))
 (define-mapping (notename 'F' '5' 'flat') (arci-location '2' '3' '1'))
@@ -159,7 +155,7 @@
 (define-mapping (notename 'C' '5' 'flat') (arci-location '3' '2' '1'))
 (define-mapping (notename 'C' '6' 'flat') (arci-location '3' '3' '1'))
 
-; alternative references for upper manual keys with double alterations
+# alternative references for upper manual keys with double alterations
 (define-mapping (notename 'G' '2' 'flat-flat') (arci-location '-3' '0' '1'))
 (define-mapping (notename 'G' '3' 'flat-flat') (arci-location '-3' '1' '1'))
 (define-mapping (notename 'G' '4' 'flat-flat') (arci-location '-3' '2' '1'))
@@ -201,7 +197,7 @@
 
 
 
-; alternative references for upper manual keys with quartertone accidentals
+# alternative references for upper manual keys with quartertone accidentals
 
 (define-mapping (notename 'E' '3' 'quarter-sharp') (arci-location '2' '1' '11'))
 (define-mapping (notename 'E' '4' 'quarter-sharp') (arci-location '2' '2' '11'))
@@ -266,7 +262,7 @@
 (define-mapping (notename 'A' '4' 'three-quarter-sharp') (arci-location '8' '2' '1'))
 (define-mapping (notename 'A' '5' 'three-quarter-sharp') (arci-location '8' '3' '1'))
 
-; 'enharmonic equivalents' for quartertone-notation of upper manual
+# 'enharmonic equivalents' for quartertone-notation of upper manual
 
 (define-mapping (notename 'G' '2' 'three-quarter-flat') (arci-location '-3' '0' '1'))
 (define-mapping (notename 'G' '3' 'three-quarter-flat') (arci-location '-3' '1' '1'))
