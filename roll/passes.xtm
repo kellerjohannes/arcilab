@@ -1,9 +1,22 @@
-(sys:load (string-append ROLL-SOURCE-PATH "roll/pass1.xtm"))
-(sys:load (string-append ROLL-SOURCE-PATH "roll/pass2.xtm"))
-(sys:load (string-append ROLL-SOURCE-PATH "roll/pass3.xtm"))
-(sys:load (string-append ROLL-SOURCE-PATH "roll/pass4.xtm"))
+(sys:load (string-append SOURCE-PATH "roll/pass1.xtm"))
+(sys:load (string-append SOURCE-PATH "roll/pass2.xtm"))
+(sys:load (string-append SOURCE-PATH "roll/pass3.xtm"))
+(sys:load (string-append SOURCE-PATH "roll/pass4.xtm"))
 
 
+; preparation: reads configuration
+(bind-func roll_preparation:[void,Config*]*
+  (lambda (conf)
+    ; import default configuration. this file needs to exist in this location.
+    (config_read_from_file conf (cat2 SOURCE_PATH (Str "configuration/roll-default/default001")))
+    ; overwrite configuration with local file, delivered with the xml score. this file is
+    ; optional
+    (config_read_from_file conf (cat2 ROLL_WORKING_PATH (Str "configuration.txt")))
+
+    ; take action based on configuration info (load tabulature etc.)
+    ;   import tabulature based on default or local configuration
+    (tab_load_tabulature (get_tabulature conf) (cat2 SOURCE_PATH (tabulatureFilePath conf)))
+    void))
 
 ; reads in xml data from 'filepath' and stores it in the 'score' object
 (bind-func roll_pass1:[void,Score*,String*]*
@@ -13,18 +26,16 @@
     void))
 
 ; transforms timing information in 'score' based on configuration file in 'filepath'
-(bind-func roll_pass2:[void,Score*,String*]*
-  (lambda (score filepath)
+(bind-func roll_pass2:[void,Score*,Config*]*
+  (lambda (score conf)
     (rewrite_time_global score)
     (resolve_ties score)
-    ;read default config
-    ;overwrite with custom time configuration, if available
     ;calculate absolute timings based on tempo markings (using absoluteStartTime and absoluteDuration in Note*)
       void))
 
 ; transforms pitch information in 'score' based on configuaration file in 'filepath'
-(bind-func roll_pass3:[void,Score*,String*]*
-  (lambda (score filepath)
+(bind-func roll_pass3:[void,Score*,Config*]*
+  (lambda (score conf)
     ;read default config
     ;overwrite with custom config if available
     ;assign event types
@@ -34,8 +45,8 @@
     void))
 
 ; assigns voices for player module, writes time sorted event table
-(bind-func roll_pass4:[void,Score*,String*]* ; <EventTable> necessary, TBI
-  (lambda (score filepath) ;eventTable missing
+(bind-func roll_pass4:[void,Score*,Config*]* ; <EventTable> necessary, TBI
+  (lambda (score conf) ;eventTable missing
     ;write time ordered event table
     ;read default config
     ;overwrite with custom config if available

@@ -1,12 +1,19 @@
 
-(define ROLL-SOURCE-PATH "../../Coding/extempore/arcilab/")
-(bind-val ROLL_WORKING_PATH String* (Str "../../Coding/extempore/arcilab/scores/"))
+
+;temporary stuff for debug purposes (saves compilation time):
+
+;(define SOURCE-PATH "../../Coding/extempore/arcilab/")
+;(bind-val SOURCE_PATH String* (Str "../../Coding/extempore/arcilab/"))
+;(bind-val ROLL_WORKING_PATH String* (Str "../../Coding/extempore/arcilab/scores/guinea05/"))
 
 
-(sys:load (string-append ROLL-SOURCE-PATH "roll/logging.xtm"))
-(bind-val rollErr RollError* (roll_create_logfile (cat2 ROLL_WORKING_PATH (Str "logfile-parser"))))
+;(sys:load (string-append SOURCE-PATH "roll/logging.xtm"))
+;(bind-val rollErr RollError* (roll_create_logfile (cat2 ROLL_WORKING_PATH (Str "logfile-parser"))))
 
-(sys:load (string-append ROLL-SOURCE-PATH "roll/strings.xtm"))
+;(sys:load (string-append SOURCE-PATH "roll/strings.xtm"))
+
+
+; ===============================================================
 
 
 ; configuration.xtm
@@ -191,7 +198,7 @@
       (let ((res (Tabulature:[Tabulature*,i64,Notename**,Key**]* 0 tmpNotenames tmpKeys)))
         res))))
 
-(bind-func extract_notename:[Notename*,String*]*
+(bind-func tab_extract_notename:[Notename*,String*]*
   (lambda (data)
     (let ((loc:|6,i64|* (salloc))
           (i 0))
@@ -199,13 +206,13 @@
       (dotimes (i 5)
         (aset! loc (+ 1 i) (find_substring_from data (Str "'") (+ 1 (aref loc i)))))
       (dotimes (i 6)
-        (if (< (aref loc i) 0) (roll_error rollErr (Str "Roll, extract_notename (Tabulature*): syntax error in tabulature file. Might destroy everything.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL)))
+        (if (< (aref loc i) 0) (roll_error rollErr (Str "Roll, tab_extract_notename (Tabulature*): syntax error in tabulature file. Might destroy everything.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL)))
       (let ((res (cNotename (substring data (+ 1 (aref loc 0)) (aref loc 1)) 
                             (extract_i64 (substring data (+ 1 (aref loc 2)) (aref loc 3)))
                             (substring data (+ 1 (aref loc 4)) (aref loc 5)))))
         res))))
 
-(bind-func extract_key:[Key*,String*]*
+(bind-func tab_extract_key:[Key*,String*]*
   (lambda (data)
     (let ((loc:|6,i64|* (salloc))
           (i 0))
@@ -213,30 +220,30 @@
       (dotimes (i 6)
         (aset! loc (+ 1 i) (find_substring_from data (Str "'") (+ 1 (aref loc i)))))
       (dotimes (i 6)
-        (if (< (aref loc i) 0) (roll_error rollErr (Str "Roll, extract_key (Tabulature*): syntax error in tabulature file. Might destroy everything.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL)))
+        (if (< (aref loc i) 0) (roll_error rollErr (Str "Roll, tab_extract_key (Tabulature*): syntax error in tabulature file. Might destroy everything.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL)))
       (let ((res (cKey (extract_i64 (substring data (+ 1 (aref loc 0)) (aref loc 1))) 
                        (extract_i64 (substring data (+ 1 (aref loc 2)) (aref loc 3)))
                        (extract_i64 (substring data (+ 1 (aref loc 4)) (aref loc 5))))))
         res))))
 
-(bind-func read_lines:[void,Tabulature*,String*]*
+(bind-func tab_read_lines:[void,Tabulature*,String*]*
   (lambda (tab data)
     (cond ((= 0 (length data)) void)
           (else
             (let ((newData (split_second data (find_substring data (Str "(")))))
             (cond ((equal (substring newData 0 27) (Str "(define-mapping (notename '"))
-                    (let ((nn (extract_notename (substring newData 0 (+ 1 (find_substring newData (Str ")"))))))
-                          (ky (extract_key (substring newData (+ 0 (find_substring newData (Str "arci-location '"))) (+ 1 (find_substring newData (Str "))")))))))
+                    (let ((nn (tab_extract_notename (substring newData 0 (+ 1 (find_substring newData (Str ")"))))))
+                          (ky (tab_extract_key (substring newData (+ 0 (find_substring newData (Str "arci-location '"))) (+ 1 (find_substring newData (Str "))")))))))
                       (push tab nn ky)
-                      (read_lines tab (split_second newData (+ 1 (find_substring newData (Str "\n")))))))
-                  (else (read_lines tab (split_second newData (+ 1 (find_substring newData (Str "\n"))))))))))))
+                      (tab_read_lines tab (split_second newData (+ 1 (find_substring newData (Str "\n")))))))
+                  (else (tab_read_lines tab (split_second newData (+ 1 (find_substring newData (Str "\n"))))))))))))
 
-(bind-func load_tabulature:[void,Tabulature*,String*]*
+(bind-func tab_load_tabulature:[void,Tabulature*,String*]*
   (lambda (tab filepath)
     (let ((filedata (sys_slurp_file (cstring filepath))))
-      (cond ((null? filedata) (roll_error rollErr (Str "Roll, load_tabulature: invalid file. Terrible thing.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL) void)
+      (cond ((null? filedata) (roll_error rollErr (Str "Roll, tab_load_tabulature: invalid file. Terrible thing.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL) void)
             (else (let ((data (Str filedata)))
-                    (read_lines tab data))))
+                    (tab_read_lines tab data))))
       void)))
 
 
@@ -269,7 +276,7 @@
 (bind-func print:[void,Config*]*
   (lambda (conf)
     (printf "Configuration:\ntabulatureFilePath = '%s'\n"
-            (tabulatureFilePath conf))
+            (cstring (tabulatureFilePath conf)))
     void))
 
 (bind-func cConfig:[Config*]*
@@ -280,48 +287,50 @@
                          tab)))
         res))))
 
-; needs change:
-(bind-func extract_value:[<String*,String*>,String*]*
+(bind-func config_extract_name:[String*,String*]*
   (lambda (data)
-    (let ((loc:|4,i64|* (salloc))
-          (i 0))
-      (aset! loc 0 (find_substring data (Str "'")))
-      (dotimes (i 3)
-        (aset! loc (+ 1 i) (find_substring_from data (Str "'") (+ 1 (aref loc i)))))
-      (dotimes (i 4)
-        (if (< (aref loc i) 0) (roll_error rollErr (Str "Roll, extract_value (Config*): syntax error in configuration file. Might destroy everything.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL)))
-      (let ((res:<String*,String*> (cKey (extract_i64 (substring data (+ 1 (aref loc 0)) (aref loc 1))) 
-                       (extract_i64 (substring data (+ 1 (aref loc 2)) (aref loc 3)))
-                       (extract_i64 (substring data (+ 1 (aref loc 4)) (aref loc 5))))))
-        res))))
+    (let ((first (find_substring data (Str "'")))
+          (second (find_substring_from data (Str "'") (+ 1 first))))
+      (cond ((or (< first 0) (< second 0))
+              (roll_error rollErr (Str "Roll, config_extract_name: no ' found, syntax error in config file. Huge problem.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL)
+              (Str ""))
+            (else (substring data (+ 1 first) second))))))
 
-(bind-func read_lines:[void,Config*,String*]*
+(bind-func config_extract_value:[String*,String*]*
+  (lambda (data)
+    (let ((first (find_substring data (Str "'")))
+          (second (find_substring_from data (Str "'") (+ 1 first)))
+          (third (find_substring_from data (Str "'") (+ 1 second)))
+          (fourth (find_substring_from data (Str "'") (+ 1 third))))
+      (cond ((or (< third 0) (< fourth 0))
+              (roll_error rollErr (Str "Roll, config_extract_name: no ' found, syntax error in config file. Huge problem.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL)
+              (Str ""))
+            (else (substring data (+ 1 third) fourth))))))
+
+(bind-func config_store_entry:[void,Config*,String*,String*]*
+  (lambda (conf name value)
+    (cond ((equal name (Str "tabulatureFilePath"))
+            (set_tabulatureFilePath conf value))
+          (else (roll_error rollErr (Str "Roll, config_store_entry: entry name unknown.  Ignoring it.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)))
+    void))
+
+(bind-func config_read_lines:[void,Config*,String*]*
   (lambda (conf data)
     (cond ((= 0 (length data)) void)
           (else (let ((line (remove_initial_spaces (substring data 0 (find_substring data (Str "\n"))))))
-            (cond ((equal (substring line 0 11) (Str "(set-value "))
-                    (printf "line: '%s'\n" (cstring line))
-                    ; ... 
-                    (read_lines conf (split_second data (+ 1 (find_substring data (Str "\n"))))))
-                  (else (read_lines conf (split_second data (+ 1 (find_substring data (Str "\n"))))))))))))
+            (cond ((<= (length line) 11) 
+                    (config_read_lines conf (split_second data (+ 1 (find_substring data (Str "\n"))))))
+                  ((equal (substring line 0 11) (Str "(set-value "))
+                    (config_store_entry conf (config_extract_name line) (config_extract_value line))
+                    (config_read_lines conf (split_second data (+ 1 (find_substring data (Str "\n"))))))
+                  (else (config_read_lines conf (split_second data (+ 1 (find_substring data (Str "\n"))))))))))))
 
-(bind-func read_config_from_file:[void,Config*,String*]*
+(bind-func config_read_from_file:[void,Config*,String*]*
   (lambda (conf filepath)
     (let ((fileData (sys_slurp_file (cstring filepath))))
       (cond ((null? fileData) (roll_error rollErr (Str "Roll, read_config_from_file: invalid file.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL) void)
             (else
-              (read_lines conf (Str fileData))
+              (config_read_lines conf (Str fileData))
               void)))))
 
-(bind-func import_configuration:[void,Config*]*
-  (lambda (conf)
-    ;(read_config_from_file conf {default})
-    ;(read_config_from_file conf {local})
-    ;import tabulature
-(bind-func test
-  (lambda ()
-    (let ((conf (cConfig)))
-      (read_config_from_file conf (Str "../../Coding/extempore/arcilab/configuration/roll-default/default001"))
-      (print conf))))
 
-($ (test))
