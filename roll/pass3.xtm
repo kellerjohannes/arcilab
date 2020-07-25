@@ -23,3 +23,27 @@
                                          (accidental (get_note (get_measure score measureCursor) noteCursor)))))))
     void))
 
+(bind-func roll_assign_event_type:[void,Score*,Config*]*
+  (lambda (score conf)
+    (let ((measureCursor 0)
+          (noteCursor 0))
+      (dotimes (measureCursor (measureCount score))
+        (dotimes (noteCursor (noteCount (get_measure score measureCursor)))
+          (cond ((equal (eventType conf) (Str "forceTabulature"))
+                  (set_eventType (get_note (get_measure score measureCursor) noteCursor) ROLL_EVENT_TYPE_TABULATURE))
+                ((equal (eventType conf) (Str "forcePitchUtopia"))
+                  (set_eventType (get_note (get_measure score measureCursor) noteCursor) ROLL_EVENT_TYPE_PITCH_UTOPIA))
+                ((equal (eventType conf) (Str "forceCommand"))
+                  (set_eventType (get_note (get_measure score measureCursor) noteCursor) ROLL_EVENT_TYPE_COMMAND))
+                ((equal (eventType conf) (Str "notehead"))
+                  (cond ((equal (notehead (get_note (get_measure score measureCursor) noteCursor)) (noteheadEventTypeTabulature conf))
+                          (set_eventType (get_note (get_measure score measureCursor) noteCursor) ROLL_EVENT_TYPE_TABULATURE))
+                        ((equal (notehead (get_note (get_measure score measureCursor) noteCursor)) (noteheadEventTypePitchUtopia conf))
+                          (set_eventType (get_note (get_measure score measureCursor) noteCursor) ROLL_EVENT_TYPE_PITCH_UTOPIA))
+                        ((equal (notehead (get_note (get_measure score measureCursor) noteCursor)) (noteheadEventTypeCommand conf))
+                          (set_eventType (get_note (get_measure score measureCursor) noteCursor) ROLL_EVENT_TYPE_COMMAND))
+                        (else (roll_error rollErr (Str "roll_assign_event_type: notehead unknown. Assuming 'normal'.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL) void)))
+                (else (roll_error rollErr (Str "roll_assign_event_type: event type unknown. Assuming 'tabulature'.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL) void))))
+    void)))
+
+

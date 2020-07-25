@@ -19,18 +19,17 @@
 ; configuration.xtm
 ; 
 ; loads and reads default and custom configuration files and stores values in a Config*
-; object
-
-
-
-
 
 
 ; Config* object, stores all the configuration options for passes 2-5
 
-(bind-type Config <String*,Tabulature*>)
+(bind-type Config <String*,Tabulature*,String*,String*,String*,String*>)
 ; 0 filepath of tabulature file
 ; 1 tabulature object, mapping between notated pitches and keys
+; 2 eventType
+; 3 noteheadEventTypeTabulature
+; 4 noteheadEventTypePitchUtopia
+; 5 noteheadEventTypeCommand
 
 (bind-func tabulatureFilePath:[String*,Config*]*
   (lambda (conf)
@@ -50,18 +49,62 @@
     (tset! conf 1 tab)
     void))
     
+(bind-func eventType:[String*,Config*]*
+  (lambda (conf)
+    (tref conf 2)))
+
+(bind-func set_eventType:[void,Config*,String*]*
+  (lambda (conf et)
+    (tset! conf 2 et)
+    void))
+
+(bind-func noteheadEventTypeTabulature:[String*,Config*]*
+  (lambda (conf)
+    (tref conf 3)))
+
+(bind-func set_noteheadEventTypeTabulature:[void,Config*,String*]*
+  (lambda (conf netpu)
+    (tset! conf 3 netpu)
+    void))
+
+(bind-func noteheadEventTypePitchUtopia:[String*,Config*]*
+  (lambda (conf)
+    (tref conf 4)))
+
+(bind-func set_noteheadEventTypePitchUtopia:[void,Config*,String*]*
+  (lambda (conf netpu)
+    (tset! conf 4 netpu)
+    void))
+
+(bind-func noteheadEventTypeCommand:[String*,Config*]*
+  (lambda (conf)
+    (tref conf 5)))
+
+(bind-func set_noteheadEventTypeCommand:[void,Config*,String*]*
+  (lambda (conf netpu)
+    (tset! conf 5 netpu)
+    void))
+
 (bind-func print:[void,Config*]*
   (lambda (conf)
-    (printf "Configuration:\ntabulatureFilePath = '%s'\n"
-            (cstring (tabulatureFilePath conf)))
+    (printf "Configuration:\ntabulatureFilePath = '%s'\neventType = '%s'\nnoteheadEventTypeTabulature = '%s'\nnoteheadEventTypePitchUtopia = '%s'\nnoteheadEventTypeCommand = '%s'\n"
+            (cstring (tabulatureFilePath conf))
+            (cstring (eventType conf))
+            (cstring (noteheadEventTypeTabulature conf))
+            (cstring (noteheadEventTypePitchUtopia conf))
+            (cstring (noteheadEventTypeCommand conf)))
     void))
 
 (bind-func cConfig:[Config*]*
   (lambda ()
     (let ((tab (cTabulature)))
-      (let ((res (Config:[Config*,String*,Tabulature*]* 
+      (let ((res (Config:[Config*,String*,Tabulature*,String*,String*,String*,String*]* 
                          (Str "")
-                         tab)))
+                         tab
+                         (Str "")
+                         (Str "")
+                         (Str "")
+                         (Str ""))))
         res))))
 
 (bind-func config_extract_name:[String*,String*]*
@@ -88,6 +131,15 @@
   (lambda (conf name value)
     (cond ((equal name (Str "tabulatureFilePath"))
             (set_tabulatureFilePath conf value))
+          ((equal name (Str "eventType"))
+            (set_eventType conf value))
+          ((equal name (Str "noteheadEventTypeTabulature"))
+            (set_noteheadEventTypeTabulature conf value))
+          ((equal name (Str "noteheadEventTypePitchUtopia"))
+            (set_noteheadEventTypePitchUtopia conf value))
+          ((equal name (Str "noteheadEventTypeCommand"))
+            (set_noteheadEventTypeCommand conf value))
+          ;...
           (else (roll_error rollErr (Str "Roll, config_store_entry: entry name unknown.  Ignoring it.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)))
     void))
 

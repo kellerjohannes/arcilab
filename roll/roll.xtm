@@ -75,6 +75,7 @@
       ; DEBUG:
       (printf "starting roll preparation.\n")
       (roll_preparation configuration)
+      (print configuration)
       ; DEBUG:
       (printf "starting pass 1.\n")
       (roll_pass1 score (cat2 ROLL_WORKING_PATH score_filename))
@@ -88,7 +89,7 @@
       (printf "starting pass 4.\n")
       (roll_pass4 score configuration)
       ; DEBUG:
-      (printf "writing score object..\n")
+      (printf "writing score object.\n")
       (write_to_file score (Str "score-object"))
       ; DEBUG:
       (printf "writing logfile.\n")
