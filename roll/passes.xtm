@@ -22,7 +22,7 @@
 (bind-func roll_pass1:[void,Score*,String*]*
   (lambda (score filepath)
     (xml_import score filepath)
-    ;xml read tempo in xml score
+    ;TODO xml read tempo in xml score
     void))
 
 ; transforms timing information in 'score' based on configuration file in 'filepath'
@@ -30,24 +30,25 @@
   (lambda (score conf)
     (rewrite_time_global score)
     (resolve_ties score)
-    ;calculate absolute timings based on tempo markings (using absoluteStartTime and absoluteDuration in Note*)
+    ;TODO calculate absolute timings based on tempo markings (using absoluteStartTime and absoluteDuration in Note*)
       void))
 
 ; transforms pitch information in 'score' based on configuaration file in 'filepath'
 (bind-func roll_pass3:[void,Score*,Config*]*
   (lambda (score conf)
-    ;assign event types
-    ;parse tabulature events (transform into key numbers or generic key names)
-    ;parse pitch utopia information
-    ;parse command literals
+    ;TODO assign event types
+    ;parse tabulature events (transform into key numbers or generic key names):
+    (roll_parse_tabulature_events score (get_tabulature conf))
+    ;TODO parse pitch utopia information
+    ;TODO parse command literals
     void))
 
 ; assigns voices for player module, writes time sorted event table
 (bind-func roll_pass4:[void,Score*,Config*]* ; <EventTable> necessary, TBI
   (lambda (score conf) ;eventTable missing
-    ;write time ordered event table
-    ;read default config
-    ;overwrite with custom config if available
-    ;assign voices according to config
+    ;TODO write time ordered event table
+    ;TODO read default config
+    ;TODO overwrite with custom config if available
+    ;TODO assign voices according to config
     void))
 

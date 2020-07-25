@@ -1,3 +1,25 @@
 ; Pass 3
 
+(bind-func roll_parse_tabulature_events:[void,Score*,Tabulature*]*
+  (lambda (score tab)
+    (let ((measureCursor 0)
+          (noteCursor 0))
+      (dotimes (measureCursor (measureCount score))
+        (dotimes (noteCursor (noteCount (get_measure score measureCursor)))
+          (set_pitchclass (get_key (get_note (get_measure score measureCursor) noteCursor))
+                          (lookup_key_pitchclass tab
+                                                 (root (get_note (get_measure score measureCursor) noteCursor))
+                                                 (octave (get_note (get_measure score measureCursor) noteCursor))
+                                                 (accidental (get_note (get_measure score measureCursor) noteCursor))))
+          (set_octave (get_key (get_note (get_measure score measureCursor) noteCursor))
+                      (lookup_key_octave tab
+                                         (root (get_note (get_measure score measureCursor) noteCursor))
+                                         (octave (get_note (get_measure score measureCursor) noteCursor))
+                                         (accidental (get_note (get_measure score measureCursor) noteCursor))))
+          (set_manual (get_key (get_note (get_measure score measureCursor) noteCursor))
+                      (lookup_key_manual tab
+                                         (root (get_note (get_measure score measureCursor) noteCursor))
+                                         (octave (get_note (get_measure score measureCursor) noteCursor))
+                                         (accidental (get_note (get_measure score measureCursor) noteCursor)))))))
+    void))
 

@@ -108,6 +108,7 @@
       (cond ((null? fileData) (roll_error rollErr (Str "Roll, read_config_from_file: invalid file.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL) void)
             (else
               (config_read_lines conf (Str fileData))
+              (roll_error rollErr (Str "Configuration file loaded.") ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_ALL)
               void)))))
 
 

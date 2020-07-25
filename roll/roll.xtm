@@ -34,6 +34,8 @@
 
 
 ; Wish list:
+; - revisit all error messages, clean up
+; - renaming error handling system, make it global (not part of ROLL)
 ; + pre-parse xml file to determine highest division, store in Score*
 ; + integrate recalculation of timing info (StartTime and Duration) based on highest division in the score
 ; - pass 1 (read and store XML data):
@@ -46,10 +48,9 @@
 ; - pass 2
 
 ; redundant stuff:
-; - division value for Measure* object (is globalised while reading xml data)
+; - division value for Measure* object (is now globalised while reading xml data)
 ; - 'rest' value in Note* object -> can be used to mute notes. rests in xml data are
 ;   ignored while parsing xml
-
 
 
 
@@ -71,12 +72,26 @@
     (set! rollErr (roll_create_logfile (cat2 ROLL_WORKING_PATH (Str "logfile-parser"))))
     (let ((score (cScore))
           (configuration (cConfig)))
+      ; DEBUG:
+      (printf "starting roll preparation.\n")
       (roll_preparation configuration)
+      ; DEBUG:
+      (printf "starting pass 1.\n")
       (roll_pass1 score (cat2 ROLL_WORKING_PATH score_filename))
+      ; DEBUG:
+      (printf "starting pass 2.\n")
       (roll_pass2 score configuration)
+      ; DEBUG:
+      (printf "starting pass 3.\n")
       (roll_pass3 score configuration)
+      ; DEBUG:
+      (printf "starting pass 4.\n")
       (roll_pass4 score configuration)
+      ; DEBUG:
+      (printf "writing score object..\n")
       (write_to_file score (Str "score-object"))
+      ; DEBUG:
+      (printf "writing logfile.\n")
       (roll_close_logfile rollErr)
       void)))
 

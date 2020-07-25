@@ -1,3 +1,9 @@
+(bind-val KEY_UNDEF_PITCHCLASS i64 117)
+(bind-val KEY_UNDEF_OCTAVE i64 117)
+(bind-val KEY_UNDEF_MANUAL i64 117)
+
+
+
 
 ; Key* object, reference to a specific key on a Studio31 keyboard
 (bind-type Key <i64,i64,i64>)
@@ -221,4 +227,42 @@
             (else (let ((data (Str filedata)))
                     (tab_read_lines tab data))))
       void)))
+
+
+
+
+(bind-func lookup_key_pitchclass:[i64,Tabulature*,String*,i64,String*]*
+  (lambda (tab nnRoot nnOctave nnAccidental)
+    (let ((i 0)
+          (res 0))
+      (dotimes (i (count tab))
+        (if (and (equal nnRoot (root (get_notename tab i)))
+                 (= nnOctave (octave (get_notename tab i)))
+                 (equal nnAccidental (accidental (get_notename tab i))))
+            (set! res (pitchclass (get_key tab i)))))
+      res)))
+
+(bind-func lookup_key_octave:[i64,Tabulature*,String*,i64,String*]*
+  (lambda (tab nnRoot nnOctave nnAccidental)
+    (let ((i 0)
+          (res 0))
+      (dotimes (i (count tab))
+        (if (and (equal nnRoot (root (get_notename tab i)))
+                 (= nnOctave (octave (get_notename tab i)))
+                 (equal nnAccidental (accidental (get_notename tab i))))
+            (set! res (octave (get_key tab i)))))
+      res)))
+
+(bind-func lookup_key_manual:[i64,Tabulature*,String*,i64,String*]*
+  (lambda (tab nnRoot nnOctave nnAccidental)
+    (let ((i 0)
+          (res 0))
+      (dotimes (i (count tab))
+        (if (and (equal nnRoot (root (get_notename tab i)))
+                 (= nnOctave (octave (get_notename tab i)))
+                 (equal nnAccidental (accidental (get_notename tab i))))
+            (set! res (manual (get_key tab i)))))
+      res)))
+
+
 

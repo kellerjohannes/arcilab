@@ -22,5 +22,4 @@
 (sys:load (string-append SOURCE-PATH "roll/roll.xtm"))
 
 
-
 ($ (parse_roll (Str "guinea05sibelius.xml")))

@@ -1,14 +1,15 @@
 Logfile roll module of ArciLab software.
-@2195456, Warning: Roll, read_config_from_file: invalid file.
-@2224128, Information: XML file slurped.
-@2226176, Information: Parser: partwise score detected.
-@2227200, Information: Parser: opening part 'P1'.
-@2228224, Information: Pre parse done: score division = 
-@2229248, Information: Parser: partwise score detected.
-@2230272, Information: Parser: opening part 'P1'.
-@2231296, Warning: Note element: empty auxData requested. 'null' returned.
-@2231296, Warning: Note element: empty auxData requested. 'null' returned.
-@2231296, Warning: Note element: empty auxData requested. 'null' returned.
-@2231296, Warning: Note element: empty auxData requested. 'null' returned.
-@2231296, Warning: Note element: empty auxData requested. 'null' returned.
+@4879360, Information: Configuration file loaded.
+@4879360, Warning: Roll, read_config_from_file: invalid file.
+@4909056, Information: XML file slurped.
+@4910080, Information: Parser: partwise score detected.
+@4912128, Information: Parser: opening part 'P1'.
+@4912128, Information: Pre parse done: score division = 
+@4914176, Information: Parser: partwise score detected.
+@4915200, Information: Parser: opening part 'P1'.
+@4915200, Warning: Note element: empty auxData requested. 'null' returned.
+@4915200, Warning: Note element: empty auxData requested. 'null' returned.
+@4915200, Warning: Note element: empty auxData requested. 'null' returned.
+@4915200, Warning: Note element: empty auxData requested. 'null' returned.
+@4915200, Warning: Note element: empty auxData requested. 'null' returned.
 End of logfile.

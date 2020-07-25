@@ -21,7 +21,7 @@
 ; this data type stores data of one musical event, representing the xml data of a note
 
 
-(bind-type Note <i64,i1,String*,i64,String*,String*,float,i64,i32,String*,String*,String*,i32,i64,i64,i64,i32,i8*>)
+(bind-type Note <i64,i1,String*,i64,String*,String*,float,i64,i32,String*,String*,String*,i32,i64,i64,i64,i32,Key*,i8*>)
 ; 0 start time (in ticks, relative to beginning of measure)
 ; 1 rest (boolean, 0 = note, 1 = rest)
 ; 2 root (note name, 'A'-'G')
@@ -39,7 +39,8 @@
 ; 14 xml voice (<voice> value in xml data)
 ; 15 voice assignment (for the polyphony managmenet of the player module, not representing the xml voice information necessarily)
 ; 16 output hint (tacet / arciorgano / oscillators / sampler / MIDI out)
-; 17 auxiliary data
+; 17 Key* (keyboard location on arciorgano)
+; 18 auxiliary data
 
 (bind-func startTime:[i64,Note*]*
   (lambda (n)
@@ -224,18 +225,27 @@
                 (tset! n 16 ROLL_OUTPUT_HINT_TACET)))
     void))
 
+(bind-func get_key:[Key*,Note*]*
+  (lambda (n)
+    (tref n 17)))
+
+(bind-func set_key:[void,Note*,Key*]*
+  (lambda (n k)
+    (tset! n 17 k)
+    void))
+    
 (bind-func auxData:[i8*,Note*]*
   (lambda (n)
-    (cond ((null? (tref n 17)) (roll_error rollErr 
+    (cond ((null? (tref n 18)) (roll_error rollErr 
                                            (Str "Note element: empty auxData requested. 'null' returned.") 
                                            ROLL_ERR_FLAG_WARNING 
                                            ROLL_ERR_DEST_FILE) 
                                 null)
-          (else (tref n 17)))))
+          (else (tref n 18)))))
 
 (bind-func cNote:[Note*]*
   (lambda ()
-    (let ((res (Note:[Note*,i64,i1,String*,i64,String*,String*,float,i64,i32,String*,String*,String*,i32,i64,i64,i64,i32,i8*]*
+    (let ((res (Note:[Note*,i64,i1,String*,i64,String*,String*,float,i64,i32,String*,String*,String*,i32,i64,i64,i64,i32,Key*,i8*]*
                      0
                      #f
                      (Str "undef")
@@ -253,13 +263,15 @@
                      0
                      0
                      ROLL_OUTPUT_HINT_TACET
+                     (cKey KEY_UNDEF_PITCHCLASS KEY_UNDEF_OCTAVE KEY_UNDEF_MANUAL)
                      null)))
        res)))
 
 
 (bind-func print:[void,Note*]*
   (lambda (n)
-    (printf "start time:      %lld\nrest:            %s\nroot:            '%s'\noctave: %lld\nnotehead:        '%s'\naccidental       '%s'\nalteration:      %f\nduration: %lld\ntie:             %s\npitch info:      '%s'\narticulation:    '%s'\ncommand literal: '%s'\nevent type:      %s\npart:            %lld\nxml voice:          %lld\nvoice:           %lld\noutput hint:     %s\nauxiliary data:  %s\n" (startTime n)
+    (printf "start time: %lld\nrest: %s\nroot: '%s'\noctave: %lld\nnotehead: '%s'\naccidental: '%s'\nalteration: %f\nduration: %lld\ntie: %s\npitch info: '%s'\narticulation:'%s'\ncommand literal: '%s'\nevent type %s\npart: %lld\nxml voice: %lld\nvoice: %lld\noutput hint: %s\nkey location: %lld, %lld, %lld\nauxiliary data: %s\n" 
+                (startTime n)
                 (if (rest n) "yes" "no")
                 (cstring (root n))
                 (octave n)
@@ -288,13 +300,15 @@
                       ((= (outputHint n) ROLL_OUTPUT_HINT_SAMPLER) "sampler")
                       ((= (outputHint n) ROLL_OUTPUT_HINT_MIDI) "MIDI")
                       (else "unknown output hint"))
+                (pitchclass (get_key n)) (octave (get_key n)) (manual (get_key n))
                 (if (null? (auxData n)) "null" "yes"))
       void))
 
 
 (bind-func write_to_file:[void,Note*,i8*]*
   (lambda (n file)
-    (fprintf file "start time:      %lld\nrest:            %s\nroot: '%s'\noctave:          %lld\nnotehead:        '%s'\naccidental       '%s'\nalteration: %f\nduration:        %lld\ntie:             %s\npitch info:      '%s'\narticulation: '%s'\ncommand literal: '%s'\nevent type:      %s\npart:            %lld\nxml voice: %lld\nvoice:           %lld\noutput hint:     %s\nauxiliary data:  %s\n" (startTime n)
+    (fprintf file "start time: %lld\nrest: %s\nroot: '%s'\noctave: %lld\nnotehead: '%s'\naccidental: '%s'\nalteration: %f\nduration: %lld\ntie: %s\npitch info: '%s'\narticulation:'%s'\ncommand literal: '%s'\nevent type %s\npart: %lld\nxml voice: %lld\nvoice: %lld\noutput hint: %s\nkey location: %lld, %lld, %lld\nauxiliary data: %s\n" 
+                (startTime n)
                 (if (rest n) "yes" "no")
                 (cstring (root n))
                 (octave n)
@@ -323,6 +337,7 @@
                       ((= (outputHint n) ROLL_OUTPUT_HINT_SAMPLER) "sampler")
                       ((= (outputHint n) ROLL_OUTPUT_HINT_MIDI) "MIDI")
                       (else "unknown output hint"))
+                (pitchclass (get_key n)) (octave (get_key n)) (manual (get_key n))
                 (if (null? (auxData n)) "null" "yes"))
       void))
 
