@@ -36,8 +36,6 @@
 ; transforms pitch information in 'score' based on configuaration file in 'filepath'
 (bind-func roll_pass3:[void,Score*,Config*]*
   (lambda (score conf)
-    ;read default config
-    ;overwrite with custom config if available
     ;assign event types
     ;parse tabulature events (transform into key numbers or generic key names)
     ;parse pitch utopia information

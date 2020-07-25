@@ -1,0 +1,26 @@
+
+; temporary definition: will be located in ArciLab main file ('entry point')
+; filepath to ArciLab home directory (can be relative to extempore directory or absolute [not platform independent!])
+(define SOURCE-PATH "../../Coding/extempore/arcilab/")
+(bind-val SOURCE_PATH String* (Str "../../Coding/extempore/arcilab/"))
+
+
+; this needs to be (re-)defined when working with ArciLab. filepath to the working
+; directory, where the current score and custom configuration files are located, and where
+; temporary files and logfiles will be stored automatically
+(bind-val ROLL_WORKING_PATH String* (Str "../../Coding/extempore/arcilab/scores/guinea05/"))
+
+
+; creating a global error handling environment
+(sys:load (string-append SOURCE-PATH "roll/logging.xtm"))
+(bind-val rollErr RollError* (roll_create_logfile (cat2 ROLL_WORKING_PATH (Str "logfile-parser"))))
+
+
+(sys:load (string-append SOURCE-PATH "strings.xtm"))
+(sys:load (string-append SOURCE-PATH "pitch-management.xtm"))
+
+(sys:load (string-append SOURCE-PATH "roll/roll.xtm"))
+
+
+
+($ (parse_roll (Str "guinea05sibelius.xml")))
