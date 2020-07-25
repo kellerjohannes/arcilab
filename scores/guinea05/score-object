@@ -1,0 +1,116 @@
+Score: measure count = 2, division = 256
+==================================================
+Measure: no = 1, division = 256, duration = 1024, time signature = 4 / 4, note count = 4
+--------------------------------------------------
+start time: 0
+rest: no
+root: 'D'
+octave: 5
+notehead: 'normal'
+accidental: 'natural'
+alteration: 0.000000
+duration: 768
+tie: start
+pitch info: 'undef'
+articulation:'normal'
+command literal: 'undef'
+event type tabulature
+part: 0
+xml voice: 1
+voice: 0
+output hint: tacet
+key location: 0, 3, 0
+auxiliary data: null
+--------------------------------------------------
+start time: 256
+rest: yes
+root: 'D'
+octave: 5
+notehead: 'normal'
+accidental: 'natural'
+alteration: 0.000000
+duration: 256
+tie: within
+pitch info: 'undef'
+articulation:'normal'
+command literal: 'undef'
+event type tabulature
+part: 0
+xml voice: 1
+voice: 0
+output hint: tacet
+key location: 0, 3, 0
+auxiliary data: null
+--------------------------------------------------
+start time: 512
+rest: yes
+root: 'D'
+octave: 5
+notehead: 'normal'
+accidental: 'natural'
+alteration: 0.000000
+duration: 256
+tie: end
+pitch info: 'undef'
+articulation:'normal'
+command literal: 'undef'
+event type tabulature
+part: 0
+xml voice: 1
+voice: 0
+output hint: tacet
+key location: 0, 3, 0
+auxiliary data: null
+--------------------------------------------------
+start time: 768
+rest: no
+root: 'D'
+octave: 5
+notehead: 'normal'
+accidental: 'natural'
+alteration: 0.000000
+duration: 1280
+tie: start
+pitch info: 'undef'
+articulation:'normal'
+command literal: 'undef'
+event type tabulature
+part: 0
+xml voice: 1
+voice: 0
+output hint: tacet
+key location: 0, 3, 0
+auxiliary data: null
+---------------------------------------------------
+
+---------------------------------------------------
+End of measure no 1.
+==================================================
+Measure: no = 2, division = 256, duration = 1024, time signature = 4 / 4, note count = 1
+--------------------------------------------------
+start time: 1024
+rest: yes
+root: 'D'
+octave: 5
+notehead: 'normal'
+accidental: 'natural'
+alteration: 0.000000
+duration: 1024
+tie: end
+pitch info: 'undef'
+articulation:'normal'
+command literal: 'undef'
+event type tabulature
+part: 0
+xml voice: 1
+voice: 0
+output hint: tacet
+key location: 0, 3, 0
+auxiliary data: null
+---------------------------------------------------
+
+---------------------------------------------------
+End of measure no 2.
+==================================================
+
+==================================================
