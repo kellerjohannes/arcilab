@@ -42,8 +42,10 @@
                           (set_eventType (get_note (get_measure score measureCursor) noteCursor) ROLL_EVENT_TYPE_PITCH_UTOPIA))
                         ((equal (notehead (get_note (get_measure score measureCursor) noteCursor)) (noteheadEventTypeCommand conf))
                           (set_eventType (get_note (get_measure score measureCursor) noteCursor) ROLL_EVENT_TYPE_COMMAND))
-                        (else (roll_error rollErr (Str "roll_assign_event_type: notehead unknown. Assuming 'normal'.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL) void)))
-                (else (roll_error rollErr (Str "roll_assign_event_type: event type unknown. Assuming 'tabulature'.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL) void))))
+                        (else (roll_error rollErr (Str "roll_assign_event_type: notehead unknown. Assuming 'normal'.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
+                              (set_eventType (get_note (get_measure score measureCursor) noteCursor) ROLL_EVENT_TYPE_TABULATURE))))
+                (else (roll_error rollErr (Str "roll_assign_event_type: event type unknown. Assuming 'tabulature'.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
+                      (set_eventType (get_note (get_measure score measureCursor) noteCursor) ROLL_EVENT_TYPE_TABULATURE)))))
     void)))
 
 

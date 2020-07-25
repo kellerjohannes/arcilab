@@ -1,5 +1,5 @@
 (set-value 'tabulatureFilePath' 'configuration/mappings/vicentino-enharmonic')
-(set-value 'eventType' 'tabulature')
+(set-value 'eventType' 'forceTabulature')
 (set-value 'noteheadEventTypeTabulature' 'normal')
 (set-value 'noteheadEventTypePitchUtopia' 'triangle')
 (set-value 'noteheadEventTypeCommand' 'square')

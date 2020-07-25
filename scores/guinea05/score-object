@@ -14,7 +14,7 @@ tie: start
 pitch info: 'undef'
 articulation:'normal'
 command literal: 'undef'
-event type pitch utopia
+event type tabulature
 part: 0
 xml voice: 1
 voice: 0
@@ -34,7 +34,7 @@ tie: within
 pitch info: 'undef'
 articulation:'normal'
 command literal: 'undef'
-event type pitch utopia
+event type tabulature
 part: 0
 xml voice: 1
 voice: 0
@@ -54,7 +54,7 @@ tie: end
 pitch info: 'undef'
 articulation:'normal'
 command literal: 'undef'
-event type pitch utopia
+event type tabulature
 part: 0
 xml voice: 1
 voice: 0
@@ -74,7 +74,7 @@ tie: start
 pitch info: 'undef'
 articulation:'normal'
 command literal: 'undef'
-event type pitch utopia
+event type tabulature
 part: 0
 xml voice: 1
 voice: 0
@@ -100,7 +100,7 @@ tie: end
 pitch info: 'undef'
 articulation:'normal'
 command literal: 'undef'
-event type pitch utopia
+event type tabulature
 part: 0
 xml voice: 1
 voice: 0
