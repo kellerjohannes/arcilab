@@ -285,7 +285,7 @@
 
 
 ; ParserState remembers things while reading through xml Data
-(bind-type ParserState <i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,i64,String*,float,i1,String*,String*,String*,String*,String*,i64>)
+(bind-type ParserState <i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,i64,String*,float,i1,String*,String*,String*,String*,String*,i64,String*>)
 ; 0 part count
 ; 1 measure count
 ; 2 divisions
@@ -306,6 +306,7 @@
 ; 17 articulation
 ; 18 text
 ; 19 xml voice assignment
+; 20 pitchInformation (body of <text> in <lyric>)
 
 (bind-func partCount:[i64,ParserState*]*
   (lambda (ps)
@@ -487,9 +488,18 @@
     (tset! ps 19 v)
     void))
 
+(bind-func pitchInfo:[String*,ParserState*]*
+  (lambda (ps)
+    (tref ps 20)))
+
+(bind-func set_pitchInfo:[void,ParserState*,String*]*
+  (lambda (ps pi)
+    (tset! ps 20 pi)
+    void))
+
 (bind-func cParserState:[ParserState*]*
   (lambda ()
-    (let ((res (ParserState:[ParserState*,i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,i64,String*,float,i1,String*,String*,String*,String*,String*,i64]* 
+    (let ((res (ParserState:[ParserState*,i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,i64,String*,float,i1,String*,String*,String*,String*,String*,i64,String*]* 
                             0 
                             0
                             0
@@ -509,16 +519,13 @@
                             (Str "")
                             (Str "")
                             (Str "")
-                            0)))
+                            0
+                            (Str ""))))
           res)))
 
 (bind-func print:[void,ParserState*]*
   (lambda (state)
-    (printf "Parser state printout:\npart count = %lld\nmeasure count = %lld\ndivisions =
-    %lld\nbeats = %lld\nbeatType = %lld\nrest = %s\ntimer = %lld\nstep = '%s'\noctave =
-    %lld\nduration = %lld\nnoteCount = %lld\naccidental = '%s'\nalter = %f\nchord =
-    %s\ntie = '%s'\nparent = '%s'\nnotehead = '%s'\narticulation = '%s'\ntext = '%s'\nxml
-    %voice = %lld\n"
+    (printf "Parser state printout:\npart count = %lld\nmeasure count = %lld\ndivisions = %lld\nbeats = %lld\nbeatType = %lld\nrest = %s\ntimer = %lld\nstep = '%s'\noctave = %lld\nduration = %lld\nnoteCount = %lld\naccidental = '%s'\nalter = %f\nchord = %s\ntie = '%s'\nparent = '%s'\nnotehead = '%s'\narticulation = '%s'\ntext = '%s'\nxml %voice = %lld\npitch info = '%s'\n"
             (partCount state)
             (measureCount state)
             (divisions state)
@@ -538,7 +545,8 @@
             (cstring (notehead state))
             (cstring (articulation state))
             (cstring (text state))
-            (xmlVoice state))
+            (xmlVoice state)
+            (cstring (pitchInfo state)))
     void))
 
 
@@ -635,6 +643,7 @@
                   (set_notehead currentNote (notehead state))
                   (set_articulation currentNote (articulation state))
                   (set_xmlVoice currentNote (xmlVoice state))
+                  (set_color currentNote (attribute xmlElement (Str "color")))
                   (if (not (equal (text state) (Str "x")))
                     (begin 
                     ; to be reworked!
@@ -651,6 +660,10 @@
             void)
           ((equal (name xmlElement) (Str "pitch"))
             (xml_parse (body xmlElement) score state))
+          ((equal (name xmlElement) (Str "lyric"))
+            (xml_parse (body xmlElement) score state))
+          ((equal (name xmlElement) (Str "text"))
+            (set_pitchInfo state (body xmlElement)))
           ((equal (name xmlElement) (Str "rest"))
             (set_rest state #t))
           ((equal (name xmlElement) (Str "chord"))
