@@ -8,8 +8,14 @@
 ; this needs to be (re-)defined when working with ArciLab. filepath to the working
 ; directory, where the current score and custom configuration files are located, and where
 ; temporary files and logfiles will be stored automatically
-(bind-val ROLL_WORKING_PATH String* (Str "../../Coding/extempore/arcilab/scores/guinea05/"))
+(bind-val ROLL_WORKING_PATH String* (Str "..."))
 
+(bind-func set_working_path:[void,String*]*
+  (lambda (filepath)
+    (set! ROLL_WORKING_PATH filepath)
+    void))
+
+($ (set_working_path (Str "../../Coding/extempore/arcilab/scores/guinea08/")))
 
 ; creating a global error handling environment
 (sys:load (string-append SOURCE-PATH "roll/logging.xtm"))
@@ -22,4 +28,4 @@
 (sys:load (string-append SOURCE-PATH "roll/roll.xtm"))
 
 
-($ (parse_roll (Str "guinea05sibelius.xml")))
+($ (parse_roll (Str "guinea08sibelius.xml")))

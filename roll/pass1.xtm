@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 ; XMLpair element, stores two strings, a first element, and the rest of the xml data
 (bind-type XMLpair <String*,String*>)
 ; 0 xml data
@@ -152,18 +159,37 @@
 ; takes xml data, returns xml data with everything removed until a first occurrence of '<'
 (bind-func xml_delete_until_left_bracket:[String*,String*]*
   (lambda (xmlData)
+    ; DEBUG: (printf "string received: '%s'\n" (cstring xmlData))
     (cond ((= 0 (length xmlData)) (Str ""))
+          ((< (find_substring xmlData (Str "<")) 0)
+            (roll_error rollErr (Str "Roll, xml_delete_until_left_bracket: no '<' found, returning complete string.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL) xmlData)
           (else (split_second xmlData (find_substring xmlData (Str "<")))))))
 
 ; takes xml data, returns xml data without the '<?' element
 (bind-func xml_skip_version_element:[String*,String*]*
   (lambda (xmlData)
-    (xml_delete_until_left_bracket (split_second xmlData (+ 2 (find_substring xmlData (Str "?>")))))))
+    ; DEBUG: (printf "data received: '%s'\n" (cstring xmlData))
+    (cond ((< (find_substring xmlData (Str "?>")) 0)
+            ; DEBUG: (printf "no success.\n")
+            (roll_error rollErr
+                        (Str "Roll, xml_skip_version_element: no '?>' found, returning complete string.")
+                        ROLL_ERR_FLAG_WARNING
+                        ROLL_ERR_DEST_ALL)
+            xmlData)
+          (else 
+            ; DEBUG: (printf "here we go!\n")
+            (xml_delete_until_left_bracket (split_second xmlData (+ 2 (find_substring xmlData (Str "?>")))))))))
 
 ; takes xml data, returns xml data without the '<!' element
 (bind-func xml_skip_doctype_element:[String*,String*]*
   (lambda (xmlData)
-    (xml_delete_until_left_bracket (split_second xmlData (+ 1 (find_substring xmlData (Str ">")))))))
+    (cond ((< (find_substring xmlData (Str ">")) 0)
+            (roll_error rollErr
+                        (Str "Roll, xml_skip_doctype_element: no '>' found, malformed xml data.  Returning complete string.\n")
+                        ROLL_ERR_FLAG_WARNING
+                        ROLL_ERR_DEST_ALL)
+            xmlData)
+          (else (xml_delete_until_left_bracket (split_second xmlData (+ 1 (find_substring xmlData (Str ">")))))))))
 
 ; takes xml data, returns a String* containing the name of the first xml element
 (bind-func xml_extract_element_name:[String*,String*]*
@@ -174,19 +200,27 @@
                                        ROLL_ERR_DEST_ALL)
                            null)
           ((= 0 (length xmlData)) (Str ""))
-          ((not (equal (substring xmlData 0 1) (Str "<"))) (roll_error rollErr
-                                                           (Str "Roll, xml_extract_element_name: first character is not '<', can't parse.")
-                                                           ROLL_ERR_FLAG_FATAL
-                                                           ROLL_ERR_DEST_ALL)
-                                                           (Str ""))
-          (else (substring xmlData 1 (find_substring_or xmlData (Str " ") (Str ">")))))))
+          ((< (find_substring xmlData (Str "<")) 0)
+            (roll_error rollErr (Str "Roll, xml_extract_element_name: first character is not '<', can't parse. Returning empty string.")
+                                ROLL_ERR_FLAG_WARNING
+                                ROLL_ERR_DEST_ALL)
+            (Str ""))
+          ((or (< (find_substring xmlData (Str ">")) 0)
+               (< (find_substring xmlData (Str " ")) 0))
+             (roll_error rollErr
+                         (Str "Roll, xml_extract_element_name: no '>' or ' ' found, malformed xml data. Returning empty string.")
+                         ROLL_ERR_FLAG_WARNING
+                         ROLL_ERR_DEST_ALL)
+             (Str ""))
+          (else (substring (xml_delete_until_left_bracket xmlData) 1 (find_substring_or xmlData (Str " ") (Str ">")))))))
 
 ; takes a String* with a name (without '<>'), returns a String* with the corresponding endtag
 (bind-func xml_construct_endtag:[String*,String*]*
   (lambda (name)
     (cat2 (cat2 (Str "</") name) (Str ">"))))
 
-; takes xml data, returns the index of the second element on the highest level
+; takes xml data, returns the index of the second element on the highest level. If there
+; is only one element in the xml data it will return -1.
 (bind-func xml_find_element_separation:[i64,String*]*
   (lambda (xmlData)
     (cond ((null? xmlData) (roll_error rollErr
@@ -195,13 +229,13 @@
                                        ROLL_ERR_DEST_ALL)
                            0)
           ((= 0 (length xmlData)) 0)
-          ((not (equal (substring xmlData 0 1) (Str "<"))) (roll_error rollErr (Str "Roll, xml_find_element_separation: first character is not a '<', stop parsing.")
-                                                                               ROLL_ERR_FLAG_FATAL
-                                                                               ROLL_ERR_DEST_ALL)
-                                                           0)
+          ((< (find_substring xmlData (Str "<")) 0)
+            (roll_error rollErr (Str "Roll, xml_find_element_separation: first character is not a '<', stop parsing.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL)
+            0)
+          ((< (find_substring xmlData (Str ">")) 0)
+            (roll_error rollErr (Str "Roll, xml_find_element_separation: no '>' found in xml data, stop parsing.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL) 0)
           (else
             (let ((titleClose (find_substring xmlData (Str ">"))))
-              ;DEBUG: (printf "titleClose=%lld\n" titleClose)
               (cond ((equal (substring xmlData (- titleClose 1) titleClose) (Str "/"))
                       (find_substring_from xmlData (Str "<") titleClose))
                     (else (let* ((name (xml_extract_element_name xmlData))
@@ -214,12 +248,13 @@
 ; the rest of the xml data
 (bind-func xml_divide:[XMLpair*,String*]*
   (lambda (xmlData)
-    (cond ((not (equal (split_first xmlData 1) (Str "<")))
+    (cond ((< (find_substring xmlData (Str "<")) 0) 
             (roll_error rollErr
                         (Str "xml_read_element: first character is not '<', malformed xmlData. This will abort the parsing process.")
                         ROLL_ERR_FLAG_FATAL
                         ROLL_ERR_DEST_ALL)
-            null)
+            ;DEBUG (printf "critical data: '%s'\n" (cstring xmlData))
+            (cXMLpair (Str "") (Str "")))
           (else
             (let ((splitPoint (xml_find_element_separation xmlData)))
               ;DEBUG: (printf "splitpoint: %lld\n" splitPoint)
@@ -227,7 +262,8 @@
                       (let ((res (cXMLpair xmlData (Str "")))) 
                         res))
                     (else
-                      (let ((res (cXMLpair (split_first xmlData splitPoint) (split_second xmlData splitPoint))))
+                      (let ((res (cXMLpair (split_second (split_first xmlData splitPoint) (find_substring xmlData (Str "<"))) 
+                                           (split_second xmlData splitPoint))))
                         res))))))))
 
 ; takes a String* with the title data of an xml element (< ... >) and an XMLelement*,
@@ -236,6 +272,12 @@
   (lambda (xmlData xmlElement)
     (cond ((null? xmlData) void)
           ((= 0 (length xmlData)) void)
+          ((< (find_substring xmlData (Str "=")) 0)
+            (roll_error rollErr (Str "Roll, xml_extract_attribute: no '=' found, stop extraction process.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
+            void)
+          ((< (find_substring xmlData (create_quotes)) 0)
+            (roll_error rollErr (Str "Roll, xml_extract_attribute: no quotes found, stop extraction process.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
+            void)
           (else (let ((name (split_first xmlData (find_substring xmlData (Str "="))))
                       (value (substring xmlData (+ 2 (find_substring xmlData (Str "=")))
                                                 (find_substring_from xmlData (create_quotes) (+ 1 (find_substring xmlData (create_quotes))))))
@@ -247,12 +289,13 @@
 ; the name of the element; extracts the body and stores it in the XMLelement*
 (bind-func xml_extract_body:[void,String*,XMLelement*,String*]*
   (lambda (xmlData xmlElement endtag)
-    (cond ((null? xmlData) (roll_error rollErr
-                                       (Str "Roll, xml_extract_body: empty xmlData pointer. Did nothing.")
-                                       ROLL_ERR_FLAG_WARNING
-                                       ROLL_ERR_DEST_ALL)
-                           void)
+    (cond ((null? xmlData) 
+            (roll_error rollErr (Str "Roll, xml_extract_body: empty xmlData pointer. Did nothing.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
+            void)
           ((= 0 (length xmlData)) void)
+          ((< (find_substring xmlData endtag) 0)
+            (roll_error rollErr (Str "Roll, xml_extract_body: endtag not found, malformed xml data. Aborting body extraction process.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
+            void)
           (else (set_body xmlElement (remove_initial_spaces (split_first xmlData (find_substring xmlData endtag))))
                 void))))
 
@@ -260,27 +303,33 @@
 ; data in the XMLelement*
 (bind-func xml_read_element:[void,String*,XMLelement*]*
   (lambda (xmlData xmlElement)
-    (cond ((null? xmlData) (roll_error rollErr
-                                       (Str "Roll, xml_read_element: empty xmlData pointer. Did nothing.")
-                                       ROLL_ERR_FLAG_WARNING
-                                       ROLL_ERR_DEST_ALL)
-                           void)
+    (cond ((null? xmlData) 
+            (roll_error rollErr (Str "Roll, xml_read_element: empty xmlData pointer. Did nothing.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
+            void)
           ((= 0 (length xmlData)) void)
-          ((not (equal (substring xmlData 0 1) (Str "<"))) (roll_error rollErr
-                                                             (Str "Roll, xml_read_element: first character is not '<'.  Problem?")
-                                                             ROLL_ERR_FLAG_WARNING
-                                                             ROLL_ERR_DEST_ALL)
-                                                           void)
+          ((not (equal (substring xmlData 0 1) (Str "<"))) 
+            (roll_error rollErr (Str "Roll, xml_read_element: first character is not '<'.  Problem?") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
+            void)
+          ((< (find_substring xmlData (Str ">")) 0)
+            (roll_error rollErr (Str "Roll, xml_read_element: no '>' found, malformed xml data. Doing nothing.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
+            void)
+          ((< (find_substring_or xmlData (Str " ") (Str "/")) 0)
+            (roll_error rollErr (Str "Roll, xml_read_element: no ' ' or '/' found, malformed xml data. Doing nothing.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
+            void)
           ((equal (substring xmlData (- (find_substring xmlData (Str ">")) 1) (find_substring xmlData (Str ">"))) (Str "/"))
             (set_name xmlElement (substring xmlData 1 (find_substring_or xmlData (Str " ") (Str "/"))))
-            ; DEBUG: (printf "wohooooooo: name = '%s'\nattributes = '%s'\n" (cstring (name xmlElement)) (cstring (substring xmlData (+ (length (name xmlElement)) 2) (find_substring xmlData (Str "/")))))
-            (xml_extract_attribute (substring xmlData (+ (length (name xmlElement)) 2) (find_substring xmlData (Str "/"))) xmlElement))
+            (xml_extract_attribute (substring xmlData (+ (length (name xmlElement)) 2) (find_substring xmlData (Str "/"))) xmlElement)
+            void)
           (else 
             (let ((name (xml_extract_element_name xmlData)))
               (set_name xmlElement name)
-              (xml_extract_attribute (substring xmlData (+ 2 (length name)) (find_substring xmlData (Str ">"))) xmlElement)
-              (xml_extract_body (split_second xmlData (+ 1 (find_substring xmlData (Str ">")))) xmlElement (xml_construct_endtag name))
-              void)))))
+              (cond ((< (find_substring xmlData (Str ">")) 0)
+                      (roll_error rollErr (Str "Roll, xml_read_element: no '>' found, malformed xml data. Doing nothing.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
+                      void)
+                    (else
+                      (xml_extract_attribute (substring xmlData (+ 2 (length name)) (find_substring xmlData (Str ">"))) xmlElement)
+                      (xml_extract_body (split_second xmlData (+ 1 (find_substring xmlData (Str ">")))) xmlElement (xml_construct_endtag name))
+                      void)))))))
 
 
 
@@ -662,6 +711,10 @@
             (xml_parse (body xmlElement) score state))
           ((equal (name xmlElement) (Str "lyric"))
             (xml_parse (body xmlElement) score state))
+          ((equal (name xmlElement) (Str "direction"))
+            (xml_parse (body xmlElement) score state))
+          ((equal (name xmlElement) (Str "direction-type"))
+            (xml_parse (body xmlElement) score state))
           ((equal (name xmlElement) (Str "text"))
             (set_pitchInfo state (body xmlElement)))
           ((equal (name xmlElement) (Str "rest"))
@@ -684,7 +737,6 @@
             (set_octave state (extract_i64 (body xmlElement))))
           ((equal (name xmlElement) (Str "duration"))
             (cond ((equal (parent state) (Str "note"))
-                    ; DEBUG: (printf "duration detected and extracted! %lld\n" (extract_i64 (body xmlElement)))
                     (set_duration state (recalculate_time (extract_i64 (body xmlElement)) (division score) (divisions state))))
                   ((equal (parent state) (Str "backup"))
                     (set_timer state (- (timer state) (recalculate_time (extract_i64 (body xmlElement)) (division score) (divisions state)))))
@@ -799,9 +851,13 @@
             (let ((first (substring xmlData 0 2)))
               (cond ((equal first (Str "<?"))
                       ;DEBUG: (printf "xmlData:\n%s\n" (cstring (xml_skip_version_element xmlData)))
+                      ;DEBUG:
+                      (printf "version element skipped\n")
                       (xml_pre_parse (xml_skip_version_element xmlData) maxDivision currentDivision))
                     ((equal first (Str "<!"))
                       ;DEBUG: ;(printf "xmlData:\n%s\n" (cstring (xml_skip_doctype_element xmlData)))
+                      ;DEBUG: 
+                      (printf "doctype elemente skipped\n")
                       (xml_pre_parse (xml_skip_doctype_element xmlData) maxDivision currentDivision))
                     (else 
                       (let ((pair (xml_divide xmlData))
@@ -846,3 +902,5 @@
             ;DEBUG: (print state)
             void)))
     void)))
+
+

@@ -1,0 +1,184 @@
+Score: measure count = 2, division = 256
+==================================================
+Measure: no = 1, division = 256, duration = 1024, time signature = 4/4, note count = 4
+--------------------------------------------------
+start time: 0
+rest: no
+root: 'C'
+octave: 4
+notehead: 'normal'
+accidental: 'natural'
+alteration: 0.000000
+duration: 256
+tie: no
+pitch info: 'undef'
+articulation:'normal'
+command literal: 'undef'
+event type tabulature
+part: 0
+xml voice: 1
+voice: 0
+output hint: tacet
+key location: -2, 2, 0
+color: '#000000'
+auxiliary data: null
+--------------------------------------------------
+start time: 256
+rest: no
+root: 'D'
+octave: 4
+notehead: 'normal'
+accidental: 'natural'
+alteration: 0.000000
+duration: 256
+tie: no
+pitch info: 'undef'
+articulation:'normal'
+command literal: 'undef'
+event type tabulature
+part: 0
+xml voice: 1
+voice: 0
+output hint: tacet
+key location: 0, 2, 0
+color: '#000000'
+auxiliary data: null
+--------------------------------------------------
+start time: 512
+rest: no
+root: 'E'
+octave: 4
+notehead: 'normal'
+accidental: 'natural'
+alteration: 0.000000
+duration: 256
+tie: no
+pitch info: 'undef'
+articulation:'normal'
+command literal: 'undef'
+event type tabulature
+part: 0
+xml voice: 1
+voice: 0
+output hint: tacet
+key location: 2, 2, 0
+color: '#000000'
+auxiliary data: null
+--------------------------------------------------
+start time: 768
+rest: no
+root: 'F'
+octave: 4
+notehead: 'normal'
+accidental: 'natural'
+alteration: 0.000000
+duration: 256
+tie: no
+pitch info: 'undef'
+articulation:'normal'
+command literal: 'undef'
+event type tabulature
+part: 0
+xml voice: 1
+voice: 0
+output hint: tacet
+key location: -3, 2, 0
+color: '#000000'
+auxiliary data: null
+---------------------------------------------------
+
+---------------------------------------------------
+End of measure no 1.
+==================================================
+Measure: no = 2, division = 256, duration = 1024, time signature = 4/4, note count = 4
+--------------------------------------------------
+start time: 1024
+rest: no
+root: 'G'
+octave: 4
+notehead: 'normal'
+accidental: 'natural'
+alteration: 0.000000
+duration: 256
+tie: no
+pitch info: 'undef'
+articulation:'normal'
+command literal: 'undef'
+event type tabulature
+part: 0
+xml voice: 1
+voice: 0
+output hint: tacet
+key location: -1, 2, 0
+color: '#000000'
+auxiliary data: null
+--------------------------------------------------
+start time: 1280
+rest: no
+root: 'A'
+octave: 4
+notehead: 'normal'
+accidental: 'natural'
+alteration: 0.000000
+duration: 256
+tie: no
+pitch info: 'undef'
+articulation:'normal'
+command literal: 'undef'
+event type tabulature
+part: 0
+xml voice: 1
+voice: 0
+output hint: tacet
+key location: 1, 2, 0
+color: '#000000'
+auxiliary data: null
+--------------------------------------------------
+start time: 1536
+rest: no
+root: 'B'
+octave: 4
+notehead: 'normal'
+accidental: 'natural'
+alteration: 0.000000
+duration: 256
+tie: no
+pitch info: 'undef'
+articulation:'normal'
+command literal: 'undef'
+event type tabulature
+part: 0
+xml voice: 1
+voice: 0
+output hint: tacet
+key location: 3, 2, 0
+color: '#000000'
+auxiliary data: null
+--------------------------------------------------
+start time: 1792
+rest: no
+root: 'C'
+octave: 5
+notehead: 'normal'
+accidental: 'natural'
+alteration: 0.000000
+duration: 256
+tie: no
+pitch info: 'undef'
+articulation:'normal'
+command literal: 'undef'
+event type tabulature
+part: 0
+xml voice: 1
+voice: 0
+output hint: tacet
+key location: -2, 3, 0
+color: '#000000'
+auxiliary data: null
+---------------------------------------------------
+
+---------------------------------------------------
+End of measure no 2.
+==================================================
+
+==================================================

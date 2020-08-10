@@ -46,6 +46,7 @@
 ;     (lyrics?), commands generic text (timing?)
 ;   - read and store tempo markings
 ; - pass 2
+; - system crashes then last line of xml file is not empty -> fix is complicated
 
 ; redundant stuff:
 ; - division value for Measure* object (is now globalised while reading xml data)

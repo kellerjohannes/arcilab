@@ -9,7 +9,7 @@
 
 (bind-func find_substring_loop:[i64,String*,String*,i64]*
   (lambda (tbs sf index)
-    (cond ((= 0 (length tbs)) -1)
+    (cond ((= (- (length sf) 1) (length tbs)) -1)
           ((equal (substring tbs 0 (length sf)) sf) index)
           (else (find_substring_loop (split_second tbs 1) sf (+ 1 index))))))
 
