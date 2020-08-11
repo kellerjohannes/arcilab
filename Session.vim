@@ -75,7 +75,7 @@ badd +1 roll/pass4.xtm
 badd +1 roll/configuration.xtm
 badd +1 roll/score.xtm
 badd +1 pitch-management.xtm
-badd +0 strings.xtm
+badd +1 strings.xtm
 argglobal
 silent! argdel *
 $argadd arcilab.xtm
@@ -223,12 +223,12 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 31 - ((29 * winheight(0) + 29) / 59)
+let s:l = 27 - ((25 * winheight(0) + 29) / 59)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-31
-normal! 013|
+27
+normal! 0
 tabedit roll/roll.xtm
 set splitbelow splitright
 set nosplitbelow
@@ -670,11 +670,11 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 906 - ((48 * winheight(0) + 30) / 61)
+let s:l = 1 - ((0 * winheight(0) + 29) / 59)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-906
+1
 normal! 0
 tabedit roll/pass2.xtm
 set splitbelow splitright
@@ -1415,12 +1415,12 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 337 - ((38 * winheight(0) + 30) / 61)
+let s:l = 609 - ((41 * winheight(0) + 29) / 59)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-337
-normal! 042|
+609
+normal! 05|
 tabedit pitch-management.xtm
 set splitbelow splitright
 set nosplitbelow
@@ -1719,7 +1719,7 @@ exe s:l
 normal! zt
 12
 normal! 031|
-tabnext 3
+tabnext 9
 set stal=1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

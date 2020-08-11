@@ -6,6 +6,7 @@
           (timeCursor 0)
           (measureCursor 0)
           (noteCursor 0)
+          (bpmInfoCursor 0)
           (durationDenominator:double 0.0))
       ;calculate durations of measures and store them in Measure*
       (dotimes (i (measureCount score))
@@ -22,6 +23,10 @@
         (dotimes (noteCursor (noteCount (get_measure score measureCursor)))
           (set_startTime (get_note (get_measure score measureCursor) noteCursor)
                          (+ (startTime (get_note (get_measure score measureCursor) noteCursor))
+                            timeCursor)))
+        (dotimes (bpmInfoCursor (bpmCount (get_measure score measureCursor)))
+          (set_startTime (get_bpmInfo (get_measure score measureCursor) bpmInfoCursor)
+                         (+ (startTime (get_bpmInfo (get_measure score measureCursor) bpmInfoCursor))
                             timeCursor))))
     void)))
 

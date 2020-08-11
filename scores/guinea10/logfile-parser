@@ -1,0 +1,11 @@
+Logfile roll module of ArciLab software.
+@30524416, Information: Configuration file loaded.
+@30524416, Warning: Roll, read_config_from_file: invalid file.
+@30553088, Information: XML file slurped.
+@30558208, Information: Parser: partwise score detected.
+@30561280, Information: Parser: opening part 'P1'.
+@30562304, Information: Pre parse done: score division = 
+@30568448, Information: Parser: partwise score detected.
+@30571520, Information: Parser: opening part 'P1'.
+@30573568, Information: XML parsing done.
+End of logfile.

@@ -82,3 +82,8 @@
       (sscanf (cstring s) "%f" res)
       (dtof (pref res 0)))))
 
+(bind-func extract_double:[double,String*]*
+  (lambda (s) 
+    (let ((res:double* (salloc 1)))
+      (sscanf (cstring s) "%f" res)
+      (pref res 0))))

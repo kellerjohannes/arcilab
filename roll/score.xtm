@@ -395,6 +395,7 @@
 (bind-func cBpmInfo:[bpmInfo*,i64,double]*
   (lambda (t v)
     (let ((res (bpmInfo:[bpmInfo*,i64,double]* t v)))
+      (print res)
       res)))
 
 (bind-func write_to_file:[void,bpmInfo*,i8*]*
@@ -403,6 +404,37 @@
                   (startTime bpm)
                   (value bpm))
     void))
+
+
+(bind-func normalize_bpm:[double,String*,double,i1]*
+  (lambda (bu pm dot)
+    (let ((exponent 0.0)
+          (res 0.0))
+      (cond ((equal bu (Str "breve"))
+              (set! exponent 7.0))
+            ((equal bu (Str "whole"))
+              (set! exponent 6.0))
+            ((equal bu (Str "half"))
+              (set! exponent 5.0))
+            ((equal bu (Str "quarter"))
+              (set! exponent 4.0))
+            ((equal bu (Str "eighth"))
+              (set! exponent 3.0))
+            ((equal bu (Str "16th"))
+              (set! exponent 2.0))
+            ((equal bu (Str "32nd"))
+              (set! exponent 1.0))
+            (else (roll_error rollErr (Str "Roll, normalize_bpm: beat-unit unknown, assuming 'quarter'.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
+                  (set! exponent 4.0)))
+      (if dot 
+        (set! res (* pm (/ (* 3.0 (pow 2.0 (- exponent 1.0))) 16.0)))
+        (set! res (* pm (/ (pow 2.0 exponent) 16.0))))
+      ; DEBUG:
+      (printf "bpm calculated: %f, based on '%s', %f, %s\n" res (cstring bu) pm (if dot "yes" "no"))
+      res)))
+
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Measure element ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
