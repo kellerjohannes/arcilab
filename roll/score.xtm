@@ -645,7 +645,7 @@
         res))))
 
 
-(bind-func delete:[void,Measure*]*
+(bind-func delMeasure:[void,Measure*]*
   (lambda (m)
     (free (tref m 8))
     (free (tref m 6))
@@ -742,10 +742,10 @@
                          tmp)))
         res))))
 
-(bind-func delete:[void,Score*]*
-  (lambda (s)
+(bind-func delScore:[void,Score*]*
+  (lambda (sc)
     (let ((i 0))
-      (dotimes (i (measureCount s))
-        (delete (get_measure s i)))
-      (free (tref s 2))
-      void)))
+      (dotimes (i (measureCount sc))
+        (delMeasure:[void,Measure*]* (get_measure sc i))))
+    (free (tref sc 2))
+    void))

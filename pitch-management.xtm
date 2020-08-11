@@ -189,7 +189,7 @@
       (let ((res (Tabulature:[Tabulature*,i64,Notename**,Key**]* 0 tmpNotenames tmpKeys)))
         res))))
 
-(bind-func delete:[void,Tabulature*]*
+(bind-func delTabulature:[void,Tabulature*]*
   (lambda (tab)
     (free (tref tab 1))
     (free (tref tab 2))

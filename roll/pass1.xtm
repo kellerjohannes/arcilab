@@ -97,6 +97,10 @@
           (set! res (attributeValue xmlElement i))))
       res)))
 
+
+
+
+
 (bind-func body:[String*,XMLelement*]*
   (lambda (xmlElement)
     (tref xmlElement 4)))

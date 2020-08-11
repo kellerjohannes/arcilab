@@ -88,7 +88,7 @@
       (write_to_file score (Str "score-object"))
       ; DEBUG: (printf "writing logfile.\n")
       (roll_close_logfile rollErr)
-      (delete score)
-      (delete configuration)
+      (delScore score)
+      (delConfig configuration)
       void)))
 

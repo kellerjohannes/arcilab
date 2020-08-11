@@ -108,9 +108,9 @@
         res))))
 
 
-(bind-func delete:[void,Config*]*
+(bind-func delConfig:[void,Config*]*
   (lambda (conf)
-    (delete (get_tabulature conf))
+    (del (get_tabulature conf))
     void))
 
 (bind-func config_extract_name:[String*,String*]*
