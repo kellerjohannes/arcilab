@@ -110,7 +110,7 @@
 
 (bind-func delConfig:[void,Config*]*
   (lambda (conf)
-    (del (get_tabulature conf))
+    (delTabulature (get_tabulature conf))
     void))
 
 (bind-func config_extract_name:[String*,String*]*
