@@ -357,14 +357,59 @@
 
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; BPM element ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; This element stores BPM data, for now only metronome marks. In the future rit. and acc.
+; could be nice.
 
+(bind-type bpmInfo <i64,double>)
+; 0 startTime (in global ticks, like Note*)
+; 1 BPM, normalised to quarter notes
+
+(bind-func startTime:[i64,bpmInfo*]*
+  (lambda (bpm)
+    (tref bpm 0)))
+
+(bind-func set_startTime:[void,bpmInfo*,i64]*
+  (lambda (bpm t)
+    (tset! bpm 0 t)
+    void))
+
+(bind-func value:[double,bpmInfo*]*
+  (lambda (bpm)
+    (tref bpm 1)))
+    
+(bind-func set_value:[void,bpmInfo*,double]*
+  (lambda (bpm val)
+    (tset! bpm 1 val)
+    void))
+
+(bind-func print:[void,bpmInfo*]*
+  (lambda (bpm)
+    (printf "BPM info: time = %lld, value = %f\n"
+            (startTime bpm)
+            (value bpm))
+    void))
+
+(bind-func cBpmInfo:[bpmInfo*,i64,double]*
+  (lambda (t v)
+    (let ((res (bpmInfo:[bpmInfo*,i64,double]* t v)))
+      res)))
+
+(bind-func write_to_file:[void,bpmInfo*,i8*]*
+  (lambda (bpm file)
+    (fprintf file "BPM info: time = %lld, value = %f\n"
+                  (startTime bpm)
+                  (value bpm))
+    void))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Measure element ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; This element stores data of one measure, based on xml data. 
 
-(bind-type Measure <i64,i64,i64,i64,i64,i64,Note**>)
+(bind-type Measure <i64,i64,i64,i64,i64,i64,Note**,i64,bpmInfo**>)
 ; 0 bar number
 ; 1 division
 ; 2 duration
@@ -372,6 +417,8 @@
 ; 4 beatType
 ; 5 note count
 ; 6 notes
+; 7 bpm count
+; 8 bpms
 
 (bind-func number:[i64,Measure*]*
   (lambda (m)
@@ -431,7 +478,7 @@
   (lambda (m nc)
     (cond ((>= nc 0) (tset! m 5 nc) void)
           (else (roll_error rollErr
-                            (Str "Measure element: illegal value for note count received.  Set to 0. This will probably cause unintendet behaviour.")
+                            (Str "Measure element: illegal value for note count received. Set to 0. This will probably cause unintendet behaviour.")
                             ROLL_ERR_FLAG_WARNING
                             ROLL_ERR_DEST_ALL)
                 (tset! m 5 0)
@@ -458,19 +505,60 @@
       (tset! m 6 tmp)
       void)))
 
+(bind-func bpmCount:[i64,Measure*]*
+  (lambda (m)
+    (tref m 7)))
+
+(bind-func set_bpmCount:[void,Measure*,i64]*
+  (lambda (m c)
+    (cond ((>= c 0) (tset! m 7 c) void)
+          (else (roll_error rollErr
+                            (Str "Roll, set_bpmCount: count smaller than 0, set to 0.")
+                            ROLL_ERR_FLAG_FATAL
+                            ROLL_ERR_DEST_ALL)
+                (tset! m 7 0)
+                void))))
+
+(bind-func get_bpmInfo:[bpmInfo*,Measure*,i64]*
+  (lambda (m index)
+    (cond ((and (>= index 0) (< index (bpmCount m))) (pref (tref m 8) index))
+          (else (roll_error rollErr
+                            (Str "Roll, get_bpmInfo: index out of range. Return 'null',
+                            might crash.")
+                            ROLL_ERR_FLAG_FATAL
+                            ROLL_ERR_DEST_ALL)
+                null))))
+
+(bind-func push:[void,Measure*,bpmInfo*]*
+  (lambda (m bpm)
+    (let ((tmp:bpmInfo** (halloc (+ 1 (bpmCount m))))
+          (i 0))
+      (dotimes (i (bpmCount m))
+        (pset! tmp i (get_bpmInfo m i)))
+      (pset! tmp (bpmCount m) bpm)
+      (set_bpmCount m (+ 1 (bpmCount m)))
+      (free (tref m 8))
+      (tset! m 8 tmp)
+      void)))
+
 (bind-func print:[void,Measure*]*
   (lambda (m)
     (let ((i 0))
-      (printf "Measure: no = %lld, division = %lld, duration = %lld, time signature: %lld/%lld\nnote count = %lld\n"
+      (printf "Measure: no = %lld, division = %lld, duration = %lld, time signature: %lld/%lld\nnote count = %lld\nBPM count = %lld\nBPM value = %f\n"
               (number m)
               (division m)
               (duration m)
               (beats m)
               (beatType m)
-              (noteCount m))
+              (noteCount m)
+              (bpmCount m))
       (dotimes (i (noteCount m))
         (printf "--------------------------------------------------\n")
         (print:[void,Note*]* (get_note m i)))
+      (printf "---------------------------------------------------\n")
+      (dotimes (i (bpmCount m))
+        (printf "--------------------------------------------------\n")
+        (print:[void,bpmInfo*]* (get_bpmInfo m i)))
       (printf "---------------------------------------------------\n
 ---------------------------------------------------\nEnd of measure no %lld.\n" (number m))
       void)))
@@ -484,26 +572,35 @@
               (duration m)
               (beats m)
               (beatType m)
-              (noteCount m))
+              (noteCount m)
+              (bpmCount m))
       (dotimes (i (noteCount m))
         (fprintf file "--------------------------------------------------\n")
         (write_to_file:[void,Note*,i8*]* (get_note m i) file))
+      (fprintf file "---------------------------------------------------\n")
+      (dotimes (i (bpmCount m))
+        (fprintf file "-------------------------------------------------------\n")
+        (write_to_file:[void,bpmInfo*,i8*]* (get_bpmInfo m i) file))
       (fprintf file "---------------------------------------------------\n
 ---------------------------------------------------\nEnd of measure no %lld.\n" (number m))
       void)))
 
 (bind-func cMeasure:[Measure*]*
   (lambda ()
-    (let ((tmp:Note** (halloc 1)))
-      (set! tmp null)
-      (let ((res (Measure:[Measure*,i64,i64,i64,i64,i64,i64,Note**]*
+    (let ((tmpNotes:Note** (halloc 1))
+          (tmpBpmInfos:bpmInfo** (halloc 1)))
+      (set! tmpNotes null)
+      (set! tmpBpmInfos null)
+      (let ((res (Measure:[Measure*,i64,i64,i64,i64,i64,i64,Note**,i64,bpmInfo**]*
                           0
                           0
                           0
                           0
                           0
                           0
-                          tmp)))
+                          tmpNotes
+                          0
+                          tmpBpmInfos)))
         res))))
 
 

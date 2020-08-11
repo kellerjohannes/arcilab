@@ -15,7 +15,7 @@
     (set! ROLL_WORKING_PATH filepath)
     void))
 
-($ (set_working_path (Str "../../Coding/extempore/arcilab/scores/guinea08/")))
+($ (set_working_path (Str "../../Coding/extempore/arcilab/scores/guinea09/")))
 
 ; creating a global error handling environment
 (sys:load (string-append SOURCE-PATH "roll/logging.xtm"))
@@ -28,4 +28,4 @@
 (sys:load (string-append SOURCE-PATH "roll/roll.xtm"))
 
 
-($ (parse_roll (Str "guinea08sibelius.xml")))
+($ (parse_roll (Str "guinea09sibelius.xml")))
