@@ -851,13 +851,11 @@
             (let ((first (substring xmlData 0 2)))
               (cond ((equal first (Str "<?"))
                       ;DEBUG: (printf "xmlData:\n%s\n" (cstring (xml_skip_version_element xmlData)))
-                      ;DEBUG:
-                      (printf "version element skipped\n")
+                      ;DEBUG: (printf "version element skipped\n")
                       (xml_pre_parse (xml_skip_version_element xmlData) maxDivision currentDivision))
                     ((equal first (Str "<!"))
                       ;DEBUG: ;(printf "xmlData:\n%s\n" (cstring (xml_skip_doctype_element xmlData)))
-                      ;DEBUG: 
-                      (printf "doctype elemente skipped\n")
+                      ;DEBUG: (printf "doctype elemente skipped\n")
                       (xml_pre_parse (xml_skip_doctype_element xmlData) maxDivision currentDivision))
                     (else 
                       (let ((pair (xml_divide xmlData))

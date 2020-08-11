@@ -56,6 +56,7 @@ set smartcase
 set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc
 set tabstop=2
 set textwidth=90
+set window=60
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
 let v:this_session=expand("<sfile>:p")
 silent only
@@ -64,16 +65,17 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +0 arcilab.xtm
-badd +0 roll/roll.xtm
-badd +0 roll/passes.xtm
-badd +0 roll/pass1.xtm
-badd +0 roll/pass2.xtm
-badd +0 roll/pass3.xtm
-badd +0 roll/pass4.xtm
-badd +0 roll/configuration.xtm
-badd +0 roll/score.xtm
-badd +0 pitch-management.xtm
+badd +1 arcilab.xtm
+badd +1 roll/roll.xtm
+badd +1 roll/passes.xtm
+badd +1 roll/pass1.xtm
+badd +1 roll/pass2.xtm
+badd +1 roll/pass3.xtm
+badd +1 roll/pass4.xtm
+badd +1 roll/configuration.xtm
+badd +1 roll/score.xtm
+badd +1 pitch-management.xtm
+badd +0 strings.xtm
 argglobal
 silent! argdel *
 $argadd arcilab.xtm
@@ -221,12 +223,12 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 25 - ((24 * winheight(0) + 29) / 59)
+let s:l = 31 - ((29 * winheight(0) + 29) / 59)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-25
-normal! 0
+31
+normal! 013|
 tabedit roll/roll.xtm
 set splitbelow splitright
 set nosplitbelow
@@ -370,12 +372,12 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 74 - ((34 * winheight(0) + 29) / 59)
+let s:l = 2 - ((1 * winheight(0) + 29) / 59)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-74
-normal! 07|
+2
+normal! 0
 tabedit roll/passes.xtm
 set splitbelow splitright
 set nosplitbelow
@@ -519,12 +521,12 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 32 - ((31 * winheight(0) + 29) / 59)
+let s:l = 26 - ((24 * winheight(0) + 29) / 59)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-32
-normal! 010|
+26
+normal! 037|
 tabedit roll/pass1.xtm
 set splitbelow splitright
 set nosplitbelow
@@ -668,12 +670,12 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 29) / 59)
+let s:l = 906 - ((48 * winheight(0) + 30) / 61)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 036|
+906
+normal! 0
 tabedit roll/pass2.xtm
 set splitbelow splitright
 set nosplitbelow
@@ -817,7 +819,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 29) / 59)
+let s:l = 1 - ((0 * winheight(0) + 30) / 61)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -966,7 +968,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 25 - ((24 * winheight(0) + 29) / 59)
+let s:l = 25 - ((24 * winheight(0) + 30) / 61)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1115,7 +1117,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 29) / 59)
+let s:l = 1 - ((0 * winheight(0) + 30) / 61)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1264,7 +1266,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 29) / 59)
+let s:l = 1 - ((0 * winheight(0) + 30) / 61)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1413,12 +1415,12 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 337 - ((37 * winheight(0) + 29) / 59)
+let s:l = 337 - ((38 * winheight(0) + 30) / 61)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 337
-normal! 054|
+normal! 042|
 tabedit pitch-management.xtm
 set splitbelow splitright
 set nosplitbelow
@@ -1562,13 +1564,162 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 251 - ((43 * winheight(0) + 29) / 59)
+let s:l = 251 - ((44 * winheight(0) + 30) / 61)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 251
 normal! 029|
-tabnext 1
+tabedit strings.xtm
+set splitbelow splitright
+set nosplitbelow
+set nosplitright
+wincmd t
+set winminheight=1 winheight=1 winminwidth=1 winwidth=1
+argglobal
+let s:cpo_save=&cpo
+set cpo&vim
+inoremap <buffer> <S-Tab> :ExtemporeSendEnclosingBlock()
+nnoremap <buffer> 	 :ExtemporeSendEnclosingBlock()
+xnoremap <buffer>   :ExtemporeSendSelection()
+nnoremap <buffer>  :ExtemporeSendSelection()
+nnoremap <buffer> ,s :ExtemporeSendSelection() 
+nnoremap <buffer> ,a :ExtemporeSendEntireFile() 
+nnoremap <buffer> ,w :ExtemporeSendEnclosingBlock() 
+nnoremap <buffer> ,x :ExtemporeCloseConnection() 
+nnoremap <buffer> ,O :ExtemporeCloseConnection() 
+nnoremap <buffer> ,o :ExtemporeOpenConnection() 
+nnoremap <buffer> ] :ExtemporeSendBracketSelection()
+nnoremap <buffer> | :ExtemporeSendEntireFile()
+xnoremap <buffer> <S-Tab> :ExtemporeSendEnclosingBlock()
+nnoremap <buffer> <S-Tab> :ExtemporeSendEnclosingBlock()
+nnoremap <buffer> <BS> :ExtemporePanic()
+nnoremap <buffer> <F12> :ExtemporeSendUserInput()
+let &cpo=s:cpo_save
+unlet s:cpo_save
+setlocal keymap=
+setlocal noarabic
+setlocal autoindent
+setlocal backupcopy=
+setlocal balloonexpr=
+setlocal nobinary
+setlocal nobreakindent
+setlocal breakindentopt=
+setlocal bufhidden=
+setlocal buflisted
+setlocal buftype=
+setlocal nocindent
+setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
+setlocal cinoptions=
+setlocal cinwords=if,else,while,do,for,switch
+setlocal colorcolumn=
+setlocal comments=s1:/*,mb:*,ex:*/,://,b:#,:%,:XCOMM,n:>,fb:-
+setlocal commentstring=/*%s*/
+setlocal complete=.,w,b,u,t,i
+setlocal concealcursor=
+setlocal conceallevel=0
+setlocal completefunc=
+setlocal nocopyindent
+setlocal cryptmethod=
+setlocal nocursorbind
+setlocal nocursorcolumn
+setlocal nocursorline
+setlocal define=
+setlocal dictionary=
+setlocal nodiff
+setlocal equalprg=
+setlocal errorformat=
+setlocal expandtab
+if &filetype != 'extempore'
+setlocal filetype=extempore
+endif
+setlocal fixendofline
+setlocal foldcolumn=0
+setlocal foldenable
+setlocal foldexpr=0
+setlocal foldignore=#
+setlocal foldlevel=0
+setlocal foldmarker={{{,}}}
+setlocal foldmethod=manual
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldtext=foldtext()
+setlocal formatexpr=
+setlocal formatoptions=tcq
+setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
+setlocal formatprg=
+setlocal grepprg=
+setlocal iminsert=0
+setlocal imsearch=-1
+setlocal include=
+setlocal includeexpr=
+setlocal indentexpr=
+setlocal indentkeys=0{,0},:,0#,!^F,o,O,e
+setlocal noinfercase
+setlocal iskeyword=33,35-39,42-58,60-90,94,95,97-122,126,_
+setlocal keywordprg=
+setlocal nolinebreak
+setlocal nolisp
+setlocal lispwords=
+setlocal nolist
+setlocal makeencoding=
+setlocal makeprg=
+setlocal matchpairs=(:),{:},[:]
+setlocal modeline
+setlocal modifiable
+setlocal nrformats=bin,octal,hex
+set number
+setlocal number
+setlocal numberwidth=4
+setlocal omnifunc=
+setlocal path=
+setlocal nopreserveindent
+setlocal nopreviewwindow
+setlocal quoteescape=\\
+setlocal noreadonly
+set relativenumber
+setlocal relativenumber
+setlocal norightleft
+setlocal rightleftcmd=search
+setlocal noscrollbind
+setlocal shiftwidth=2
+setlocal noshortname
+setlocal signcolumn=auto
+setlocal nosmartindent
+setlocal softtabstop=0
+setlocal nospell
+setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
+setlocal spellfile=
+setlocal spelllang=en
+setlocal statusline=
+setlocal suffixesadd=
+setlocal swapfile
+setlocal synmaxcol=3000
+if &syntax != 'extempore'
+setlocal syntax=extempore
+endif
+setlocal tabstop=2
+setlocal tagcase=
+setlocal tags=
+setlocal termkey=
+setlocal termsize=
+setlocal textwidth=90
+setlocal thesaurus=
+setlocal noundofile
+setlocal undolevels=-123456
+setlocal nowinfixheight
+setlocal nowinfixwidth
+set nowrap
+setlocal nowrap
+setlocal wrapmargin=0
+silent! normal! zE
+let s:l = 12 - ((11 * winheight(0) + 30) / 61)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+12
+normal! 031|
+tabnext 3
 set stal=1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

@@ -22,6 +22,7 @@
 (bind-func roll_pass1:[void,Score*,String*]*
   (lambda (score filepath)
     (xml_import score filepath)
+    ;TODO xml read text fields as command literals, transform them into Note* objects in Score*
     ;TODO xml read tempo in xml score
     void))
 
