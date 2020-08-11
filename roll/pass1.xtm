@@ -97,10 +97,6 @@
           (set! res (attributeValue xmlElement i))))
       res)))
 
-
-
-
-
 (bind-func body:[String*,XMLelement*]*
   (lambda (xmlElement)
     (tref xmlElement 4)))
@@ -673,11 +669,12 @@
             (xml_parse (body xmlElement) score state)
             (set_division (get_measure score (- (measureCount state) 1)) (division score))
             (set_beats (get_measure score (- (measureCount state) 1)) (beats state))
-            (set_beatType (get_measure score (- (measureCount state) 1)) (beatType state))
-            (if (= 0 (bpmCount (get_measure score (- (measureCount state) 1))))
-                (push (get_measure score (- (measureCount state) 1))
-                      (cBpmInfo 0 60.0))
-                void))
+            (set_beatType (get_measure score (- (measureCount state) 1)) (beatType state)))
+            ; problem: absolute timing unclear ...
+            ;(if (= 0 (bpmCount (get_measure score (- (measureCount state) 1))))
+            ;    (push (get_measure score (- (measureCount state) 1))
+            ;          (cBpmInfo 0 60.0))
+            ;    void))
           ((equal (name xmlElement) (Str "attributes"))
             (xml_parse (body xmlElement) score state))
           ((equal (name xmlElement) (Str "divisions"))
@@ -691,7 +688,7 @@
           ((equal (name xmlElement) (Str "beat-unit"))
             (set_beatUnit state (body xmlElement)))
           ((equal (name xmlElement) (Str "per-minute"))
-            (set_perMinute state (i64tod (extract_i64 (body xmlElement)))))
+            (set_perMinute state (extract_double (body xmlElement))))
           ((equal (name xmlElement) (Str "beat-unit-dot"))
             (set_beatUnitDot state #t))
           ((equal (name xmlElement) (Str "metronome"))

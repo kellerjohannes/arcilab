@@ -71,8 +71,8 @@
 (bind-func parse_roll
   (lambda (score_filename:String*)
     (set! rollErr (roll_create_logfile (cat2 ROLL_WORKING_PATH (Str "logfile-parser"))))
-    (let ((score (cScore))
-          (configuration (cConfig)))
+    (letz ((score (cScore))
+           (configuration (cConfig)))
       ; DEBUG: (printf "starting roll preparation.\n")
       (roll_preparation configuration)
       (print configuration)
@@ -88,5 +88,7 @@
       (write_to_file score (Str "score-object"))
       ; DEBUG: (printf "writing logfile.\n")
       (roll_close_logfile rollErr)
+      (delete score)
+      (delete configuration)
       void)))
 

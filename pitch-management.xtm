@@ -56,6 +56,10 @@
     (let ((res (Key:[Key*,i64,i64,i64]* p o m)))
       res)))
       
+(bind-func dcKey:[void,Key*]*
+  (lambda (k)
+    (free k)
+    void))
 
 ; Notename* object, describes a pitch based on root, octave and alteration
 (bind-type Notename <String*,i64,String*>)
@@ -107,6 +111,11 @@
   (lambda (r o a)
     (let ((res (Notename:[Notename*,String*,i64,String*]* r o a)))
       res)))
+
+(bind-func dcNotename:[void,Notename*]*
+  (lambda (nn)
+    (free nn)
+    void))
 
 
 ; Tabulature* object, stores references from Notename* to Key*, usually read from a file
@@ -180,6 +189,12 @@
       (let ((res (Tabulature:[Tabulature*,i64,Notename**,Key**]* 0 tmpNotenames tmpKeys)))
         res))))
 
+(bind-func delete:[void,Tabulature*]*
+  (lambda (tab)
+    (free (tref tab 1))
+    (free (tref tab 2))
+    void))
+
 (bind-func tab_extract_notename:[Notename*,String*]*
   (lambda (data)
     (let ((loc:|6,i64|* (salloc))
@@ -227,9 +242,6 @@
             (else (let ((data (Str filedata)))
                     (tab_read_lines tab data))))
       void)))
-
-
-
 
 (bind-func lookup_key_pitchclass:[i64,Tabulature*,String*,i64,String*]*
   (lambda (tab nnRoot nnOctave nnAccidental)

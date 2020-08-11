@@ -278,6 +278,10 @@
                      null)))
        res)))
 
+(bind-func dcNote:[void,Note*]*
+  (lambda (n)
+    (free n)
+    void))
 
 (bind-func print:[void,Note*]*
   (lambda (n)
@@ -397,6 +401,11 @@
     (let ((res (bpmInfo:[bpmInfo*,i64,double]* t v)))
       (print res)
       res)))
+
+(bind-func dcBpmInfo:[void,bpmInfo*]*
+  (lambda (b)
+    (free b)
+    void))
 
 (bind-func write_to_file:[void,bpmInfo*,i8*]*
   (lambda (bpm file)
@@ -636,6 +645,11 @@
         res))))
 
 
+(bind-func delete:[void,Measure*]*
+  (lambda (m)
+    (free (tref m 8))
+    (free (tref m 6))
+    void))
 
 
 
@@ -728,3 +742,10 @@
                          tmp)))
         res))))
 
+(bind-func delete:[void,Score*]*
+  (lambda (s)
+    (let ((i 0))
+      (dotimes (i (measureCount s))
+        (delete (get_measure s i)))
+      (free (tref s 2))
+      void)))
