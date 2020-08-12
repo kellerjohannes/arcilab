@@ -1,3 +1,4 @@
+
 ; XMLpair element, stores two strings, a first element, and the rest of the xml data
 (bind-type XMLpair <String*,String*>)
 ; 0 xml data
@@ -892,28 +893,460 @@
                void))
                 void))
 
-; scans the xml score for all measure divisions, writes highest value in maxDivision
-(bind-func xml_pre_parse:[void,String*,i64*,i64*]*
-  (lambda (xmlData maxDivision currentDivision)
-    (cond ((null? xmlData) (roll_error rollErr
-                                       (Str "Roll, xml_pre_parse: undefined xmlData pointer.  No parsing possible.")
-                                       ROLL_ERR_FLAG_FATAL
-                                       ROLL_ERR_DEST_ALL)
-                           void)
-          ((= 0 (length xmlData)) void)
+
+
+
+
+
+
+
+(bind-func find_first:[i64,i8*,i64,i8*]*
+  (lambda (data in x)
+    (cond ((or (< in 0) (>= in (strlen data)))
+            (printf "find_first: index out of range.\n")
+            -1)
           (else
-            (let ((first (substring xmlData 0 2)))
-              (cond ((equal first (Str "<?"))
+            (let ((i 0)
+                  (res -1))
+              (dotimes (i (- (strlen data) in))
+                (if (= (pref data (+ i in)) (pref x 0))
+                    (begin (set! res (+ i in))
+                           (set! i (strlen data)))))
+            res)))))
+
+(bind-func find_first_before:[i64,i8*,i64,i8*]*
+  (lambda (data in x)
+    (cond ((or (< in 0) (>= in (strlen data)))
+            (printf "find_first_before: index out of range.\n")
+            -1)
+          (else
+            (let ((i 0)
+                  (res -1))
+              (dotimes (i (+ 1 in))
+                (if (= (pref data (- in i)) (pref x 0))
+                    (begin (set! res (- in i))
+                           (set! i (+ 1 in)))))
+              res)))))
+
+(bind-func equal_substring:[i1,i8*,i64,i64,i8*]*
+  (lambda (data in out x)
+    (cond ((<= (- out in) 0) 
+            (printf "equal_substring: index out of range.\n")
+            #f)
+          ((not (= (+ 1 (- out in)) (strlen x)))
+            (printf "equal_substring: length of search string doesn't match length of in-out-points.\n")
+            #f)
+          (else
+            (let ((tmp:i8* (salloc (strlen x))))
+              (memcpy tmp (pref-ptr data in) (strlen x))
+              ;DEBUG: (printf "compare: '%s' to '%s'\n" tmp x)
+              (if (= (strcmp tmp x) 0)
+                #t
+                #f))))))
+
+(bind-func equal_substrings:[i1,i8*,i64,i64,i64,i64]*
+  (lambda (data inA outA inB outB)
+  ; needs more safety checks
+    (cond ((null? data) (printf "equal_substrings: empty data pointer.\n") #f)
+          (else
+            (let* ((len (+ 1 (- outA inA)))
+                   (tmpA:i8* (salloc (+ 1 len)))
+                   (tmpB:i8* (salloc (+ 1 len))))
+              (memcpy tmpA (pref-ptr data inA) len)
+              (memcpy tmpB (pref-ptr data inB) len)
+              (pset! tmpA len 0)
+              (pset! tmpB len 0)
+              (printf "%s vs. %s\n" tmpA tmpB)
+              (if (= (strcmp tmpA tmpB) 0)
+                #t
+                #f))))))
+
+(bind-func find_substring:[i64,i8*,i64,i64,i8*]*
+  (lambda (data in out x)
+    (cond ((<= (- out in) 0) 
+            (printf "equal_substring: index out of range.\n")
+            -1)
+          (else
+            (let ((i 0)
+                  (res -1)
+                  (tmp:i8* (salloc (strlen x))))
+              (dotimes (i (+ 2 (- out in (strlen x))))
+                (memcpy tmp (pref-ptr data (+ i in)) (strlen x))
+                (if (= (strcmp tmp x) 0)
+                    (begin (set! res (+ i in))
+                           (set! i (strlen data)))))
+              res)))))
+                
+(bind-func xml_skip_bracket_pair:[i64,i8*,i64]*
+  (lambda (xmlData in)
+    (cond ((or (< in 0) (>= in (strlen xmlData)))
+            (printf "xml_skip_element: in point out of range.\n")
+            in)
+          (else
+            (let* ((firstLeftBracket (find_first xmlData in "<"))
+                   (secondLeftBracket (find_first xmlData (+ 1 firstLeftBracket) "<"))
+                   (firstRightBracket (find_first xmlData in ">")))
+              (cond ((> secondLeftBracket firstRightBracket) 
+                      firstRightBracket)
+                    ((= secondLeftBracket -1)
+                      (printf "xml_skip_element: nothing to skip here.\n")
+                      in)
+                    (else (printf "xml_skip_element: malformed brackets.\n") in)))))))
+
+(bind-type XMLTree <i64,i64,i64,i64,i64,i64*,i64*,i64*,i64*,i64,i64,XMLTree*,XMLTree*,XMLTree*>)
+; 0 element in
+; 1 element out
+; 2 name in
+; 3 name out
+; 4 attribute count
+; 5 attribute names in
+; 6 attribute names out
+; 7 attribute values in
+; 8 attribute values out
+; 9 body in
+; 10 body out
+; 11 parent (xmltree pointer)
+; 12 child (xmltree pointer)
+; 13 sibling (xmltree pointer)
+
+(bind-func elementIn:[i64,XMLTree*]*
+  (lambda (tree)
+    (tref tree 0)))
+
+(bind-func elementOut:[i64,XMLTree*]*
+  (lambda (tree)
+    (tref tree 1)))
+
+(bind-func set_elementIn:[void,XMLTree*,i64]*
+  (lambda (tree in)
+    (tset! tree 0 in)
+    void))
+
+(bind-func set_element:[void,XMLTree*,i64,i64]*
+  (lambda (tree in out)
+    (tset! tree 0 in)
+    (tset! tree 1 out)
+    void))
+
+(bind-func nameIn:[i64,XMLTree*]*
+  (lambda (tree)
+    (tref tree 2)))
+
+(bind-func nameOut:[i64,XMLTree*]*
+  (lambda (tree)
+    (tref tree 3)))
+
+(bind-func set_name:[void,XMLTree*,i64,i64]*
+  (lambda (tree in out)
+    (tset! tree 2 in)
+    (tset! tree 3 out)
+    void))
+
+(bind-func attributeCount:[i64,XMLTree*]*
+  (lambda (tree)
+    (tref tree 4)))
+
+(bind-func set_attributeCount:[void,XMLTree*,i64]*
+  (lambda (tree cnt)
+    (tset! tree 4 cnt)
+    void))
+
+(bind-func attributeNameIn:[i64,XMLTree*,i64]*
+  (lambda (tree index)
+    (cond ((or (< index 0) (> index (attributeCount tree)))
+            (printf "attribute: index out of range.\n")
+            0)
+          (else (pref (tref tree 5) index)))))
+
+(bind-func attributeNameOut:[i64,XMLTree*,i64]*
+  (lambda (tree index)
+    (cond ((or (< index 0) (> index (attributeCount tree)))
+            (printf "attribute: index out of range.\n")
+            0)
+          (else (pref (tref tree 6) index)))))
+
+(bind-func attributeValueIn:[i64,XMLTree*,i64]*
+  (lambda (tree index)
+    (cond ((or (< index 0) (> index (attributeCount tree)))
+            (printf "attribute: index out of range.\n")
+            0)
+          (else (pref (tref tree 7) index)))))
+
+(bind-func attributeValueIn:[i64,XMLTree*,i64]*
+  (lambda (tree index)
+    (cond ((or (< index 0) (> index (attributeCount tree)))
+            (printf "attribute: index out of range.\n")
+            0)
+          (else (pref (tref tree 8) index)))))
+
+(bind-func set_attributes:[void,XMLTree*,i64*,i64*,i64*,i64*]*
+  (lambda (tree nameIn nameOut valueIn valueOut)
+    (cond ((not (null? (tref tree 5))) (free (tref tree 5)))
+          ((not (null? (tref tree 6))) (free (tref tree 6)))
+          ((not (null? (tref tree 7))) (free (tref tree 7)))
+          ((not (null? (tref tree 8))) (free (tref tree 8)))
+          (else
+            (tset! tree 5 nameIn)
+            (tset! tree 6 nameOut)
+            (tset! tree 7 valueIn)
+            (tset! tree 8 valueOut)
+            void))))
+
+(bind-func bodyIn:[i64,XMLTree*]*
+  (lambda (tree)
+    (tref tree 9)))
+
+(bind-func bodyOut:[i64,XMLTree*]*
+  (lambda (tree)
+    (tref tree 10)))
+
+(bind-func set_body:[void,XMLTree*,i64,i64]*
+  (lambda (tree in out)
+    (tset! tree 9 in)
+    (tset! tree 10 out)
+    void))
+
+(bind-func get_parent:[XMLTree*,XMLTree*]*
+  (lambda (tree)
+    (tref tree 11)))
+
+(bind-func set_parent:[void,XMLTree*,XMLTree*]*
+  (lambda (tree parent)
+    (tset! tree 11 parent)
+    void))
+
+(bind-func get_child:[XMLTree*,XMLTree*]*
+  (lambda (tree)
+    (tref tree 12)))
+
+(bind-func set_child:[void,XMLTree*,XMLTree*]*
+  (lambda (tree child)
+    (tset! tree 12 child)
+    void))
+
+(bind-func get_sibling:[XMLTree*,XMLTree*]*
+  (lambda (tree)
+    (tref tree 13)))
+
+(bind-func set_sibling:[void,XMLTree*,XMLTree*]*
+  (lambda (tree sibling)
+    (tset! tree 13 sibling)
+    void))
+
+(bind-func cXMLTree:[XMLTree*,XMLTree*,i64,i64]* 
+  (lambda (parent in out)
+    (let ((res
+    (XMLTree:[XMLTree*,i64,i64,i64,i64,i64,i64*,i64*,i64*,i64*,i64,i64,XMLTree*,XMLTree*,XMLTree*]*
+                           in
+                           out
+                           -1
+                           -1
+                           0
+                           null
+                           null
+                           null
+                           null
+                           -1
+                           -1
+                           parent
+                           null
+                           null)))
+       res)))
+
+(bind-func count_attributes:[i64,i8*,i64]*
+  (lambda (xmlData in)
+    (cond ((null? xmlData) (printf "count_attributes: empty xmlData pointer.\n") 0)
+          (else
+            (let ((firstRightBracket (find_first xmlData in ">"))
+                  (firstEqual (find_first xmlData in "=")))
+              (cond ((= -1 firstRightBracket) (printf "count_attributes: no closing '>' found.\n") 0)
+                    ((= -1 firstEqual) 0)
+                    ((> firstEqual firstRightBracket) 0)
+                    (else
+                      (+ 1 (count_attributes xmlData (+ 1 firstEqual))))))))))
+
+(bind-func fill_attributes:[void,i8*,i64,i64*,i64*,i64*,i64*,i64]*
+  (lambda (xmlData in nameIn nameOut valueIn valueOut index)
+    (cond ((null? xmlData) (printf "fill_attributes: empty xmlData pointer.\n") void)
+          ((<= index 0) void)
+          (else
+            (let* ((firstEqual (find_first xmlData in "="))
+                   (firstSpace (find_first_before xmlData firstEqual " "))
+                   (firstQuotes (find_first xmlData firstEqual "\""))
+                   (secondQuotes (find_first xmlData (+ firstQuotes 1) "\"")))
+              (pset! nameIn (- index 1) (+ firstSpace 1))
+              (pset! nameOut (- index 1) (- firstEqual 1))
+              (pset! valueIn (- index 1) (+ firstQuotes 1))
+              (pset! valueOut (- index 1) (- secondQuotes 1))
+              (fill_attributes xmlData (+ secondQuotes 1) nameIn nameOut valueIn valueOut (- index 1)))))))
+
+(bind-func extract_attributes:[void,XMLTree*,i8*]*
+  (lambda (tree xmlData)
+    (cond ((null? tree) (printf "extract_attributes: empty tree pointer.\n") void)
+          ((null? xmlData) (printf "extract_attributes: empty xmlData pointer.\n") void)
+          (else
+            (let ((numAttributes (count_attributes xmlData (elementIn tree))))
+              (printf "num att: %lld\n" numAttributes)
+              (let ((nameIn:i64* (halloc numAttributes))
+                    (nameOut:i64* (halloc numAttributes))
+                    (valueIn:i64* (halloc numAttributes))
+                    (valueOut:i64* (halloc numAttributes))
+                    (i 0))
+                (fill_attributes xmlData (elementIn tree) nameIn nameOut valueIn valueOut numAttributes)
+                (set_attributeCount tree numAttributes)
+                (set_attributes tree nameIn nameOut valueIn valueOut)
+              void))))))
+
+(bind-func top_order:[i64,i64,i64,i64]*
+  (lambda (a b c)
+    (cond ((and (= a -1) (= b -1) (= c -1))
+            (printf "top_order: all candidates are -1, something went wrong.\n")
+            -1)
+          ((and (= a -1) (= b -1)) c)
+          ((and (= a -1) (= c -1)) b)
+          ((and (= b -1) (= c -1)) a)
+          ((= a -1)
+            (if (< b c) b c))
+          ((= b -1)
+            (if (< a c) a c))
+          ((= c -1)
+            (if (< a b) a b))
+          (else
+            (if (< a b)
+                (if (< a c) a c)
+                (if (< b c)
+                    b
+                    c))))))
+
+; takes a XMLTree* object that has only the in and out values defined, reads the rest of
+; the values and fills in its siblins and children if necessary. return the last position
+; in xmlData that was read
+(bind-func xml_grow_tree:[i64,XMLTree*,i8*]*
+  (lambda (tree xmlData)
+    (cond ((null? tree) (printf "xml_grow_tree: invalid tree pointer.\n") 0)
+          ((null? xmlData) (printf "xml_grow_tree: invalid xmlData pointer.\n") 0)
+          (else 
+            (set_elementIn tree (find_first xmlData (elementIn tree) "<"))
+            (cond ((< (elementIn tree) 0) 
+                    (printf "no further '<' to be found. this should not happen.\n")
+                    (- (strlen xmlData) 1))
+                  ((equal_substring xmlData (elementIn tree) (+ (elementIn tree) 1) "<?")
+                    (printf "xml_grow_tree: dealing with '<?' element\n")
+                    ; ...
+                    ; to be checked:
+                    (find_first xmlData (elementIn tree) ">"))
+                  ((equal_substring xmlData (elementIn tree) (+ (elementIn tree) 1) "<!")
+                    (printf "xml_grow_tree: dealing with '<!' element\n")
+                    ; ...
+                    ; to be checked:
+                    (find_first xmlData (elementIn tree) ">"))
+                  (else
+                    (printf "dealing with normal element ...\n")
+                    (let ((secondLeftBracket (find_first xmlData (+ (elementIn tree) 1) "<"))
+                          (firstRightBracket (find_first xmlData (elementIn tree) ">"))
+                          (firstEqual (find_first xmlData (elementIn tree) "="))
+                          (firstSpace (find_first xmlData (elementIn tree) " "))
+                          (firstSlash (find_first xmlData (elementIn tree) "/")))
+                      (cond ((< firstRightBracket (elementIn tree))
+                              (printf "malformed brackets.\n")
+                              firstRightBracket)
+                            (else
+                              (let ((nameOut (top_order firstSpace firstSlash firstRightBracket)))
+                                (set_name tree (+ (elementIn tree) 1) nameOut)
+                                (if (and (not (firstEqual -1))
+                                         (< firstEqual firstRightBracket))
+                                    (extract_attributes tree xmlData)
+                                    void)
+                                (cond ((= firstSlash (- firstRightBracket 1))
+                                        (set_body tree -1 -1)
+                                        (let ((nextLeftBracket (find_first xmlData firstRightBracket)))
+                                          (cond ((< nextLeftBracket 0) firstRightBracket)
+                                                (else 
+                                                  (let ((sibling (cXMLTree tree nextLeftBracket)))
+                                                    (set_sibling tree sibling)
+                                                    (grow_tree sibling xmlData))))))
+                                      (else
+                                        (cond ((and (equal_substring xmlData (+ 1 secondLeftBracket) (+ 1 secondLeftBracket) "/")
+                                                    (equal_substrings xmlData (nameIn tree) (nameOut tree) (+ 2 secondLeftBracket) (- (find_first xmlData secondLeftBracket ">") 1)))
+                                                (set_body tree (+ 1 firstRightBracket) (secondLeftBracket))
+                                                (let ((nextLeftBracket (find_first xmlData firstSlash "<")))
+                                                  (cond ((< nextLeftBracket 0) firstRightBracket)
+                                                        (else
+                                                          (let ((sibling (cXMLTree tree nextLeftBracket)))
+                                                            (set_sibling tree sibling)
+                                                            (grow_tree sibling xmlData))))))
+                                              (else
+                                                (let ((child (cXMLTree tree nextLeftBracket)))
+                                                  (set_child tree child)
+                                                  (let* ((endChildren (grow_tree child xmlData))
+                                                         (endIn (find_first xmlData endChildren "</"))
+                                                         (nextSibling (find_first xmlData (+ 1 endIn) "<")))
+                                                    (cond ((< endIn 0) 
+                                                            (printf "xml_grow_tree: no endtag found, malformed xmlData.\n")
+                                                            endChildren)
+                                                          ((equal_substrings xmlData (nameIn tree) (nameOut tree) (+ 2 endIn) (- (find_first xmlData endIn ">") 1))
+                                                            (cond ((< nextSibling 0) (find_first xmlData endIn ">"))
+                                                                  (else
+                                                                    (let ((sibling (cXMLTree tree nextSibling)))
+                                                                      (set_sibling tree sibling)
+                                                                      (grow_tree sibling xmlData)))))
+                                                          (else 
+                                                            (printf "xml_grow_tree: no endtag found, malformed xmlData.\n")
+                                                            endIn))))))))))))))))))))))
+                                                            
+                                                    
+
+
+
+
+                              ((= firstSlash (- firstRightBracket 1))
+                                (cond ((or (< firstEqual 0))
+                                           (> firstEqual firstRightBracket))
+                                         (
+    
+
+
+
+
+
+
+
+
+
+
+
+; scans the xml score for all measure divisions, writes highest value in maxDivision
+(bind-func xml_pre_parse:[void,i8*,i64,i64,i64*,i64*]*
+  (lambda (xmlData in out maxDivision currentDivision)
+    (cond ((null? xmlData) 
+            (roll_error rollErr (Str "Roll, xml_pre_parse: undefined xmlData pointer.  No parsing possible.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL)
+            void)
+          ((<= (- out in) 0) 
+            (roll_error rollErr (Str "Roll, xml_pre_parse: indices out of range.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL) void)
+          (else
+            (let ((element (cXmlElement)))
+              (xml_read_element element xmlData in)
+              void)))))
+
+            (let ((newIn in))
+              (set! newIn (find_first xmlData in "<"))
+              (printf "new in = %lld\n" newIn)
+              (cond ((equal_substring xmlData 0 1 "<?")
                       ;DEBUG: (printf "xmlData:\n%s\n" (cstring (xml_skip_version_element xmlData)))
+                      (set! newIn (xml_skip_bracket_pair xmlData newIn))
                       ;DEBUG: 
-                      (printf "version element skipped\n")
-                      (xml_pre_parse (xml_skip_version_element xmlData) maxDivision currentDivision))
-                    ((equal first (Str "<!"))
+                      (printf "version element skipped, new in = %lld\n" newIn)
+                      (xml_pre_parse xmlData newIn out maxDivision currentDivision))
+                    ((equal_substring xmlData 0 1 "<!")
                       ;DEBUG: ;(printf "xmlData:\n%s\n" (cstring (xml_skip_doctype_element xmlData)))
+                      (set! newIn (xml_skip_bracket_pair xmlData newIn))
                       ;DEBUG: 
-                      (printf "doctype element skipped\n")
-                      (xml_pre_parse (xml_skip_doctype_element xmlData) maxDivision currentDivision))
-                    (else 
+                      (printf "doctype element skipped, new in = %lld\n" newIn)
+                      (xml_pre_parse xmlData newIn out maxDivision currentDivision))
+                    (else
+                      (printf "nix passiert\n")
+                      void)))))))
+  
                       (let ((pair (xml_divide xmlData))
                             (xmlElement (cXMLelement)))
                         ;DEBUG: (print pair)
@@ -925,41 +1358,67 @@
                         (xml_pre_interpret_element xmlElement maxDivision currentDivision)
                         (delElement xmlElement)
                         (xml_pre_parse (xml_cdr pair) maxDivision currentDivision)))))))))
-    
+      
 
 
+(bind-func test
+  (lambda ()
+    (letz ((xmlData (sys_slurp_file "/home/johannes/Coding/extempore/arcilab/scores/anna/anna9.xml")))
+      (printf "%lld\n" (strlen xmlData))
+      (printf "%lld\n" (find_first xmlData 0 "<"))
+      (printf "%s\n" (if (equal_substring xmlData 0 1 "<?") "yes!" "noo"))
+      (printf "%lld\n" (find_substring xmlData 0 (- (strlen xmlData) 1) "@@@")))))
 
-
+($ (test))
 
 (bind-func xml_import:[void,Score*,String*]*
   (lambda (score filepath)
-    (let ((fileData (sys_slurp_file (cstring filepath))))
+    (letz ((xmlData (sys_slurp_file (cstring filepath))))
       (cond
-        ((null? fileData) (roll_error rollErr
+        ((null? xmlData) (roll_error rollErr
                                       (Str "Roll, xml_import: xml file could not be opened. Aborting.")
                                       ROLL_ERR_FLAG_FATAL
                                       ROLL_ERR_DEST_ALL)
                           void)
         (else
-          (let ((xmlFile (Str fileData))
-                (maxDivision:i64* (salloc 1))
+          (let ((maxDivision:i64* (salloc 1))
                 (currentDivision:i64* (salloc 1))
                 (state (cParserState)))
             (pset! maxDivision 0 0)
             (pset! currentDivision 0 0)
-            (roll_error rollErr
-                        (Str "XML file slurped.")
-                        ROLL_ERR_FLAG_INFO
-                        ROLL_ERR_DEST_ALL)
-            ;DEBUG: (printf "file contents:\n%s\n" (cstring xmlFile))
-            (xml_pre_parse xmlFile maxDivision currentDivision)
+            (roll_error rollErr (Str "XML file slurped.") ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_ALL)
+            ;DEBUG: (printf "file contents:\n%s\n" xmlData)
+            (xml_pre_parse xmlData 0 (- (strlen xmlData) 1) maxDivision currentDivision)
             (set_division score (pref maxDivision 0))
             (roll_error rollErr (Str "Pre parse done: score division = ") ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_ALL)
-            (xml_parse xmlFile score state)
-            (roll_error rollErr (Str "XML parsing done.") ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_ALL)
+            ;(xml_parse xmlData score state)
+            ;(roll_error rollErr (Str "XML parsing done.") ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_ALL)
             ;DEBUG: (printf "this went well.\n")
             ;DEBUG: (print state)
             void)))
     void)))
 
+(bind-func test_import
+  (lambda ()
+    (letz ((score (cScore)))
+      (xml_import score (Str "/home/johannes/Coding/extempore/arcilab/scores/anna/anna9.xml"))
+      void)))
 
+($ (test_import))
+
+
+
+
+
+(bind-type subDing <i64,i64>)
+
+(bind-func cSubDing:[subDing*]*
+  (lambda ()
+    (let ((res (subDing:[subDing*,i64,i64]* -1 -1)))
+      res)))
+
+(bind-type ding <i64,subDing*>)
+
+(bind-func cDing:[ding*]*
+  (lambda ()
+    (let ((res (ding:[ding*,i64,
