@@ -1,4 +1,9 @@
-<name1 />
-<name2/>
-<name3 att1="val1" att2="val2" att3="val3" />
-<name4 you="hi" me="yay" they="yolo"/>
+<?bullshit!      ?>
+<!--comment-->
+<family>
+  <mum>
+    <child/>
+    <child/>
+    <child>small body</child>
+  </mum>
+</family>

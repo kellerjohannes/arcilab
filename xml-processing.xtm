@@ -1,904 +1,8 @@
-
-; XMLpair element, stores two strings, a first element, and the rest of the xml data
-(bind-type XMLpair <String*,String*>)
-; 0 xml data
-; 1 xml data
-
-(bind-func xml_car:[String*,XMLpair*]*
-  (lambda (p)
-    (tref p 0)))
-
-(bind-func set_first:[void,XMLpair*,String*]*
-  (lambda (p s)
-    (tset! p 0 s)
-    void))
-
-(bind-func xml_cdr:[String*,XMLpair*]*
-  (lambda (p)
-    (tref p 1)))
-
-(bind-func set_second:[void,XMLpair*,String*]*
-  (lambda (p s)
-    (tset! p 1 s)
-    void))
-
-(bind-func cXMLpair:[XMLpair*,String*,String*]*
-  (lambda (first second)
-    (let ((res (XMLpair:[XMLpair*,String*,String*]* first second)))
-      res)))
-
-(bind-func print:[void,XMLpair*]*
-  (lambda (p)
-    (printf "Pair: first = \n%s\nPair: second = \n%s\n"
-            (cstring (xml_car p))
-            (cstring (xml_cdr p)))
-    void))
-
-
-
-; XMLelement, stores the content of an xml element
-(bind-type XMLelement <String*,i64,String**,String**,String*>)
-; 0 name
-; 1 attribute count
-; 2 attribute names
-; 3 attribute values
-; 4 body
-
-(bind-func name:[String*,XMLelement*]*
-  (lambda (xmlElement)
-    (tref xmlElement 0)))
-
-(bind-func set_name:[void,XMLelement*,String*]*
-  (lambda (xmlElement name)
-    (tset! xmlElement 0 name)
-    void))
-
-(bind-func count:[i64,XMLelement*]*
-  (lambda (xmlElement)
-    (tref xmlElement 1)))
-
-(bind-func set_count:[void,XMLelement*,i64]*
-  (lambda (xmlElement count)
-    (tset! xmlElement 1 count)
-    void))
-
-(bind-func attributeName:[String*,XMLelement*,i64]*
-  (lambda (xmlElement index)
-    (cond ((and (>= index 0) (< index (count xmlElement)))
-            (pref (tref xmlElement 2) index))
-          (else (roll_error rollErr
-                            (Str "Roll, XMLelement:attributeName: index out of range.")
-                            ROLL_ERR_FLAG_FATAL
-                            ROLL_ERR_DEST_ALL)
-                (Str "")))))
-
-(bind-func attributeValue:[String*,XMLelement*,i64]*
-  (lambda (xmlElement index)
-    (cond ((and (>= index 0) (< index (count xmlElement)))
-            (pref (tref xmlElement 3) index))
-          (else (roll_error rollErr
-                            (Str "Roll, XMLelement:attributeValue: index out of range.")
-                            ROLL_ERR_FLAG_FATAL
-                            ROLL_ERR_DEST_ALL)
-                (Str "")))))
-
-(bind-func attribute:[String*,XMLelement*,String*]*
-  (lambda (xmlElement name)
-    (let ((i 0)
-          (res (Str "")))
-      (dotimes (i (count xmlElement)) 
-        (if (equal (attributeName xmlElement i) name)
-          (set! res (attributeValue xmlElement i))))
-      res)))
-
-
-
-
-
-(bind-func body:[String*,XMLelement*]*
-  (lambda (xmlElement)
-    (tref xmlElement 4)))
-
-(bind-func set_body:[void,XMLelement*,String*]*
-  (lambda (xmlElement body)
-    (tset! xmlElement 4 body)
-    void))
-
-(bind-func push_attribute:[void,XMLelement*,String*,String*]*
-  (lambda (xmlElement name value)
-    (let ((tmpNamePtr:String** (halloc (+ 1 (count xmlElement))))
-          (tmpValuePtr:String** (halloc (+ 1 (count xmlElement))))
-          (i 0))
-      (dotimes (i (count xmlElement))
-        (pset! tmpNamePtr i (attributeName xmlElement i))
-        (pset! tmpValuePtr i (attributeValue xmlElement i)))
-      (pset! tmpNamePtr (count xmlElement) name)
-      (pset! tmpValuePtr (count xmlElement) value)
-      (set_count xmlElement (+ 1 (count xmlElement)))
-      (free (tref xmlElement 2))
-      (free (tref xmlElement 3))
-      (tset! xmlElement 2 tmpNamePtr)
-      (tset! xmlElement 3 tmpValuePtr)
-      void)))
-
-(bind-func cXMLelement:[XMLelement*]*
+(bind-func create_cquotes:[i8*]*
   (lambda ()
-    (let ((namePtr:String** (halloc 1))
-          (valuePtr:String** (halloc 1)))
-      (set! namePtr null)
-      (set! valuePtr null)
-      (let ((res (XMLelement:[XMLelement*,String*,i64,String**,String**,String*]*
-                             (Str "")
-                             0
-                             namePtr
-                             valuePtr
-                             (Str ""))))
-         res))))
-
-(bind-func delElement:[void,XMLelement*]*
-  (lambda (xmlElement)
-    (free (tref xmlElement 2))
-    (free (tref xmlElement 3))
-    void))
-
-(bind-func print:[void,XMLelement*]*
-  (lambda (xmlElement)
-    (printf "XML element:\nname = '%s'\n" (cstring (name xmlElement)))
-    (let ((i 0))
-      (dotimes (i (count xmlElement))
-        (printf "attribute #%lld: name = '%s', value = '%s'\n"
-                i
-                (cstring (attributeName xmlElement i))
-                (cstring (attributeValue xmlElement i))))
-      (printf "body:\n%s\n" (cstring (body xmlElement)))
-      void)))
-
-
-
-
-; takes xml data, returns xml data with everything removed until a first occurrence of '<'
-(bind-func xml_delete_until_left_bracket:[String*,String*]*
-  (lambda (xmlData)
-    ; DEBUG: (printf "string received: '%s'\n" (cstring xmlData))
-    (cond ((= 0 (length xmlData)) (Str ""))
-          ((< (find_substring xmlData (Str "<")) 0)
-            (roll_error rollErr (Str "Roll, xml_delete_until_left_bracket: no '<' found, returning complete string.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL) xmlData)
-          (else (split_second xmlData (find_substring xmlData (Str "<")))))))
-
-; takes xml data, returns xml data without the '<?' element
-(bind-func xml_skip_version_element:[String*,String*]*
-  (lambda (xmlData)
-    ; DEBUG: (printf "data received: '%s'\n" (cstring xmlData))
-    (cond ((< (find_substring xmlData (Str "?>")) 0)
-            ; DEBUG: (printf "no success.\n")
-            (roll_error rollErr
-                        (Str "Roll, xml_skip_version_element: no '?>' found, returning complete string.")
-                        ROLL_ERR_FLAG_WARNING
-                        ROLL_ERR_DEST_ALL)
-            xmlData)
-          (else 
-            ; DEBUG: (printf "here we go!\n")
-            (xml_delete_until_left_bracket (split_second xmlData (+ 2 (find_substring xmlData (Str "?>")))))))))
-
-; takes xml data, returns xml data without the '<!' element
-(bind-func xml_skip_doctype_element:[String*,String*]*
-  (lambda (xmlData)
-    (cond ((< (find_substring xmlData (Str ">")) 0)
-            (roll_error rollErr
-                        (Str "Roll, xml_skip_doctype_element: no '>' found, malformed xml data.  Returning complete string.\n")
-                        ROLL_ERR_FLAG_WARNING
-                        ROLL_ERR_DEST_ALL)
-            xmlData)
-          (else (xml_delete_until_left_bracket (split_second xmlData (+ 1 (find_substring xmlData (Str ">")))))))))
-
-; takes xml data, returns a String* containing the name of the first xml element
-(bind-func xml_extract_element_name:[String*,String*]*
-  (lambda (xmlData)
-    (cond ((null? xmlData) (roll_error rollErr
-                                       (Str "Roll, xml_extract_element_name: empty xmlData pointer. Problem.")
-                                       ROLL_ERR_FLAG_FATAL
-                                       ROLL_ERR_DEST_ALL)
-                           null)
-          ((= 0 (length xmlData)) (Str ""))
-          ((< (find_substring xmlData (Str "<")) 0)
-            (roll_error rollErr (Str "Roll, xml_extract_element_name: first character is not '<', can't parse. Returning empty string.")
-                                ROLL_ERR_FLAG_WARNING
-                                ROLL_ERR_DEST_ALL)
-            (Str ""))
-          ((or (< (find_substring xmlData (Str ">")) 0)
-               (< (find_substring xmlData (Str " ")) 0))
-             (roll_error rollErr
-                         (Str "Roll, xml_extract_element_name: no '>' or ' ' found, malformed xml data. Returning empty string.")
-                         ROLL_ERR_FLAG_WARNING
-                         ROLL_ERR_DEST_ALL)
-             (Str ""))
-          (else (substring (xml_delete_until_left_bracket xmlData) 1 (find_substring_or xmlData (Str " ") (Str ">")))))))
-
-; takes a String* with a name (without '<>'), returns a String* with the corresponding endtag
-(bind-func xml_construct_endtag:[String*,String*]*
-  (lambda (name)
-    (cat2 (cat2 (Str "</") name) (Str ">"))))
-
-; takes xml data, returns the index of the second element on the highest level. If there
-; is only one element in the xml data it will return -1.
-(bind-func xml_find_element_separation:[i64,String*]*
-  (lambda (xmlData)
-    (cond ((null? xmlData) (roll_error rollErr
-                                       (Str "Roll, xml_find_element_separation: undefined xmlData pointer. Problem.")
-                                       ROLL_ERR_FLAG_FATAL
-                                       ROLL_ERR_DEST_ALL)
-                           0)
-          ((= 0 (length xmlData)) 0)
-          ((< (find_substring xmlData (Str "<")) 0)
-            (roll_error rollErr (Str "Roll, xml_find_element_separation: first character is not a '<', stop parsing.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL)
-            0)
-          ((< (find_substring xmlData (Str ">")) 0)
-            (roll_error rollErr (Str "Roll, xml_find_element_separation: no '>' found in xml data, stop parsing.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL) 0)
-          (else
-            (let ((titleClose (find_substring xmlData (Str ">"))))
-              (cond ((equal (substring xmlData (- titleClose 1) titleClose) (Str "/"))
-                      (find_substring_from xmlData (Str "<") titleClose))
-                    (else (let* ((name (xml_extract_element_name xmlData))
-                                 (endtag (xml_construct_endtag name))
-                                 (endPos (+ (find_substring xmlData endtag) (length endtag))))
-                            ;DEBUG: (printf "name='%s', endtag='%s', endPos=%lld\n" (cstring name) (cstring endtag) endPos)
-                            (find_substring_from xmlData (Str "<") endPos)))))))))
-
-; takes xml data, returns a XMLpair, 'first' being the first xml element, 'second' being
-; the rest of the xml data
-(bind-func xml_divide:[XMLpair*,String*]*
-  (lambda (xmlData)
-    (cond ((< (find_substring xmlData (Str "<")) 0) 
-            (roll_error rollErr (Str "xml_read_element: first character is not '<', malformed xmlData. This will abort the parsing process.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL)
-            ;DEBUG (printf "critical data: '%s'\n" (cstring xmlData))
-            (cXMLpair (Str "") (Str "")))
-          (else
-            ;DEBUG:
-            (printf "xml data ok, starting to find separation point\n")
-            (let ((splitPoint (xml_find_element_separation xmlData)))
-              ;DEBUG: 
-              (printf "splitpoint: %lld\n" splitPoint)
-              (cond ((<= splitPoint 0)
-                      (let ((res (cXMLpair xmlData (Str "")))) 
-                        res))
-                    (else
-                      (let ((res (cXMLpair (split_second (split_first xmlData splitPoint) (find_substring xmlData (Str "<"))) 
-                                           (split_second xmlData splitPoint))))
-                        res))))))))
-
-; takes a String* with the title data of an xml element (< ... >) and an XMLelement*,
-; extracts the attribute names and values and stores them in the XMLelement*
-(bind-func xml_extract_attribute:[void,String*,XMLelement*]*
-  (lambda (xmlData xmlElement)
-    (cond ((null? xmlData) void)
-          ((= 0 (length xmlData)) void)
-          ((< (find_substring xmlData (Str "=")) 0)
-            (roll_error rollErr (Str "Roll, xml_extract_attribute: no '=' found, stop extraction process.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
-            void)
-          ((< (find_substring xmlData (create_quotes)) 0)
-            (roll_error rollErr (Str "Roll, xml_extract_attribute: no quotes found, stop extraction process.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
-            void)
-          (else (let ((name (split_first xmlData (find_substring xmlData (Str "="))))
-                      (value (substring xmlData (+ 2 (find_substring xmlData (Str "=")))
-                                                (find_substring_from xmlData (create_quotes) (+ 1 (find_substring xmlData (create_quotes))))))
-                      (leftover (split_second xmlData (+ 4 (length name) (length value)))))
-                  (push_attribute xmlElement name value)
-                  (xml_extract_attribute leftover xmlElement))))))
-
-; takes a String* starting with the body of an element, a XMLelement* and a String* with
-; the name of the element; extracts the body and stores it in the XMLelement*
-(bind-func xml_extract_body:[void,String*,XMLelement*,String*]*
-  (lambda (xmlData xmlElement endtag)
-    (cond ((null? xmlData) 
-            (roll_error rollErr (Str "Roll, xml_extract_body: empty xmlData pointer. Did nothing.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
-            void)
-          ((= 0 (length xmlData)) void)
-          ((< (find_substring xmlData endtag) 0)
-            (roll_error rollErr (Str "Roll, xml_extract_body: endtag not found, malformed xml data. Aborting body extraction process.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
-            void)
-          (else (set_body xmlElement (remove_initial_spaces (split_first xmlData (find_substring xmlData endtag))))
-                void))))
-
-; takes xml data and an XMLelement*, extracts name, attributes and body and stores this
-; data in the XMLelement*
-(bind-func xml_read_element:[void,String*,XMLelement*]*
-  (lambda (xmlData xmlElement)
-    (cond ((null? xmlData) 
-            (roll_error rollErr (Str "Roll, xml_read_element: empty xmlData pointer. Did nothing.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
-            void)
-          ((= 0 (length xmlData)) void)
-          ((not (equal (substring xmlData 0 1) (Str "<"))) 
-            (roll_error rollErr (Str "Roll, xml_read_element: first character is not '<'.  Problem?") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
-            void)
-          ((< (find_substring xmlData (Str ">")) 0)
-            (roll_error rollErr (Str "Roll, xml_read_element: no '>' found, malformed xml data. Doing nothing.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
-            void)
-          ((< (find_substring_or xmlData (Str " ") (Str "/")) 0)
-            (roll_error rollErr (Str "Roll, xml_read_element: no ' ' or '/' found, malformed xml data. Doing nothing.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
-            void)
-          ((equal (substring xmlData (- (find_substring xmlData (Str ">")) 1) (find_substring xmlData (Str ">"))) (Str "/"))
-            (set_name xmlElement (substring xmlData 1 (find_substring_or xmlData (Str " ") (Str "/"))))
-            (xml_extract_attribute (substring xmlData (+ (length (name xmlElement)) 2) (find_substring xmlData (Str "/"))) xmlElement)
-            void)
-          (else 
-            (let ((name (xml_extract_element_name xmlData)))
-              (set_name xmlElement name)
-              (cond ((< (find_substring xmlData (Str ">")) 0)
-                      (roll_error rollErr (Str "Roll, xml_read_element: no '>' found, malformed xml data. Doing nothing.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)
-                      void)
-                    (else
-                      (xml_extract_attribute (substring xmlData (+ 2 (length name)) (find_substring xmlData (Str ">"))) xmlElement)
-                      (xml_extract_body (split_second xmlData (+ 1 (find_substring xmlData (Str ">")))) xmlElement (xml_construct_endtag name))
-                      void)))))))
-
-
-
-; ParserState remembers things while reading through xml Data
-(bind-type ParserState <i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,i64,String*,float,i1,String*,String*,String*,String*,String*,i64,String*,String*,double,i1>)
-; 0 part count
-; 1 measure count
-; 2 divisions
-; 3 beats (meter numerator)
-; 4 beat-type (meter denominator)
-; 5 step (note name)
-; 6 octave
-; 7 duration
-; 8 rest
-; 9 timer (within measure)
-; 10 note count
-; 11 accidental
-; 12 alter
-; 13 chord
-; 14 tie (string)
-; 15 parent (name of enclosing xml element)
-; 16 notehead
-; 17 articulation
-; 18 text
-; 19 xml voice assignment
-; 20 pitchInformation (body of <text> in <lyric>)
-; 21 beat-unit (for metronome marks)
-; 22 per-minute (for metronome marks)
-; 23 beat-unit-dot
-
-(bind-func partCount:[i64,ParserState*]*
-  (lambda (ps)
-    (tref ps 0)))
-
-(bind-func set_partCount:[void,ParserState*,i64]*
-  (lambda (ps pc)
-    (tset! ps 0 pc)
-    void))
-
-(bind-func measureCount:[i64,ParserState*]*
-  (lambda (ps)
-    (tref ps 1)))
-
-(bind-func set_measureCount:[void,ParserState*,i64]*
-  (lambda (ps mc)
-    (tset! ps 1 mc)
-    void))
-
-(bind-func divisions:[i64,ParserState*]*
-  (lambda (ps)
-    (tref ps 2)))
-
-(bind-func set_divisions:[void,ParserState*,i64]*
-  (lambda (ps d)
-    (tset! ps 2 d)
-    void))
-    
-(bind-func beats:[i64,ParserState*]*
-  (lambda (ps)
-    (tref ps 3)))
-
-(bind-func set_beats:[void,ParserState*,i64]*
-  (lambda (ps b)
-    (tset! ps 3 b)
-    void))
-
-(bind-func beatType:[i64,ParserState*]*
-  (lambda (ps)
-    (tref ps 4)))
-
-(bind-func set_beatType:[void,ParserState*,i64]*
-  (lambda (ps bt)
-    (tset! ps 4 bt)
-    void))
-
-(bind-func step:[String*,ParserState*]*
-  (lambda (ps)
-    (tref ps 5)))
-
-(bind-func set_step:[void,ParserState*,String*]*
-  (lambda (ps s)
-    (tset! ps 5 s)
-    void))
-
-(bind-func octave:[i64,ParserState*]*
-  (lambda (ps)
-    (tref ps 6)))
-
-(bind-func set_octave:[void,ParserState*,i64]*
-  (lambda (ps o)
-    (tset! ps 6 o)
-    void))
-
-(bind-func duration:[i64,ParserState*]*
-  (lambda (ps)
-    (tref ps 7)))
-
-(bind-func set_duration:[void,ParserState*,i64]*
-  (lambda (ps d)
-    (tset! ps 7 d)
-    void))
-
-(bind-func rest:[i1,ParserState*]*
-  (lambda (ps)
-    (tref ps 8)))
-
-(bind-func set_rest:[void,ParserState*,i1]*
-  (lambda (ps r)
-    (tset! ps 8 r)
-    void))
-
-(bind-func timer:[i64,ParserState*]*
-  (lambda (ps)
-    (tref ps 9)))
-
-(bind-func set_timer:[void,ParserState*,i64]*
-  (lambda (ps t)
-    (tset! ps 9 t)
-    void))
-
-(bind-func noteCount:[i64,ParserState*]*
-  (lambda (ps)
-    (tref ps 10)))
-
-(bind-func set_noteCount:[void,ParserState*,i64]*
-  (lambda (ps nc)
-    (tset! ps 10 nc)
-    void))
-
-(bind-func accidental:[String*,ParserState*]*
-  (lambda (ps)
-    (tref ps 11)))
-
-(bind-func set_accidental:[void,ParserState*,String*]*
-  (lambda (ps a)
-    (tset! ps 11 a)
-    void))
-
-(bind-func alter:[float,ParserState*]*
-  (lambda (ps)
-    (tref ps 12)))
-
-(bind-func set_alter:[void,ParserState*,float]*
-  (lambda (ps a)
-    (tset! ps 12 a)
-    void))
-
-(bind-func chord:[i1,ParserState*]*
-  (lambda (ps)
-    (tref ps 13)))
-
-(bind-func set_chord:[void,ParserState*,i1]*
-  (lambda (ps c)
-    (tset! ps 13 c)
-    void))
-
-(bind-func tie:[String*,ParserState*]*
-  (lambda (ps)
-    (tref ps 14)))
-
-(bind-func set_tie:[void,ParserState*,String*]*
-  (lambda (ps t)
-    (tset! ps 14 t)
-    void))
-
-(bind-func parent:[String*,ParserState*]*
-  (lambda (ps)
-    (tref ps 15)))
-
-(bind-func set_parent:[void,ParserState*,String*]*
-  (lambda (ps p)
-    (tset! ps 15 p)
-    void))
-
-(bind-func notehead:[String*,ParserState*]*
-  (lambda (ps)
-    (tref ps 16)))
-    
-(bind-func set_notehead:[void,ParserState*,String*]*
-  (lambda (ps nh)
-    (tset! ps 16 nh)
-    void))
-
-(bind-func articulation:[String*,ParserState*]*
-  (lambda (ps)
-    (tref ps 17)))
-
-(bind-func set_articulation:[void,ParserState*,String*]*
-  (lambda (ps a)
-    (tset! ps 17 a)
-    void))
-
-(bind-func text:[String*,ParserState*]*
-  (lambda (ps)
-    (tref ps 18)))
-
-(bind-func set_text:[void,ParserState*,String*]*
-  (lambda (ps t)
-    (tset! ps 18 t)
-    void))
-
-(bind-func xmlVoice:[i64,ParserState*]*
-  (lambda (ps)
-    (tref ps 19)))
-
-(bind-func set_xmlVoice:[void,ParserState*,i64]*
-  (lambda (ps v)
-    (tset! ps 19 v)
-    void))
-
-(bind-func pitchInfo:[String*,ParserState*]*
-  (lambda (ps)
-    (tref ps 20)))
-
-(bind-func set_pitchInfo:[void,ParserState*,String*]*
-  (lambda (ps pi)
-    (tset! ps 20 pi)
-    void))
-
-(bind-func beatUnit:[String*,ParserState*]*
-  (lambda (ps)
-    (tref ps 21)))
-
-(bind-func set_beatUnit:[void,ParserState*,String*]*
-  (lambda (ps bu)
-    (tset! ps 21 bu)
-    void))
-
-(bind-func perMinute:[double,ParserState*]*
-  (lambda (ps)
-    (tref ps 22)))
-
-(bind-func set_perMinute:[void,ParserState*,double]*
-  (lambda (ps pm)
-    (tset! ps 22 pm)
-    void))
-
-(bind-func beatUnitDot:[i1,ParserState*]*
-  (lambda (ps)
-    (tref ps 23)))
-
-(bind-func set_beatUnitDot:[void,ParserState*,i1]*
-  (lambda (ps bud)
-    (tset! ps 23 bud)
-    void))
-
-(bind-func cParserState:[ParserState*]*
-  (lambda ()
-    (let ((res (ParserState:[ParserState*,i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,i64,String*,float,i1,String*,String*,String*,String*,String*,i64,String*,String*,double,i1]* 
-                            0 
-                            0
-                            0
-                            4
-                            4
-                            (Str "")
-                            0
-                            0
-                            #f
-                            0
-                            0
-                            (Str "")
-                            0.0
-                            #f
-                            (Str "")
-                            (Str "")
-                            (Str "")
-                            (Str "")
-                            (Str "")
-                            0
-                            (Str "")
-                            (Str "quarter")
-                            60.0
-                            #f)))
-          res)))
-
-(bind-func print:[void,ParserState*]*
-  (lambda (state)
-    (printf "Parser state printout:\npart count = %lld\nmeasure count = %lld\ndivisions = %lld\nbeats = %lld\nbeatType = %lld\nrest = %s\ntimer = %lld\nstep = '%s'\noctave = %lld\nduration = %lld\nnoteCount = %lld\naccidental = '%s'\nalter = %f\nchord = %s\ntie = '%s'\nparent = '%s'\nnotehead = '%s'\narticulation = '%s'\ntext = '%s'\nxml %voice = %lld\npitch info = '%s'\nbeatUnit = '%s'\nperMinute = %f\nbeatUnitDot = %s\n"
-            (partCount state)
-            (measureCount state)
-            (divisions state)
-            (beats state)
-            (beatType state)
-            (if (rest state) "yes" "no")
-            (timer state)
-            (cstring (step state))
-            (octave state)
-            (duration state)
-            (noteCount state)
-            (cstring (accidental state))
-            (ftod (alter state))
-            (if (chord state) "yes" "no")
-            (cstring (tie state))
-            (cstring (parent state))
-            (cstring (notehead state))
-            (cstring (articulation state))
-            (cstring (text state))
-            (xmlVoice state)
-            (cstring (pitchInfo state))
-            (cstring (beatUnit state))
-            (perMinute state)
-            (if (beatUnitDot state) "yes" "no"))
-    void))
-
-
-; transform time value in 'local ticks' (<divisions> of <measure>) into 'global ticks'
-(bind-func recalculate_time:[i64,i64,i64,i64]*
-  (lambda (value globalDivision localDivision)
-     (* (/ value localDivision) globalDivision)))
-
-
-; dummy, for compilation
-(bind-func xml_parse:[void,String*,Score*,ParserState*]* (lambda (a b c) void))
-
-; central parser unit: takes an XMLelement* storage, a Score* storage and a ParserState*
-; storage and reads through the data while filling the Score* object. the final product is
-; a complete Score* object
-(bind-func xml_interpret_element:[void,XMLelement*,Score*,ParserState*]*
-  (lambda (xmlElement score state)
-    (cond ((equal (name xmlElement) (Str "score-partwise"))
-            (roll_error rollErr (Str "Parser: partwise score detected.") ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_FILE)
-            (xml_parse (body xmlElement) score state))
-          ((equal (name xmlElement) (Str "part"))
-            (roll_error rollErr (cat2 (cat2 (Str "Parser: opening part '") (attribute xmlElement (Str "id"))) (Str "'."))
-                                ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_FILE)
-            (set_partCount state (+ 1 (partCount state)))
-            (set_measureCount state 0)
-            (xml_parse (body xmlElement) score state))
-          ((equal (name xmlElement) (Str "measure"))
-            ; push a new measure into Score*
-            (set_measureCount state (+ 1 (measureCount state)))
-            (if (< (measureCount score) (measureCount state))
-              (begin (push score (cMeasure))
-                     (set_number (get_measure score (- (measureCount score) 1)) (measureCount state))
-                     (set_noteCount state 0))
-              (begin (set_noteCount state (- (noteCount (get_measure score (- (measureCount state) 1))) 0))))
-            ; reset measure specific state values
-            (set_timer state 0)
-            ; ...
-            ; read body of <measure>
-            (xml_parse (body xmlElement) score state)
-            (set_division (get_measure score (- (measureCount state) 1)) (division score))
-            (set_beats (get_measure score (- (measureCount state) 1)) (beats state))
-            (set_beatType (get_measure score (- (measureCount state) 1)) (beatType state)))
-            ; problem: absolute timing unclear ...
-            ;(if (= 0 (bpmCount (get_measure score (- (measureCount state) 1))))
-            ;    (push (get_measure score (- (measureCount state) 1))
-            ;          (cBpmInfo 0 60.0))
-            ;    void))
-          ((equal (name xmlElement) (Str "attributes"))
-            (xml_parse (body xmlElement) score state))
-          ((equal (name xmlElement) (Str "divisions"))
-            (set_divisions state (extract_i64 (body xmlElement))))
-          ((equal (name xmlElement) (Str "time"))
-            (xml_parse (body xmlElement) score state))
-          ((equal (name xmlElement) (Str "beats"))
-            (set_beats state (extract_i64 (body xmlElement))))
-          ((equal (name xmlElement) (Str "beat-type"))
-            (set_beatType state (extract_i64 (body xmlElement))))
-          ((equal (name xmlElement) (Str "beat-unit"))
-            (set_beatUnit state (body xmlElement)))
-          ((equal (name xmlElement) (Str "per-minute"))
-            (set_perMinute state (i64tod (extract_i64 (body xmlElement)))))
-          ((equal (name xmlElement) (Str "beat-unit-dot"))
-            (set_beatUnitDot state #t))
-          ((equal (name xmlElement) (Str "metronome"))
-            (set_beatUnitDot state #f)
-            (set_beatUnit state (Str "quarter"))
-            (set_perMinute state 60.0)
-            (xml_parse (body xmlElement) score state)
-            (push (get_measure score (- (measureCount state) 1)) 
-                  (cBpmInfo (timer state) (normalize_bpm (beatUnit state) (perMinute state) (beatUnitDot state)))))
-          ((equal (name xmlElement) (Str "note"))
-            ; reset note specific data:
-            (set_step state (Str ""))
-            (set_octave state 0)
-            (set_duration state 0)
-            (set_rest state #f)
-            (set_accidental state (Str "natural"))
-            (set_alter state 0.0)
-            (set_chord state #f)
-            (set_tie state (Str ""))
-            (set_notehead state (Str "normal"))
-            (set_articulation state (Str "normal"))
-            (set_text state (Str "x"))
-            (set_xmlVoice state 0)
-            ; read body of <note>:
-            (set_parent state (name xmlElement))
-            (xml_parse (body xmlElement) score state)
-            ; act on data in ParserState*:
-            ;   in case chord is true, set timer to starttime of previous note
-            (if (chord state)
-              (set_timer state (startTime (get_note (get_measure score (- (measureCount state) 1)) (- (noteCount state) 1)))))
-            ;   in case rest is false, push a new note into score and fill with data
-            ;      (rests are not written into Score*)
-            (if (not (rest state))
-              (let ((currentMeasure (get_measure score (- (measureCount state) 1))))
-                (push currentMeasure (cNote))
-                (set_noteCount state (+ (noteCount state) 1))
-                (let ((currentNote (get_note currentMeasure (- (noteCount state) 1))))
-                  ; write note specific data into score:
-                  (set_startTime currentNote (timer state))
-                  (set_root currentNote (step state))
-                  (set_octave currentNote (octave state))
-                  (set_duration currentNote (duration state))
-                  (set_accidental currentNote (accidental state))
-                  (set_alter currentNote (alter state))
-                  (cond ((equal (tie state) (Str "")) (set_tie currentNote ROLL_TIE_NONE))
-                        ((equal (tie state) (Str "start")) (set_tie currentNote ROLL_TIE_START))
-                        ((equal (tie state) (Str "stop")) (set_tie currentNote ROLL_TIE_END))
-                        ((equal (tie state) (Str "both")) (set_tie currentNote ROLL_TIE_WITHIN))
-                        (else (set_tie currentNote -1)))
-                  (set_part currentNote (- (partCount state) 1))
-                  (set_notehead currentNote (notehead state))
-                  (set_articulation currentNote (articulation state))
-                  (set_xmlVoice currentNote (xmlVoice state))
-                  (set_color currentNote (attribute xmlElement (Str "color")))
-                  (if (not (equal (text state) (Str "x")))
-                    (begin 
-                    ; to be reworked!
-                    (printf "wohohooooo\n")
-                    (cond ((equal (substring (text state) 0 1) (Str "!"))
-                            (set_command currentNote (split_second (text state) 1)))
-                          ((equal (substring (text state) 0 1) (Str "p"))
-                            (set_pitchInfo currentNote (text state)))  
-                          (else (roll_error rollErr (Str "Roll, xml_parse: textfield prefix unknown.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)))))
-                  ; ...
-                  void)))
-            ; update time
-            (set_timer state (+ (timer state) (duration state)))
-            void)
-          ((equal (name xmlElement) (Str "pitch"))
-            (xml_parse (body xmlElement) score state))
-          ((equal (name xmlElement) (Str "lyric"))
-            (xml_parse (body xmlElement) score state))
-          ((equal (name xmlElement) (Str "direction"))
-            (xml_parse (body xmlElement) score state))
-          ((equal (name xmlElement) (Str "direction-type"))
-            (xml_parse (body xmlElement) score state))
-          ((equal (name xmlElement) (Str "text"))
-            (set_pitchInfo state (body xmlElement)))
-          ((equal (name xmlElement) (Str "rest"))
-            (set_rest state #t))
-          ((equal (name xmlElement) (Str "chord"))
-            (set_chord state #t))
-          ((equal (name xmlElement) (Str "tie"))
-            (cond ((and (equal (tie state) (Str "stop"))
-                        (equal (attribute xmlElement (Str "type")) (Str "start")))
-                    (set_tie state (Str "both")))
-                  ((and (equal (tie state) (Str "start"))
-                        (equal (attribute xmlElement (Str "type")) (Str "stop")))
-                    (set_tie state (Str "both")))
-                  (else (set_tie state (attribute xmlElement (Str "type"))))))
-          ((equal (name xmlElement) (Str "step"))
-            (set_step state (body xmlElement)) void)
-          ((equal (name xmlElement) (Str "voice"))
-            (set_xmlVoice state (extract_i64 (body xmlElement))))
-          ((equal (name xmlElement) (Str "octave"))
-            (set_octave state (extract_i64 (body xmlElement))))
-          ((equal (name xmlElement) (Str "duration"))
-            (cond ((equal (parent state) (Str "note"))
-                    (set_duration state (recalculate_time (extract_i64 (body xmlElement)) (division score) (divisions state))))
-                  ((equal (parent state) (Str "backup"))
-                    (set_timer state (- (timer state) (recalculate_time (extract_i64 (body xmlElement)) (division score) (divisions state)))))
-                  ((equal (parent state) (Str "forward"))
-                    (set_timer state (+ (timer state) (recalculate_time (extract_i64 (body xmlElement)) (division score) (divisions state)))))
-                  (else (roll_error rollErr (Str "Roll, xml_parse: unknown parent of <duration>.") ROLL_ERR_FLAG_WARNING ROLL_ERR_DEST_ALL)) void))
-          ((equal (name xmlElement) (Str "accidental"))
-            (set_accidental state (body xmlElement)))
-          ((equal (name xmlElement) (Str "notehead"))
-            (set_notehead state (body xmlElement)))
-          ((equal (name xmlElement) (Str "articulations"))
-            (xml_parse (body xmlElement) score state))
-          ((equal (name xmlElement) (Str "notations"))
-            (xml_parse (body xmlElement) score state))
-          ((or (equal (name xmlElement) (Str "tenuto"))
-               (equal (name xmlElement) (Str "staccato"))
-               (equal (name xmlElement) (Str "accent")))
-            (if (equal (articulation state) (Str "normal"))
-              (set_articulation state (name xmlElement))
-              (set_articulation state (cat2 (articulation state) (name xmlElement)))))
-          ((equal (name xmlElement) (Str "alter"))
-            (set_alter state (extract_float (body xmlElement))))
-          ((equal (name xmlElement) (Str "backup"))
-            (set_parent state (name xmlElement))
-            (xml_parse (body xmlElement) score state))
-          ((equal (name xmlElement) (Str "forward"))
-            (set_parent state (name xmlElement))
-            (xml_parse (body xmlElement) score state))
-          (else 
-               ; (roll_error rollErr
-               ;             (cat2 (cat2 (Str "Roll, xml_interpret_element: ignoring element '") (name xmlElement)) (Str "' and its content and sub-elements."))
-               ;             ROLL_ERR_FLAG_INFO
-               ;             ROLL_ERR_DEST_ALL))
-               void)
-                void)))
-
-
-
-(bind-func xml_parse:[void,String*,Score*,ParserState*]*
-  (lambda (xmlData score state)
-    (cond ((null? xmlData) (roll_error rollErr
-                                       (Str "Roll, xml_parse: undefined xmlData pointer.  No parsing possible.")
-                                       ROLL_ERR_FLAG_FATAL
-                                       ROLL_ERR_DEST_ALL)
-                           void)
-          ((= 0 (length xmlData)) void)
-          (else
-            (let ((first (substring xmlData 0 2)))
-              (cond ((equal first (Str "<?"))
-                      ;DEBUG: (printf "xmlData:\n%s\n" (cstring (xml_skip_version_element xmlData)))
-                      (xml_parse (xml_skip_version_element xmlData) score state))
-                    ((equal first (Str "<!"))
-                      ;DEBUG: ;(printf "xmlData:\n%s\n" (cstring (xml_skip_doctype_element xmlData)))
-                      (xml_parse (xml_skip_doctype_element xmlData) score state))
-                    (else 
-                      (let ((pair (xml_divide xmlData))
-                            (xmlElement (cXMLelement)))
-                        ;DEBUG: (print pair)
-                        (xml_read_element (xml_car pair) xmlElement)
-                        (xml_interpret_element xmlElement score state)
-                        (delElement xmlElement)
-                        (xml_parse (xml_cdr pair) score state)))))))))
-        
-
-
-
-
-
-
-; dummy, for compiler
-(bind-func xml_pre_parse:[void,String*,i64*,i64*]* (lambda (a b c) void))
-
-; reads through xml data to extract all <divisions> elements in order to determine the highest
-(bind-func xml_pre_interpret_element:[void,XMLelement*,i64*,i64*]*
-  (lambda (xmlElement maxDivision currentDivision)
-    (cond ((equal (name xmlElement) (Str "score-partwise"))
-            (roll_error rollErr (Str "Parser: partwise score detected.") ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_FILE)
-            (xml_pre_parse (body xmlElement) maxDivision currentDivision))
-          ((equal (name xmlElement) (Str "part"))
-            (roll_error rollErr (cat2 (cat2 (Str "Parser: opening part '") (attribute xmlElement (Str "id"))) (Str "'."))
-                                ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_FILE)
-            (xml_pre_parse (body xmlElement) maxDivision currentDivision))
-          ((equal (name xmlElement) (Str "measure"))
-            (pset! currentDivision 0 0)
-            (xml_pre_parse (body xmlElement) maxDivision currentDivision)
-            (if (> (pref currentDivision 0) (pref maxDivision 0))
-              (begin 
-                (pset! maxDivision 0 (pref currentDivision 0))
-                void)))
-          ((equal (name xmlElement) (Str "attributes"))
-            (xml_pre_parse (body xmlElement) maxDivision currentDivision))
-          ((equal (name xmlElement) (Str "divisions"))
-            (pset! currentDivision 0 (extract_i64 (body xmlElement)))
-            void)
-          (else 
-               ; (roll_error rollErr
-               ;             (cat2 (cat2 (Str "Roll, xml_interpret_element: ignoring element '") (name xmlElement)) (Str "' and its content and sub-elements."))
-               ;             ROLL_ERR_FLAG_INFO
-               ;             ROLL_ERR_DEST_ALL))
-               void))
-                void))
-
-
-
-
-
-
-
+    (let ((cs:i8* (halloc 2)))
+      (pfill! cs 34 0)
+      cs)))
 
 (bind-func find_first:[i64,i8*,i64,i8*]*
   (lambda (data in x)
@@ -930,19 +34,21 @@
 
 (bind-func equal_substring:[i1,i8*,i64,i64,i8*]*
   (lambda (data in out x)
-    (cond ((<= (- out in) 0) 
-            (printf "equal_substring: index out of range.\n")
+    (cond ((< (- out in) 0) 
+            (printf "equal_substring: index out of range. in=%lld, out=%lld\n" in out)
             #f)
           ((not (= (+ 1 (- out in)) (strlen x)))
-            (printf "equal_substring: length of search string doesn't match length of in-out-points.\n")
+            ;(printf "equal_substring: length of search string doesn't match length of in-out-points.\n")
             #f)
           (else
-            (let ((tmp:i8* (salloc (strlen x))))
+            (let ((tmp:i8* (salloc (+ 1 (strlen x)))))
               (memcpy tmp (pref-ptr data in) (strlen x))
+              (pset! tmp (strlen x) 0)
               ;DEBUG: (printf "compare: '%s' to '%s'\n" tmp x)
               (if (= (strcmp tmp x) 0)
                 #t
                 #f))))))
+
 
 (bind-func equal_substrings:[i1,i8*,i64,i64,i64,i64]*
   (lambda (data inA outA inB outB)
@@ -975,22 +81,6 @@
                     (begin (set! res (+ i in))
                            (set! i (strlen data)))))
               res)))))
-                
-(bind-func xml_skip_bracket_pair:[i64,i8*,i64]*
-  (lambda (xmlData in)
-    (cond ((or (< in 0) (>= in (strlen xmlData)))
-            (printf "xml_skip_element: in point out of range.\n")
-            in)
-          (else
-            (let* ((firstLeftBracket (find_first xmlData in "<"))
-                   (secondLeftBracket (find_first xmlData (+ 1 firstLeftBracket) "<"))
-                   (firstRightBracket (find_first xmlData in ">")))
-              (cond ((> secondLeftBracket firstRightBracket) 
-                      firstRightBracket)
-                    ((= secondLeftBracket -1)
-                      (printf "xml_skip_element: nothing to skip here.\n")
-                      in)
-                    (else (printf "xml_skip_element: malformed brackets.\n") in)))))))
 
 (bind-type XMLTree <i64,i64,i64,i64,i64,i64*,i64*,i64*,i64*,i64,i64,XMLTree*,XMLTree*,XMLTree*>)
 ; 0 element in
@@ -1094,6 +184,16 @@
             (tset! tree 6 nameOut)
             (tset! tree 7 valueIn)
             (tset! tree 8 valueOut)
+            void))))
+
+(bind-func delete_attributes:[void,XMLTree*]*
+  (lambda (tree)
+    (cond ((not (null? (tref tree 5))) (free (tref tree 5)))
+          ((not (null? (tref tree 6))) (free (tref tree 6)))
+          ((not (null? (tref tree 7))) (free (tref tree 7)))
+          ((not (null? (tref tree 8))) (free (tref tree 8)))
+          (else
+            (printf "delete_attributes: no allocated memory found.\n")
             void))))
 
 (bind-func bodyIn:[i64,XMLTree*]*
@@ -1231,6 +331,13 @@
                     b
                     c))))))
 
+(bind-func output_data:[void,i8*,i64,i64]*
+  (lambda (data in out)
+    (let ((buf:i8* (salloc (+ 2 (- out in)))))
+      (memcpy buf (pref-ptr data in) (+ 1 (- out in)))
+      (pset! buf (+ 1 (- out in)) 0)
+      (printf "  %s\n" buf)
+      void)))
 
 (bind-func output_name:[void,XMLTree*,i8*]*
   (lambda (tree data)
@@ -1274,279 +381,230 @@
               (dotimes (i level)
                 (printf "-"))
               (output_name tree data)
-              (printf ": ")
-              (output_attributes tree data)
+              (if (> (attributeCount tree) 0)
+                (begin
+                  (printf " [")
+                  (output_attributes tree data)
+                  (printf "]")
+                  void))
+              (if (> (bodyIn tree) 0)
+                (begin
+                  (printf ": '")
+                  (output_body tree data)
+                  (printf "'")
+                  void))
               (printf "\n"))
-            (xml_print_tree (get_sibling tree) data level)
-            (xml_print_tree (get_child tree) data (+ 1 level))))))
+            (xml_print_tree (get_child tree) data (+ 1 level))
+            (xml_print_tree (get_sibling tree) data level)))))
 
-(bind-func test
-  (lambda ()
-    (let ((tree (cXMLTree null 0 19))
-          (data (sys_slurp_file "/home/johannes/Coding/extempore/arcilab/scores/anna/test.xml")))
-      (cond ((null? data) (printf "no file found.\n") void)
-            (else
-              (printf "\nreading test tree: \n")
-              (xml_grow_tree tree data)
-              (printf "\ntree grown. this is the tree:\n")
-              (xml_print_tree tree data 0)
-              void)))))
 
-($ (test))
+(bind-val xml_tree_timer i64 0)
 
 (bind-func xml_grow_tree:[i64,XMLTree*,i8*]*
   (lambda (tree data)
     (cond ((null? tree) (printf "xml_grow_tree: no tree pointer found.\n") -1)
           ((null? data) (printf "xml_grow_tree: no data pointer found.\n") -1)
-          ((< (find_first data (elementIn tree) "<") 0) (printf "end of xml structure reached.\n") -1)
+          ((< (find_first data (elementIn tree) "<") 0) (printf "end of xml structure reached. something smells.\n") -1)
           (else
-            (let* ((firstRightBracket (find_first data (elementIn tree) ">"))
+            ;(printf "\nopening a new tree element at position %lld\n" (elementIn tree))
+            ;(printf "%f " (/ (i64tod (elementIn tree)) (i64tod (strlen data))))
+            (if (> (now) (+ xml_tree_timer 40000))
+              (begin
+                (set! xml_tree_timer (now))
+                (printf "%.2f\n" (/ (i64tod (elementIn tree)) (i64tod (strlen data))))
+                void)
+              void)
+            (let* ((res -1)
+                   (firstRightBracket (find_first data (elementIn tree) ">"))
                    (secondLeftBracket (find_first data (+ 1 (elementIn tree)) "<"))
+                   (secondRightBracket (find_first data secondLeftBracket ">"))
                    (firstEqual (find_first data (elementIn tree) "="))
                    (firstSpace (find_first data (elementIn tree) " "))
                    (firstSlash (find_first data (+ 1 (elementIn tree)) "/")))
-                    ; no body, children, possible attributes, possible siblings
-              (cond ((and (not (< firstSlash 0))
-                          (< firstSlash firstRightBracket))
-                      (set_body tree -1 -1)
-                      (set_child tree null)
-                      (set_name tree (+ (elementIn tree) 1) 
-                                     (- (top_order firstSpace firstSlash) 1))
-                      ; extract attributes if existing
-                      (if (and (not (< firstEqual 0))
-                               (< firstEqual firstSlash))
-                            (begin
-                              (extract_attributes tree data))
-                            void)
-                            ; no elements left, returning right bracket which should be end of file
-                      (cond ((< secondLeftBracket 0)
-                              (printf "xml_grow_tree: end of data reached.\n")
-                              firstRightBracket)
-                            ; creating a sibling
-                            (else
-                              (set_elementOut tree firstRightBracket)
-                              (let ((sibling (cXMLTree tree secondLeftBracket)))
-                                (xml_grow_tree sibling data)
-                                (set_sibling tree sibling)
-                                firstRightBracket))))
-                    ; body or children expected
-                    (else (printf "not implemented yet.\n") 0)))))))
-
-
-
-
-
-
-              (cond ((equal_substrings data (+ 1 (elementIn tree))
-                                            (- firstRightBracket 1)
-                                            (+ 2 secondLeftBracket)
-                                            (- secondRightBracket 1))
-                      (set_name tree (+ 1 (elementIn tree)) (- firstRightBracket 1))
-                      (set_body tree (+ 1 firstRightBracket) (- secondLeftBracket 1))
-                      secondRightBracket)
-                    (else (printf "xml_grow_tree: no closing tag found.\n") 0)))))))
-
-; takes a XMLTree* object that has only the in and out values defined, reads the rest of
-; the values and fills in its siblins and children if necessary. return the last position
-; in xmlData that was read
-(bind-func xml_grow_tree:[i64,XMLTree*,i8*]*
-  (lambda (tree xmlData)
-    (cond ((null? tree) (printf "xml_grow_tree: invalid tree pointer.\n") 0)
-          ((null? xmlData) (printf "xml_grow_tree: invalid xmlData pointer.\n") 0)
-          (else 
-            (set_elementIn tree (find_first xmlData (elementIn tree) "<"))
-            (cond ((< (elementIn tree) 0) 
-                    (printf "no further '<' to be found. this should not happen.\n")
-                    (- (strlen xmlData) 1))
-                  ((equal_substring xmlData (elementIn tree) (+ (elementIn tree) 1) "<?")
-                    (printf "xml_grow_tree: dealing with '<?' element\n")
-                    ; ...
-                    ; to be checked:
-                    (find_first xmlData (elementIn tree) ">"))
-                  ((equal_substring xmlData (elementIn tree) (+ (elementIn tree) 1) "<!")
-                    (printf "xml_grow_tree: dealing with '<!' element\n")
-                    ; ...
-                    ; to be checked:
-                    (find_first xmlData (elementIn tree) ">"))
-                  (else
-                    (printf "dealing with normal element ...\n")
-                    (let ((secondLeftBracket (find_first xmlData (+ (elementIn tree) 1) "<"))
-                          (firstRightBracket (find_first xmlData (elementIn tree) ">"))
-                          (firstEqual (find_first xmlData (elementIn tree) "="))
-                          (firstSpace (find_first xmlData (elementIn tree) " "))
-                          (firstSlash (find_first xmlData (elementIn tree) "/")))
-                      (cond ((< firstRightBracket (elementIn tree))
-                              (printf "malformed brackets.\n")
-                              firstRightBracket)
-                            (else
-                              (let ((nameOut (top_order firstSpace firstSlash firstRightBracket)))
-                                (set_name tree (+ (elementIn tree) 1) nameOut)
-                                (if (and (not (firstEqual -1))
-                                         (< firstEqual firstRightBracket))
-                                    (extract_attributes tree xmlData)
-                                    void)
-                                (cond ((= firstSlash (- firstRightBracket 1))
-                                        (set_body tree -1 -1)
-                                        (let ((nextLeftBracket (find_first xmlData firstRightBracket)))
-                                          (cond ((< nextLeftBracket 0) firstRightBracket)
-                                                (else 
-                                                  (let ((sibling (cXMLTree tree nextLeftBracket)))
-                                                    (set_sibling tree sibling)
-                                                    (grow_tree sibling xmlData))))))
-                                      (else
-                                        (cond ((and (equal_substring xmlData (+ 1 secondLeftBracket) (+ 1 secondLeftBracket) "/")
-                                                    (equal_substrings xmlData (nameIn tree) (nameOut tree) (+ 2 secondLeftBracket) (- (find_first xmlData secondLeftBracket ">") 1)))
-                                                (set_body tree (+ 1 firstRightBracket) (secondLeftBracket))
-                                                (let ((nextLeftBracket (find_first xmlData firstSlash "<")))
-                                                  (cond ((< nextLeftBracket 0) firstRightBracket)
-                                                        (else
-                                                          (let ((sibling (cXMLTree tree nextLeftBracket)))
-                                                            (set_sibling tree sibling)
-                                                            (grow_tree sibling xmlData))))))
-                                              (else
-                                                (let ((child (cXMLTree tree nextLeftBracket)))
-                                                  (set_child tree child)
-                                                  (let* ((endChildren (grow_tree child xmlData))
-                                                         (endIn (find_first xmlData endChildren "</"))
-                                                         (nextSibling (find_first xmlData (+ 1 endIn) "<")))
-                                                    (cond ((< endIn 0) 
-                                                            (printf "xml_grow_tree: no endtag found, malformed xmlData.\n")
-                                                            endChildren)
-                                                          ((equal_substrings xmlData (nameIn tree) (nameOut tree) (+ 2 endIn) (- (find_first xmlData endIn ">") 1))
-                                                            (cond ((< nextSibling 0) (find_first xmlData endIn ">"))
-                                                                  (else
-                                                                    (let ((sibling (cXMLTree tree nextSibling)))
-                                                                      (set_sibling tree sibling)
-                                                                      (grow_tree sibling xmlData)))))
-                                                          (else 
-                                                            (printf "xml_grow_tree: no endtag found, malformed xmlData.\n")
-                                                            endIn))))))))))))))))))))))
-                                                            
-                                                    
-
-
-
-
-                              ((= firstSlash (- firstRightBracket 1))
-                                (cond ((or (< firstEqual 0))
-                                           (> firstEqual firstRightBracket))
-                                         (
-    
-
-
-
-
-
-
-
-
-
-
-
-; scans the xml score for all measure divisions, writes highest value in maxDivision
-(bind-func xml_pre_parse:[void,i8*,i64,i64,i64*,i64*]*
-  (lambda (xmlData in out maxDivision currentDivision)
-    (cond ((null? xmlData) 
-            (roll_error rollErr (Str "Roll, xml_pre_parse: undefined xmlData pointer.  No parsing possible.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL)
-            void)
-          ((<= (- out in) 0) 
-            (roll_error rollErr (Str "Roll, xml_pre_parse: indices out of range.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL) void)
-          (else
-            (let ((element (cXmlElement)))
-              (xml_read_element element xmlData in)
-              void)))))
-
-            (let ((newIn in))
-              (set! newIn (find_first xmlData in "<"))
-              (printf "new in = %lld\n" newIn)
-              (cond ((equal_substring xmlData 0 1 "<?")
-                      ;DEBUG: (printf "xmlData:\n%s\n" (cstring (xml_skip_version_element xmlData)))
-                      (set! newIn (xml_skip_bracket_pair xmlData newIn))
-                      ;DEBUG: 
-                      (printf "version element skipped, new in = %lld\n" newIn)
-                      (xml_pre_parse xmlData newIn out maxDivision currentDivision))
-                    ((equal_substring xmlData 0 1 "<!")
-                      ;DEBUG: ;(printf "xmlData:\n%s\n" (cstring (xml_skip_doctype_element xmlData)))
-                      (set! newIn (xml_skip_bracket_pair xmlData newIn))
-                      ;DEBUG: 
-                      (printf "doctype element skipped, new in = %lld\n" newIn)
-                      (xml_pre_parse xmlData newIn out maxDivision currentDivision))
+              ;(printf "positions in this element:\n - firstRightBracket %lld\n - secondLeftBracket %lld\n - firstSlash %lld\n" firstRightBracket secondLeftBracket firstSlash)
+              (set_elementIn tree (find_first data (elementIn tree) "<"))
+              (cond ((< (elementIn tree) 0)
+                      ;(printf "xml_grow_tree: no '<' found, don't know what to do.\n")
+                      (set! res -1))
+                    ((equal_substring data (+ (elementIn tree) 1) (+ (elementIn tree) 1) "/")
+                      ;(printf "the name of this element starts with a '/', this is wrong.\n")
+                      (set! res -1))
+                    ((equal_substring data (elementIn tree) (+ 1 (elementIn tree)) "<?")
+                      ;(printf "ignore '<? ...?>' element\n")
+                      (let ((nextBracket (find_first data (find_first data (elementIn tree) "?>") "<")))
+                        (cond ((< nextBracket 0)
+                                (printf "no data after <? ... ?> element, job done.\n") -1)
+                              (else
+                                (set_elementIn tree nextBracket)
+                                (xml_grow_tree tree data)))))
+                    ((equal_substring data (elementIn tree) (+ 1 (elementIn tree)) "<!")
+                      ;(printf "ignore <! ...> element\n")
+                      (let ((nextBracket (find_first data (find_first data (elementIn tree) ">") "<")))
+                        (cond ((< nextBracket 0)
+                                (printf "no data after <! ... > element, job done.\n") -1)
+                              (else
+                                (set_elementIn tree nextBracket)
+                                (xml_grow_tree tree data)))))
                     (else
-                      (printf "nix passiert\n")
-                      void)))))))
-  
-                      (let ((pair (xml_divide xmlData))
-                            (xmlElement (cXMLelement)))
-                        ;DEBUG: (print pair)
-                        ;DEBUG:
-                        (printf "pair generated, starting to read xmlElement.\n")
-                        (xml_read_element (xml_car pair) xmlElement)
-                        ;DEBUG:
-                        (printf "name of element: '%s'\n" (cstring (name xmlElement)))
-                        (xml_pre_interpret_element xmlElement maxDivision currentDivision)
-                        (delElement xmlElement)
-                        (xml_pre_parse (xml_cdr pair) maxDivision currentDivision)))))))))
-      
+                      (set_name tree (+ (elementIn tree) 1)
+                                     (- (top_order firstRightBracket firstSpace firstSlash) 1))
+                      ;(printf "this is the name for the element:\n")
+                      ;(output_data data (nameIn tree) (nameOut tree))
+                      (if (and (not (< firstEqual 0))
+                               (< firstEqual firstRightBracket))
+                          (begin
+                            (extract_attributes tree data)
+                            ;(printf "attributes were found and extracted.\n")
+                            void)
+                          void)
+                      (cond ((< firstSlash firstRightBracket)
+                              (set_elementOut tree firstRightBracket)
+                              (set_body tree -1 -1)
+                              (set_child tree null)
+                              ;(printf "this element is minimal, no further data extracted. Reading position = %lld.\n" (elementOut tree))
+                              (set! res (elementOut tree)))
+                            ((and (> secondLeftBracket 0)
+                                  (= #t (equal_substring data (+ 1 secondLeftBracket) (+ 1 secondLeftBracket) "/"))
+                                  (equal_substrings data (nameIn tree) (nameOut tree)
+                                                         (+ 2 secondLeftBracket) (- secondRightBracket 1)))
+                              (set_body tree (+ 1 firstRightBracket) (- secondLeftBracket 1))
+                              (set_child tree null)
+                              (set_elementOut tree (find_first data secondLeftBracket ">"))
+                              ;(printf "body read. res = %lld. Body:\n" (elementOut tree))
+                              ;(output_data data (bodyIn tree) (bodyOut tree))
+                              (set! res (elementOut tree)))
+                            ((and (not (< secondLeftBracket 0))
+                                  (not (equal_substring data (+ secondLeftBracket 1) (+ secondLeftBracket 1) "/")))
+                              ;(printf "there will be children!\n")
+                              (set_body tree -1 -1)
+                              (let* ((child (cXMLTree tree secondLeftBracket))
+                                     (ret (xml_grow_tree child data))
+                                     (finalLeftBracket (find_first data ret "<"))
+                                     (finalRightBracket (find_first data finalLeftBracket ">")))
+                                 ;(printf "this is where the child stopped reading: %lld\n" ret)
+                                 (cond ((and (not (< ret 0))
+                                             (not (< finalLeftBracket 0))
+                                             (equal_substring data (+ 1 finalLeftBracket) (+ 1 finalLeftBracket) "/")
+                                             (equal_substrings data (+ 2 finalLeftBracket) (- finalRightBracket 1)
+                                                                    (nameIn tree) (nameOut tree)))
+                                         (set_elementOut tree finalRightBracket)
+                                         (set_child tree child)
+                                         (set! res (elementOut tree)))
+                                       (else 
+                                         ;(printf "xml_grow_tree: malformed data. no endtag after children found.\n")
+                                         (set! res -1)))))
+                            (else (printf "xml_grow_tree: malformed data. element structure unknown.\n") (set! res -1)))
+                      (cond ((< res 0) (printf "xml_grow_tree: serious problem occurred!\n") res)
+                            (else
+                              (let ((siblingLeftBracket (find_first data res "<")))
+                                (cond ((and (> siblingLeftBracket 0)
+                                            (equal_substring data (+ 1 siblingLeftBracket) (+ 1 siblingLeftBracket) "/"))
+                                        ;(printf "there are no more siblings, giving back to parent.\n")
+                                        (elementOut tree))
+                                      ((> siblingLeftBracket 0)
+                                       ;(printf "starting sibling at position %lld.\n" siblingLeftBracket)
+                                       (let* ((sibling (cXMLTree (get_parent tree) siblingLeftBracket)))
+                                         (set! res (xml_grow_tree sibling data))
+                                         (set_sibling tree sibling)
+                                         res))
+                                      (else
+                                        (printf "xml_grow_tree: end of xml data reached. reading pos = %lld\n" res)
+                                        (elementOut tree))))))
+                      res)))))))
+        
+(bind-func xml_delete_tree:[void,XMLTree*]*
+  (lambda (tree)
+    (cond ((null? tree) void)
+          (else
+            (if (> (attributeCount tree) 0)
+              (delete_attributes tree)
+              void)
+            (if (null? (get_child tree))
+              void
+              (xml_delete_tree (get_child tree)))
+            (if (null? (get_sibling tree))
+              void
+              (xml_delete_tree (get_sibling tree)))))))
 
+(bind-func extract_i64:[i64,i8*,i64,i64]*
+  (lambda (data in out)
+    (cond ((< in 0) (printf "extract_i64: in out of range.") -1)
+          ((< out 0) (printf "extract_i64: out out of range.") -1)
+          (else
+            (let ((tmp:i8* (salloc (+ 2 (- out in))))
+                  (val:i64* (salloc 1)))
+              (memcpy tmp (pref-ptr data in) (+ 1 (- out in)))
+              (pset! tmp (+ 2 (- out in)) 0)
+              (sscanf tmp "%lld" val)
+              (pref val 0))))))
+
+(bind-func extract_double:[double,i8*,i64,i64]*
+  (lambda (data in out)
+    (cond ((< in 0) (printf "extract_i64: in out of range.") -1.0)
+          ((< out 0) (printf "extract_i64: out out of range.") -1.0)
+          (else
+            (let ((tmp:i8* (salloc (+ 2 (- out in))))
+                  (val:double* (salloc 1)))
+              (memcpy tmp (pref-ptr data in) (+ 1 (- out in)))
+              (pset! tmp (+ 2 (- out in)) 0)
+              (sscanf tmp "%d" val)
+              (pref val 0))))))
+
+(bind-func equal_name:[i1,XMLTree*,i8*,i8*]*
+  (lambda (tree data x)
+    (equal_substring data (nameIn tree) (nameOut tree) x)))
+
+(bind-func read_body_i64:[i64,XMLTree*,i8*]*
+  (lambda (tree data)
+    (extract_i64 data (bodyIn tree) (bodyOut tree))))
+
+(bind-func read_body_double:[double,XMLTree*,i8*]*
+  (lambda (tree data)
+    (extract_double data (bodyIn tree) (bodyOut tree))))
+
+(bind-func parse_tree:[void,XMLTree*,i8*]*
+  (lambda (tree data)
+    (cond ((null? tree) void)
+          (else
+            ; do things
+            (parse_tree (get_child tree) data)
+            (parse_tree (get_sibling tree) data)))))
+
+
+(bind-func check_divisions:[void,XMLTree*,i8*,i64*]*
+  (lambda (tree data res)
+    (cond ((null? tree) void)
+          (else
+            (if (equal_name tree data "divisions")
+                (begin
+                  (let ((tmp (extract_i64 data (bodyIn tree) (bodyOut tree))))
+                    (if (> tmp (pref res 0)) (pset! res 0 tmp) 0)))
+                0)
+             (check_divisions (get_child tree) data res)
+             (check_divisions (get_sibling tree) data res)))))
+
+(bind-func highest_division:[i64,XMLTree*,i8*]*
+  (lambda (tree data)
+    (let ((res:i64* (salloc)))
+      (pset! res 0 0)
+      (check_divisions tree data res)
+      (pref res 0))))
 
 (bind-func test
   (lambda ()
-    (letz ((xmlData (sys_slurp_file "/home/johannes/Coding/extempore/arcilab/scores/anna/anna9.xml")))
-      (printf "%lld\n" (strlen xmlData))
-      (printf "%lld\n" (find_first xmlData 0 "<"))
-      (printf "%s\n" (if (equal_substring xmlData 0 1 "<?") "yes!" "noo"))
-      (printf "%lld\n" (find_substring xmlData 0 (- (strlen xmlData) 1) "@@@")))))
+    (letz ((tree:XMLTree* (cXMLTree null 0))
+           (data:i8* (sys_slurp_file "/home/johannes/Coding/extempore/arcilab/scores/cjw01/cjw_test.xml")))
+      (cond ((null? data) (printf "no file found.\n") void)
+            (else
+              (printf "\nreading test tree.\n")
+              (set! xml_tree_timer (now))
+              (xml_grow_tree tree data)
+              ;(printf "\ntree grown. this is the tree:\n")
+              ;(xml_print_tree tree data 0)
+              (printf "max. division: %lld.\n" (highest_division tree data))
+              (xml_delete_tree tree)
+              void)))
+     (printf "tree memory freed.\n")
+     void))
 
 ($ (test))
-
-(bind-func xml_import:[void,Score*,String*]*
-  (lambda (score filepath)
-    (letz ((xmlData (sys_slurp_file (cstring filepath))))
-      (cond
-        ((null? xmlData) (roll_error rollErr
-                                      (Str "Roll, xml_import: xml file could not be opened. Aborting.")
-                                      ROLL_ERR_FLAG_FATAL
-                                      ROLL_ERR_DEST_ALL)
-                          void)
-        (else
-          (let ((maxDivision:i64* (salloc 1))
-                (currentDivision:i64* (salloc 1))
-                (state (cParserState)))
-            (pset! maxDivision 0 0)
-            (pset! currentDivision 0 0)
-            (roll_error rollErr (Str "XML file slurped.") ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_ALL)
-            ;DEBUG: (printf "file contents:\n%s\n" xmlData)
-            (xml_pre_parse xmlData 0 (- (strlen xmlData) 1) maxDivision currentDivision)
-            (set_division score (pref maxDivision 0))
-            (roll_error rollErr (Str "Pre parse done: score division = ") ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_ALL)
-            ;(xml_parse xmlData score state)
-            ;(roll_error rollErr (Str "XML parsing done.") ROLL_ERR_FLAG_INFO ROLL_ERR_DEST_ALL)
-            ;DEBUG: (printf "this went well.\n")
-            ;DEBUG: (print state)
-            void)))
-    void)))
-
-(bind-func test_import
-  (lambda ()
-    (letz ((score (cScore)))
-      (xml_import score (Str "/home/johannes/Coding/extempore/arcilab/scores/anna/anna9.xml"))
-      void)))
-
-($ (test_import))
-
-
-
-
-
-(bind-type subDing <i64,i64>)
-
-(bind-func cSubDing:[subDing*]*
-  (lambda ()
-    (let ((res (subDing:[subDing*,i64,i64]* -1 -1)))
-      res)))
-
-(bind-type ding <i64,subDing*>)
-
-(bind-func cDing:[ding*]*
-  (lambda ()
-    (let ((res (ding:[ding*,i64,
