@@ -157,6 +157,12 @@
       (pfill! cs 34 0)
       (Str cs))))
 
+(bind-func create_cquotes:[i8*]*
+  (lambda ()
+    (let ((cs:i8* (halloc 2)))
+      (pfill! cs 34 0)
+      cs)))
+
 (bind-func remove_initial_spaces:[String*,String*]*
   (lambda (s)
     (split_second s (find_substring_not_or s (Str " ") (Str "\n")))))

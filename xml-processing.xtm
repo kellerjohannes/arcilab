@@ -903,7 +903,7 @@
 (bind-func find_first:[i64,i8*,i64,i8*]*
   (lambda (data in x)
     (cond ((or (< in 0) (>= in (strlen data)))
-            (printf "find_first: index out of range.\n")
+            (printf "find_first: index %lld out of range. looking for '%s'\n" in x)
             -1)
           (else
             (let ((i 0)
@@ -956,7 +956,6 @@
               (memcpy tmpB (pref-ptr data inB) len)
               (pset! tmpA len 0)
               (pset! tmpB len 0)
-              (printf "%s vs. %s\n" tmpA tmpB)
               (if (= (strcmp tmpA tmpB) 0)
                 #t
                 #f))))))
@@ -1017,6 +1016,11 @@
   (lambda (tree)
     (tref tree 1)))
 
+(bind-func set_elementOut:[void,XMLTree*,i64]*
+  (lambda (tree out)
+    (tset! tree 1 out)
+    void))
+
 (bind-func set_elementIn:[void,XMLTree*,i64]*
   (lambda (tree in)
     (tset! tree 0 in)
@@ -1072,7 +1076,7 @@
             0)
           (else (pref (tref tree 7) index)))))
 
-(bind-func attributeValueIn:[i64,XMLTree*,i64]*
+(bind-func attributeValueOut:[i64,XMLTree*,i64]*
   (lambda (tree index)
     (cond ((or (< index 0) (> index (attributeCount tree)))
             (printf "attribute: index out of range.\n")
@@ -1133,12 +1137,12 @@
     (tset! tree 13 sibling)
     void))
 
-(bind-func cXMLTree:[XMLTree*,XMLTree*,i64,i64]* 
-  (lambda (parent in out)
+(bind-func cXMLTree:[XMLTree*,XMLTree*,i64]* 
+  (lambda (parent in)
     (let ((res
     (XMLTree:[XMLTree*,i64,i64,i64,i64,i64,i64*,i64*,i64*,i64*,i64,i64,XMLTree*,XMLTree*,XMLTree*]*
                            in
-                           out
+                           -1 
                            -1
                            -1
                            0
@@ -1172,8 +1176,8 @@
           (else
             (let* ((firstEqual (find_first xmlData in "="))
                    (firstSpace (find_first_before xmlData firstEqual " "))
-                   (firstQuotes (find_first xmlData firstEqual "\""))
-                   (secondQuotes (find_first xmlData (+ firstQuotes 1) "\"")))
+                   (firstQuotes (find_first xmlData firstEqual (create_cquotes)))
+                   (secondQuotes (find_first xmlData (+ firstQuotes 1) (create_cquotes))))
               (pset! nameIn (- index 1) (+ firstSpace 1))
               (pset! nameOut (- index 1) (- firstEqual 1))
               (pset! valueIn (- index 1) (+ firstQuotes 1))
@@ -1186,7 +1190,6 @@
           ((null? xmlData) (printf "extract_attributes: empty xmlData pointer.\n") void)
           (else
             (let ((numAttributes (count_attributes xmlData (elementIn tree))))
-              (printf "num att: %lld\n" numAttributes)
               (let ((nameIn:i64* (halloc numAttributes))
                     (nameOut:i64* (halloc numAttributes))
                     (valueIn:i64* (halloc numAttributes))
@@ -1196,6 +1199,16 @@
                 (set_attributeCount tree numAttributes)
                 (set_attributes tree nameIn nameOut valueIn valueOut)
               void))))))
+
+(bind-func top_order:[i64,i64,i64]*
+  (lambda (a b)
+    (cond ((and (= a -1) (= b -1))
+            (printf "top_order: both candidates are -1, something went wrong.\n")
+            -1)
+          ((= a -1) b)
+          ((= b -1) a)
+          (else
+            (if (< a b) a b)))))
 
 (bind-func top_order:[i64,i64,i64,i64]*
   (lambda (a b c)
@@ -1217,6 +1230,121 @@
                 (if (< b c)
                     b
                     c))))))
+
+
+(bind-func output_name:[void,XMLTree*,i8*]*
+  (lambda (tree data)
+    (let* ((len (+ 1 (- (nameOut tree) (nameIn tree))))
+           (buf:i8* (salloc (+ 1 len))))
+      (memcpy buf (pref-ptr data (nameIn tree)) len)
+      (pset! buf len 0)
+      (printf "%s" buf)
+      void)))
+
+(bind-func output_body:[void,XMLTree*,i8*]*
+  (lambda (tree data)
+    (let* ((len (+ 1 (- (bodyOut tree) (bodyIn tree))))
+           (buf:i8* (salloc (+ 1 len))))
+      (memcpy buf (pref-ptr data (bodyIn tree)) len)
+      (pset! buf len 0)
+      (printf "%s" buf)
+      void)))
+
+(bind-func output_attributes:[void,XMLTree*,i8*]*
+  (lambda (tree data)
+    (let ((i 0))
+      (dotimes (i (attributeCount tree))
+        (let ((lenName (+ 1 (- (attributeNameOut tree i) (attributeNameIn tree i))))
+              (lenValue (+ 1 (- (attributeValueOut tree i) (attributeValueIn tree i))))
+              (tmpName:i8* (salloc (+ 1 lenName)))
+              (tmpValue:i8* (salloc (+ 1 lenValue))))
+          (memcpy tmpName (pref-ptr data (attributeNameIn tree i)) lenName)
+          (memcpy tmpValue (pref-ptr data (attributeValueIn tree i)) lenValue)
+          (pset! tmpName lenName 0)
+          (pset! tmpValue lenValue 0)
+          (printf "%s=" tmpName)
+          (printf "%s " tmpValue)
+      void)))))
+
+(bind-func xml_print_tree:[void,XMLTree*,i8*,i64]*
+  (lambda (tree data level)
+    (cond ((null? tree) void)
+          (else
+            (let ((i 0))
+              (dotimes (i level)
+                (printf "-"))
+              (output_name tree data)
+              (printf ": ")
+              (output_attributes tree data)
+              (printf "\n"))
+            (xml_print_tree (get_sibling tree) data level)
+            (xml_print_tree (get_child tree) data (+ 1 level))))))
+
+(bind-func test
+  (lambda ()
+    (let ((tree (cXMLTree null 0 19))
+          (data (sys_slurp_file "/home/johannes/Coding/extempore/arcilab/scores/anna/test.xml")))
+      (cond ((null? data) (printf "no file found.\n") void)
+            (else
+              (printf "\nreading test tree: \n")
+              (xml_grow_tree tree data)
+              (printf "\ntree grown. this is the tree:\n")
+              (xml_print_tree tree data 0)
+              void)))))
+
+($ (test))
+
+(bind-func xml_grow_tree:[i64,XMLTree*,i8*]*
+  (lambda (tree data)
+    (cond ((null? tree) (printf "xml_grow_tree: no tree pointer found.\n") -1)
+          ((null? data) (printf "xml_grow_tree: no data pointer found.\n") -1)
+          ((< (find_first data (elementIn tree) "<") 0) (printf "end of xml structure reached.\n") -1)
+          (else
+            (let* ((firstRightBracket (find_first data (elementIn tree) ">"))
+                   (secondLeftBracket (find_first data (+ 1 (elementIn tree)) "<"))
+                   (firstEqual (find_first data (elementIn tree) "="))
+                   (firstSpace (find_first data (elementIn tree) " "))
+                   (firstSlash (find_first data (+ 1 (elementIn tree)) "/")))
+                    ; no body, children, possible attributes, possible siblings
+              (cond ((and (not (< firstSlash 0))
+                          (< firstSlash firstRightBracket))
+                      (set_body tree -1 -1)
+                      (set_child tree null)
+                      (set_name tree (+ (elementIn tree) 1) 
+                                     (- (top_order firstSpace firstSlash) 1))
+                      ; extract attributes if existing
+                      (if (and (not (< firstEqual 0))
+                               (< firstEqual firstSlash))
+                            (begin
+                              (extract_attributes tree data))
+                            void)
+                            ; no elements left, returning right bracket which should be end of file
+                      (cond ((< secondLeftBracket 0)
+                              (printf "xml_grow_tree: end of data reached.\n")
+                              firstRightBracket)
+                            ; creating a sibling
+                            (else
+                              (set_elementOut tree firstRightBracket)
+                              (let ((sibling (cXMLTree tree secondLeftBracket)))
+                                (xml_grow_tree sibling data)
+                                (set_sibling tree sibling)
+                                firstRightBracket))))
+                    ; body or children expected
+                    (else (printf "not implemented yet.\n") 0)))))))
+
+
+
+
+
+
+              (cond ((equal_substrings data (+ 1 (elementIn tree))
+                                            (- firstRightBracket 1)
+                                            (+ 2 secondLeftBracket)
+                                            (- secondRightBracket 1))
+                      (set_name tree (+ 1 (elementIn tree)) (- firstRightBracket 1))
+                      (set_body tree (+ 1 firstRightBracket) (- secondLeftBracket 1))
+                      secondRightBracket)
+                    (else (printf "xml_grow_tree: no closing tag found.\n") 0)))))))
 
 ; takes a XMLTree* object that has only the in and out values defined, reads the rest of
 ; the values and fills in its siblins and children if necessary. return the last position
