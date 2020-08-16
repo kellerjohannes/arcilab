@@ -594,6 +594,27 @@
       (pset! res len 0)
       res)))
 
+(bind-func read_attribute_i8:[i8*,XMLTree*,i8*,i8*]*
+  (lambda (tree data name)
+    (let ((i 0)
+          (res -1))
+      (dotimes (i (attributeCount tree))
+        (if (equal_substring data 
+                             (attributeNameIn tree i)
+                             (attributeNameOut tree i)
+                             name)
+          (begin
+            (set! res i)
+            (set! i (attributeCount tree))
+            void)))
+      (cond ((< res 0) null)
+            (else
+              (let* ((len (+ 1 (- (attributeValueOut tree res) (attributeValueIn tree res))))
+                     (ret:i8* (zalloc len)))
+                (memcpy ret (pref-ptr data (attributeValueIn tree res)) len)
+                (pset! ret len 0)
+                ret))))))
+
 ; compiler dummy:
 (bind-func resolve_path:[XMLTree*,XMLTree*,i8*,i8*]*
   (lambda (tree data path)
@@ -694,11 +715,22 @@
                            (tie (resolve_path tree data "/tie"))
                            (duration (resolve_path tree data "/duration"))
                            (voice (resolve_path tree data "/voice"))
+                           (lyric (resolve_path tree data "/lyric/text"))
+                           (notehead (resolve_path tree data "/notehead"))
+                           (color (read_attribute_i8 tree data "color"))
+                           (accent (resolve_path tree data "/notations/articulations/accent"))
+                           (staccato (resolve_path tree data "/notations/articulations/staccato"))
+                           (tenuto (resolve_path tree data "/notations/articulations/tenuto"))
                            (accidental (resolve_path tree data "/accidental")))
                       (printf "   rest: %s\n" (if (null? rest) "no" "yes"))
                       (printf "   chord: %s\n" (if (null? chord) "no" "yes"))
+                      (printf "   accent: %s\n" (if (null? accent) "no" "yes"))
+                      (printf "   staccato: %s\n" (if (null? staccato) "no" "yes"))
+                      (printf "   tenuto: %s\n" (if (null? tenuto) "no" "yes"))
+                      (if (null? color) 0:i32
+                        (printf "   color: '%s'\n" color))
                       (if (null? tie) 0:i32
-                        (printf "   tie: '%s'\n" (read_body_i8 tie data)))
+                        (printf "   tie: '%s'\n" (read_attribute_i8 tie data "type")))
                       (if (null? step) 0:i32
                         (printf "   step: '%s'\n" (read_body_i8 step data)))
                       (if (null? octave) 0:i32
@@ -711,6 +743,10 @@
                         (printf "   voice: %lld\n" (read_body_i64 voice data)))
                       (if (null? accidental) 0:i32
                         (printf "   accidental: '%s'\n" (read_body_i8 accidental data)))
+                      (if (null? lyric) 0:i32
+                        (printf "   lyric: '%s'\n" (read_body_i8 lyric data)))
+                      (if (null? notehead) 0:i32
+                        (printf "   notehead: '%s'\n" (read_body_i8 notehead data)))
                     void)
                     ; check for more notes in this measure:
                     (parse_tree (get_sibling tree) data))
@@ -744,7 +780,7 @@
 (bind-func test
   (lambda ()
     (letz ((tree:XMLTree* (cXMLTree null 0))
-           (data:i8* (sys_slurp_file "/home/johannes/Coding/extempore/arcilab/scores/cjw01/cjw_test.xml")))
+           (data:i8* (sys_slurp_file "/home/johannes/Coding/extempore/arcilab/scores/guinea11/guinea11.xml")))
       (cond ((null? data) (printf "no file found.\n") void)
             (else
               (printf "\nreading test tree.\n")
