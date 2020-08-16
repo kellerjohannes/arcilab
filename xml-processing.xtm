@@ -66,6 +66,23 @@
                 #t
                 #f))))))
 
+(bind-func equal_substrings:[i1,i8*,i64,i64,i8*,i64,i64]*
+  (lambda (strA inA outA strB inB outB)
+    (cond ((null? strA) (printf "equal_substrings: empty data pointer.\n") #f)
+          ((null? strB) (printf "equal_substrings: empty data pointer.\n") #f)
+          (else
+            (let* ((lenA (+ 1 (- outA inA)))
+                   (lenB (+ 1 (- outB inB)))
+                   (tmpA:i8* (salloc (+ 1 lenA)))
+                   (tmpB:i8* (salloc (+ 1 lenB))))
+              (memcpy tmpA (pref-ptr strA inA) lenA)
+              (memcpy tmpB (pref-ptr strB inB) lenB)
+              (pset! tmpA lenA 0)
+              (pset! tmpB lenB 0)
+              (if (= (strcmp tmpA tmpB) 0)
+                #t
+                #f))))))
+
 (bind-func find_substring:[i64,i8*,i64,i64,i8*]*
   (lambda (data in out x)
     (cond ((<= (- out in) 0) 
@@ -530,6 +547,7 @@
   (lambda (data in out)
     (cond ((< in 0) (printf "extract_i64: in out of range.") -1)
           ((< out 0) (printf "extract_i64: out out of range.") -1)
+          ((null? data) 0)
           (else
             (let ((tmp:i8* (salloc (+ 2 (- out in))))
                   (val:i64* (salloc 1)))
@@ -542,6 +560,7 @@
   (lambda (data in out)
     (cond ((< in 0) (printf "extract_i64: in out of range.") -1.0)
           ((< out 0) (printf "extract_i64: out out of range.") -1.0)
+          ((null? data) 0.0)
           (else
             (let ((tmp:i8* (salloc (+ 2 (- out in))))
                   (val:double* (salloc 1)))
@@ -552,23 +571,155 @@
 
 (bind-func equal_name:[i1,XMLTree*,i8*,i8*]*
   (lambda (tree data x)
-    (equal_substring data (nameIn tree) (nameOut tree) x)))
+    (cond ((null? tree) #f)
+          (else (equal_substring data (nameIn tree) (nameOut tree) x)))))
 
 (bind-func read_body_i64:[i64,XMLTree*,i8*]*
   (lambda (tree data)
-    (extract_i64 data (bodyIn tree) (bodyOut tree))))
+    (cond ((null? tree) 0)
+          ((null? data) 0)
+          (else (extract_i64 data (bodyIn tree) (bodyOut tree))))))
 
 (bind-func read_body_double:[double,XMLTree*,i8*]*
   (lambda (tree data)
-    (extract_double data (bodyIn tree) (bodyOut tree))))
+    (cond ((null? tree) 0.0)
+          ((null? data) 0.0)
+          (else (extract_double data (bodyIn tree) (bodyOut tree))))))
+
+(bind-func read_body_i8:[i8*,XMLTree*,i8*]*
+  (lambda (tree data)
+    (let* ((len (+ 1 (- (bodyOut tree) (bodyIn tree))))
+           (res:i8* (zalloc (+ 1 len))))
+      (memcpy res (pref-ptr data (bodyIn tree)) len)
+      (pset! res len 0)
+      res)))
+
+; compiler dummy:
+(bind-func resolve_path:[XMLTree*,XMLTree*,i8*,i8*]*
+  (lambda (tree data path)
+    tree))
+
+(bind-func resolve_path_loop:[XMLTree*,XMLTree*,i8*,i8*]*
+  (lambda (tree data path)
+    (cond ((null? tree) null)
+          (else
+            (cond ((= (strlen path) 0) tree)
+                  ((> (find_first path 1 "/") 0)
+                    (cond ((equal_substrings data 
+                                             (nameIn tree) 
+                                             (nameOut tree)
+                                             path
+                                             1
+                                             (- (find_first path 1 "/") 1))
+                            (resolve_path tree data (pref-ptr path (find_first path 1 "/"))))
+                      (else 
+                        (resolve_path_loop (get_sibling tree) data path))))
+                  ((equal_substring data
+                                    (nameIn tree)
+                                    (nameOut tree)
+                                    (pref-ptr path 1))
+                    tree)
+                  (else (resolve_path_loop (get_sibling tree) data path)))))))
+
+
+(bind-func resolve_path:[XMLTree*,XMLTree*,i8*,i8*]*
+  (lambda (tree data path)
+    (cond ((null? path) null)
+          ((null? tree) null)
+          (else
+            (resolve_path_loop (get_child tree) data path)))))
 
 (bind-func parse_tree:[void,XMLTree*,i8*]*
   (lambda (tree data)
     (cond ((null? tree) void)
           (else
-            ; do things
-            (parse_tree (get_child tree) data)
-            (parse_tree (get_sibling tree) data)))))
+            (cond ((equal_name tree data "score-partwise") 
+                    (printf "score-partwise:\n")
+                    (parse_tree (get_child tree) data))
+                  ((equal_name tree data "part")
+                    (printf " part:\n")
+                    (parse_tree (get_child tree) data)
+                    (parse_tree (get_sibling tree) data))
+                  ((equal_name tree data "measure")
+                    (printf "  measure:\n")
+                    (letz ((beats (resolve_path tree data "/attributes/time/beats"))
+                           (beatType (resolve_path tree data "/attributes/time/beat-type")))
+                      (if (and (null? beats) (null? beatType)) 0:i32
+                        (printf "  signature = %lld/%lld\n" (read_body_i64 beats data)
+                                                            (read_body_i64 beatType data)))
+                      void)
+                    ; check all children for notes etc.:
+                    (parse_tree (get_child tree) data)
+                    ; close measure reading:
+                    ; ...
+                    ; check for more measures in this part:
+                    (parse_tree (get_sibling tree) data))
+                  ((equal_name tree data "direction")
+                    (printf "  direction:\n")
+                    (letz ((beatUnit (resolve_path tree data "/direction-type/metronome/beat-unit"))
+                           (perMinute (resolve_path tree data "/direction-type/metronome/per-minute"))
+                           (words (resolve_path tree data "/direction-type/words")))
+                      (if (or (null? beatUnit) (null? perMinute)) 0:i32
+                        (printf "   metronome mark: '%s' = %lld\n" (read_body_i8 beatUnit data)
+                                                                   (read_body_i64 perMinute data)))
+                      (if (null? words) 0:i32
+                        (printf "   words: '%s'\n" (read_body_i8 words data)))
+                      void)
+                    ; check for more directions in this measure:
+                    (parse_tree (get_sibling tree) data))
+                  ((equal_name tree data "forward")
+                    (printf "  forward:\n")
+                    (letz ((duration (resolve_path tree data "/duration")))
+                      (if (null? duration) 0:i32
+                        (printf "   duration: %lld\n" (read_body_i64 duration data)))
+                      void)
+                    ; check for more stuff in this measure
+                    (parse_tree (get_sibling tree) data))
+                  ((equal_name tree data "backup")
+                    (printf "  backup:\n")
+                    (letz ((duration (resolve_path tree data "/duration")))
+                      (if (null? duration) 0:i32
+                        (printf "   duration: %lld\n" (read_body_i64 duration data)))
+                      void)
+                    ; check for more stuff in this measure
+                    (parse_tree (get_sibling tree) data))
+                  ((equal_name tree data "note")
+                    (printf "  note:\n")
+                    ; missing: articulation, color, notehead, lyrics
+                    (letz ((step (resolve_path tree data "/pitch/step"))
+                           (octave (resolve_path tree data "/pitch/octave"))
+                           (alter (resolve_path tree data "/pitch/alter"))
+                           (rest (resolve_path tree data "/rest"))
+                           (chord (resolve_path tree data "/chord"))
+                           (tie (resolve_path tree data "/tie"))
+                           (duration (resolve_path tree data "/duration"))
+                           (voice (resolve_path tree data "/voice"))
+                           (accidental (resolve_path tree data "/accidental")))
+                      (printf "   rest: %s\n" (if (null? rest) "no" "yes"))
+                      (printf "   chord: %s\n" (if (null? chord) "no" "yes"))
+                      (if (null? tie) 0:i32
+                        (printf "   tie: '%s'\n" (read_body_i8 tie data)))
+                      (if (null? step) 0:i32
+                        (printf "   step: '%s'\n" (read_body_i8 step data)))
+                      (if (null? octave) 0:i32
+                        (printf "   octave: %lld\n" (read_body_i64 octave data)))
+                      (if (null? alter) 0:i32
+                        (printf "   alter: %f\n" (read_body_double alter data)))
+                      (if (null? duration) 0:i32
+                        (printf "   duration: %lld\n" (read_body_i64 duration data)))
+                      (if (null? voice) 0:i32
+                        (printf "   voice: %lld\n" (read_body_i64 voice data)))
+                      (if (null? accidental) 0:i32
+                        (printf "   accidental: '%s'\n" (read_body_i8 accidental data)))
+                    void)
+                    ; check for more notes in this measure:
+                    (parse_tree (get_sibling tree) data))
+
+                  ; check for notes
+                  ; check for 'directions'
+                  (else
+                    (parse_tree (get_child tree) data)
+                    (parse_tree (get_sibling tree) data)))))))
 
 
 (bind-func check_divisions:[void,XMLTree*,i8*,i64*]*
@@ -602,9 +753,12 @@
               ;(printf "\ntree grown. this is the tree:\n")
               ;(xml_print_tree tree data 0)
               (printf "max. division: %lld.\n" (highest_division tree data))
+              (parse_tree tree data)
+              ;(xml_print_tree tree data 0)
               (xml_delete_tree tree)
               void)))
      (printf "tree memory freed.\n")
      void))
+
 
 ($ (test))
