@@ -1,0 +1,42 @@
+Logfile roll module of ArciLab software.
+@21070848, Information: Configuration file loaded.
+@21070848, Warning: Roll, read_config_from_file: invalid file.
+@21100544, Information: XML file slurped.
+@21120000, Information: Parser: partwise score detected.
+@21128192, Information: Parser: opening part 'P1'.
+@21133312, Information: Parser: opening part 'P2'.
+@21135360, Information: Pre parse done: score division = 
+@21153792, Information: Parser: partwise score detected.
+@21163008, Information: Parser: opening part 'P1'.
+@21169152, Information: Parser: opening part 'P2'.
+@21171200, Information: XML parsing done.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+@21171200, Warning: Note element: empty auxData requested. 'null' returned.
+End of logfile.

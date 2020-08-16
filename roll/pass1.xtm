@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 ; XMLpair element, stores two strings, a first element, and the rest of the xml data
 (bind-type XMLpair <String*,String*>)
 ; 0 xml data
@@ -141,6 +134,12 @@
                              (Str ""))))
          res))))
 
+(bind-func delElement:[void,XMLelement*]*
+  (lambda (xmlElement)
+    (free (tref xmlElement 2))
+    (free (tref xmlElement 3))
+    void))
+
 (bind-func print:[void,XMLelement*]*
   (lambda (xmlElement)
     (printf "XML element:\nname = '%s'\n" (cstring (name xmlElement)))
@@ -249,15 +248,15 @@
 (bind-func xml_divide:[XMLpair*,String*]*
   (lambda (xmlData)
     (cond ((< (find_substring xmlData (Str "<")) 0) 
-            (roll_error rollErr
-                        (Str "xml_read_element: first character is not '<', malformed xmlData. This will abort the parsing process.")
-                        ROLL_ERR_FLAG_FATAL
-                        ROLL_ERR_DEST_ALL)
+            (roll_error rollErr (Str "xml_read_element: first character is not '<', malformed xmlData. This will abort the parsing process.") ROLL_ERR_FLAG_FATAL ROLL_ERR_DEST_ALL)
             ;DEBUG (printf "critical data: '%s'\n" (cstring xmlData))
             (cXMLpair (Str "") (Str "")))
           (else
+            ;DEBUG:
+            (printf "xml data ok, starting to find separation point\n")
             (let ((splitPoint (xml_find_element_separation xmlData)))
-              ;DEBUG: (printf "splitpoint: %lld\n" splitPoint)
+              ;DEBUG: 
+              (printf "splitpoint: %lld\n" splitPoint)
               (cond ((<= splitPoint 0)
                       (let ((res (cXMLpair xmlData (Str "")))) 
                         res))
@@ -334,7 +333,7 @@
 
 
 ; ParserState remembers things while reading through xml Data
-(bind-type ParserState <i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,i64,String*,float,i1,String*,String*,String*,String*,String*,i64,String*>)
+(bind-type ParserState <i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,i64,String*,float,i1,String*,String*,String*,String*,String*,i64,String*,String*,double,i1>)
 ; 0 part count
 ; 1 measure count
 ; 2 divisions
@@ -356,6 +355,9 @@
 ; 18 text
 ; 19 xml voice assignment
 ; 20 pitchInformation (body of <text> in <lyric>)
+; 21 beat-unit (for metronome marks)
+; 22 per-minute (for metronome marks)
+; 23 beat-unit-dot
 
 (bind-func partCount:[i64,ParserState*]*
   (lambda (ps)
@@ -546,14 +548,41 @@
     (tset! ps 20 pi)
     void))
 
+(bind-func beatUnit:[String*,ParserState*]*
+  (lambda (ps)
+    (tref ps 21)))
+
+(bind-func set_beatUnit:[void,ParserState*,String*]*
+  (lambda (ps bu)
+    (tset! ps 21 bu)
+    void))
+
+(bind-func perMinute:[double,ParserState*]*
+  (lambda (ps)
+    (tref ps 22)))
+
+(bind-func set_perMinute:[void,ParserState*,double]*
+  (lambda (ps pm)
+    (tset! ps 22 pm)
+    void))
+
+(bind-func beatUnitDot:[i1,ParserState*]*
+  (lambda (ps)
+    (tref ps 23)))
+
+(bind-func set_beatUnitDot:[void,ParserState*,i1]*
+  (lambda (ps bud)
+    (tset! ps 23 bud)
+    void))
+
 (bind-func cParserState:[ParserState*]*
   (lambda ()
-    (let ((res (ParserState:[ParserState*,i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,i64,String*,float,i1,String*,String*,String*,String*,String*,i64,String*]* 
+    (let ((res (ParserState:[ParserState*,i64,i64,i64,i64,i64,String*,i64,i64,i1,i64,i64,String*,float,i1,String*,String*,String*,String*,String*,i64,String*,String*,double,i1]* 
                             0 
                             0
                             0
-                            0
-                            0
+                            4
+                            4
                             (Str "")
                             0
                             0
@@ -569,12 +598,15 @@
                             (Str "")
                             (Str "")
                             0
-                            (Str ""))))
+                            (Str "")
+                            (Str "quarter")
+                            60.0
+                            #f)))
           res)))
 
 (bind-func print:[void,ParserState*]*
   (lambda (state)
-    (printf "Parser state printout:\npart count = %lld\nmeasure count = %lld\ndivisions = %lld\nbeats = %lld\nbeatType = %lld\nrest = %s\ntimer = %lld\nstep = '%s'\noctave = %lld\nduration = %lld\nnoteCount = %lld\naccidental = '%s'\nalter = %f\nchord = %s\ntie = '%s'\nparent = '%s'\nnotehead = '%s'\narticulation = '%s'\ntext = '%s'\nxml %voice = %lld\npitch info = '%s'\n"
+    (printf "Parser state printout:\npart count = %lld\nmeasure count = %lld\ndivisions = %lld\nbeats = %lld\nbeatType = %lld\nrest = %s\ntimer = %lld\nstep = '%s'\noctave = %lld\nduration = %lld\nnoteCount = %lld\naccidental = '%s'\nalter = %f\nchord = %s\ntie = '%s'\nparent = '%s'\nnotehead = '%s'\narticulation = '%s'\ntext = '%s'\nxml %voice = %lld\npitch info = '%s'\nbeatUnit = '%s'\nperMinute = %f\nbeatUnitDot = %s\n"
             (partCount state)
             (measureCount state)
             (divisions state)
@@ -595,7 +627,10 @@
             (cstring (articulation state))
             (cstring (text state))
             (xmlVoice state)
-            (cstring (pitchInfo state)))
+            (cstring (pitchInfo state))
+            (cstring (beatUnit state))
+            (perMinute state)
+            (if (beatUnitDot state) "yes" "no"))
     void))
 
 
@@ -638,6 +673,11 @@
             (set_division (get_measure score (- (measureCount state) 1)) (division score))
             (set_beats (get_measure score (- (measureCount state) 1)) (beats state))
             (set_beatType (get_measure score (- (measureCount state) 1)) (beatType state)))
+            ; problem: absolute timing unclear ...
+            ;(if (= 0 (bpmCount (get_measure score (- (measureCount state) 1))))
+            ;    (push (get_measure score (- (measureCount state) 1))
+            ;          (cBpmInfo 0 60.0))
+            ;    void))
           ((equal (name xmlElement) (Str "attributes"))
             (xml_parse (body xmlElement) score state))
           ((equal (name xmlElement) (Str "divisions"))
@@ -648,6 +688,19 @@
             (set_beats state (extract_i64 (body xmlElement))))
           ((equal (name xmlElement) (Str "beat-type"))
             (set_beatType state (extract_i64 (body xmlElement))))
+          ((equal (name xmlElement) (Str "beat-unit"))
+            (set_beatUnit state (body xmlElement)))
+          ((equal (name xmlElement) (Str "per-minute"))
+            (set_perMinute state (i64tod (extract_i64 (body xmlElement)))))
+          ((equal (name xmlElement) (Str "beat-unit-dot"))
+            (set_beatUnitDot state #t))
+          ((equal (name xmlElement) (Str "metronome"))
+            (set_beatUnitDot state #f)
+            (set_beatUnit state (Str "quarter"))
+            (set_perMinute state 60.0)
+            (xml_parse (body xmlElement) score state)
+            (push (get_measure score (- (measureCount state) 1)) 
+                  (cBpmInfo (timer state) (normalize_bpm (beatUnit state) (perMinute state) (beatUnitDot state)))))
           ((equal (name xmlElement) (Str "note"))
             ; reset note specific data:
             (set_step state (Str ""))
@@ -797,6 +850,7 @@
                         ;DEBUG: (print pair)
                         (xml_read_element (xml_car pair) xmlElement)
                         (xml_interpret_element xmlElement score state)
+                        (delElement xmlElement)
                         (xml_parse (xml_cdr pair) score state)))))))))
         
 
@@ -851,18 +905,25 @@
             (let ((first (substring xmlData 0 2)))
               (cond ((equal first (Str "<?"))
                       ;DEBUG: (printf "xmlData:\n%s\n" (cstring (xml_skip_version_element xmlData)))
-                      ;DEBUG: (printf "version element skipped\n")
+                      ;DEBUG: 
+                      (printf "version element skipped\n")
                       (xml_pre_parse (xml_skip_version_element xmlData) maxDivision currentDivision))
                     ((equal first (Str "<!"))
                       ;DEBUG: ;(printf "xmlData:\n%s\n" (cstring (xml_skip_doctype_element xmlData)))
-                      ;DEBUG: (printf "doctype elemente skipped\n")
+                      ;DEBUG: 
+                      (printf "doctype element skipped\n")
                       (xml_pre_parse (xml_skip_doctype_element xmlData) maxDivision currentDivision))
                     (else 
                       (let ((pair (xml_divide xmlData))
                             (xmlElement (cXMLelement)))
                         ;DEBUG: (print pair)
+                        ;DEBUG:
+                        (printf "pair generated, starting to read xmlElement.\n")
                         (xml_read_element (xml_car pair) xmlElement)
+                        ;DEBUG:
+                        (printf "name of element: '%s'\n" (cstring (name xmlElement)))
                         (xml_pre_interpret_element xmlElement maxDivision currentDivision)
+                        (delElement xmlElement)
                         (xml_pre_parse (xml_cdr pair) maxDivision currentDivision)))))))))
     
 

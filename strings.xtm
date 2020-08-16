@@ -1,3 +1,94 @@
+; vString element (virtual string), represents a substring of a given String*
+(bind-type vString <String**,i64,i64>)
+; pointer to a String*
+; index of first character of substring
+; index of last character of substring
+
+(bind-func get_string:[String*,vString*]*
+  (lambda (vs)
+    (tref vs 0)))
+    
+(bind-func start:[i64,vString*]*
+  (lambda (vs)
+    (tref vs 1)))
+
+(bind-func set_start:[void,vString*,i64]*
+  (lambda (vs index)
+    (cond ((or (< index 0) (> index (length (get_string vs))))
+            (printf "vString: index out of range\n")
+            void)
+          (else (tset! vs 1 index)
+                void))))
+
+(bind-func end:[i64,vString*]*
+  (lambda (vs)
+    (tref vs 2)))
+
+(bind-func set_end:[void,vString*,i64]*
+  (lambda (vs index)
+    (cond ((or (< index 0) (> index (length (get_string vs))))
+            (printf "vString: index out of range\n")
+            void)
+          (else (tset! vs 2 index)
+                void))))
+
+(bind-func set_range:[void,vString*,i64,i64]*
+  (lambda (vs s e)
+    (cond ((or (< s 0) (> s (length (get_string vs))))
+            (printf "vString: index out of range\n")
+            void)
+          ((or (< e 0) (> e (length (get_string vs))))
+            (printf "vString: index out of range\n")
+            void)
+          ((< e s)
+            (printf "vString: end before start\n")
+            void)
+          (else (tset! vs 1 s)
+                (tset! vs 2 e)
+                void))))
+
+(bind-func build_string:[String*,vString*]*
+  (lambda (vs)
+    (substring (get_string vs) (start vs) (end vs))))
+
+(bind-func cVString:[vString*,String**,i64,i64]*
+  (lambda (source s e)
+    (cond ((or (< s 0) (> s (length (pref source 0))))
+            (printf "vString: index out of range\n")
+            (set! s 0))
+          ((or (< e 0) (> e (length (pref source 0))))
+            (printf "vString: index out of range\n")
+            (set! e (- (length (pref source 0)) 1)))
+          ((< e s)
+            (printf "vString: end before start\n")
+            (set! s 0)
+            (set! e (- (length (pref source 0)) 1)))
+          (else 0))
+      (let ((res (vString:[vString*,String**,i64,i64]* source s e)))
+        res)))
+
+(bind-func cVString:[vString*,String*]*
+  (lambda (str)
+    (let ((src:String** (halloc 1)))
+      (pset! src 0 str)
+      (let ((res (vString:[vString*,String**,i64,i64]* src 0 (- (length str) 1))))
+        res))))
+
+
+
+(bind-func vstringtest
+  (lambda ()
+    (let ((s (Str "abcdefghijklmno"))
+          (src:String** (zalloc 1)))
+      (pset! src 0 s)
+      (letz ((vs (cVString src 0 14)))
+        (printf "str = '%s', s = %lld, e = %lld\n" (cstring (get_string vs))
+                                                   (start vs)
+                                                   (end vs))))))
+
+
+
+
 ; split until index (exclusive)
 (bind-func split_first:[String*,String*,i64]*
   (lambda (s index)
@@ -82,3 +173,8 @@
       (sscanf (cstring s) "%f" res)
       (dtof (pref res 0)))))
 
+(bind-func extract_double:[double,String*]*
+  (lambda (s) 
+    (let ((res:double* (salloc 1)))
+      (sscanf (cstring s) "%f" res)
+      (pref res 0))))

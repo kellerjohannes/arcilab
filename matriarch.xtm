@@ -1,0 +1,9 @@
+(sys:load "/home/johannes/Compile/extempore/libs/external/portmidi.xtm")
+
+($ (set_midi_out 2))
+
+($ (print_midi_devices))
+
+(pm_initialize)
+(pm_print_devices)
+(define *midi-out* (pm_create_output_stream 2))

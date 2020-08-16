@@ -107,6 +107,12 @@
                          (Str ""))))
         res))))
 
+
+(bind-func delConfig:[void,Config*]*
+  (lambda (conf)
+    (delTabulature (get_tabulature conf))
+    void))
+
 (bind-func config_extract_name:[String*,String*]*
   (lambda (data)
     (let ((first (find_substring data (Str "'")))

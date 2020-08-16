@@ -1,6 +1,5 @@
-/*.swp
-/*.swp}
-/*.swo
-roll//*.swp
-scores/logfile-parser
-roll/guinea../score-object
+**/*.swp
+**/*.swp}
+**/*.swo
+**/logfile-parser
+**/score-object
