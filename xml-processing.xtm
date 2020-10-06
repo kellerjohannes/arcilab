@@ -780,7 +780,7 @@
 (bind-func test
   (lambda ()
     (letz ((tree:XMLTree* (cXMLTree null 0))
-           (data:i8* (sys_slurp_file "/home/johannes/Coding/extempore/arcilab/scores/guinea11/guinea11.xml")))
+           (data:i8* (sys_slurp_file "/home/johannes/Coding/extempore/arcilab/scores/labor01/Arciorgano_Aufnahmen_Clustergissandi.xml")))
       (cond ((null? data) (printf "no file found.\n") void)
             (else
               (printf "\nreading test tree.\n")
