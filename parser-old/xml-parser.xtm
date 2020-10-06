@@ -743,9 +743,5 @@
               void))))
 
 
-($ (read_music_xml2 
-   0 
-   (Str "/home/johannes/Coding/extempore/arcilab/parser-old/labor01/vicentino_soave_modern_1-3Komma.xml")
-   (Str "/home/johannes/Coding/extempore/arcilab/parser-old/labor01/soave.xtm")))
 
 

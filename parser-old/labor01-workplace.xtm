@@ -1,0 +1,43 @@
+(sys:load "/home/johannes/Coding/extempore/arcilab/parser-old/xml-parser.xtm")
+(sys:load "/home/johannes/Coding/extempore/arcilab/parser-old/arciorgano-comm.xtm")
+
+(bind-val workpath String* (Str "/home/johannes/Coding/extempore/arcilab/parser-old/labor01/"))
+(bind-val filelist String** (halloc 10))
+
+(bind-func init
+  (lambda ()
+    (let ((i 0))
+      (dotimes (i 10)
+        (pset! filelist i (Str "null"))))
+    (pset! filelist 0 (Str "Arciorgano_Aufnahmen_Helmholtz-Fahrrad3"))
+    (printf "file list loaded.\n")))
+
+(bind-func print_filelist
+  (lambda ()
+    (let ((i 0))
+      (dotimes (i 10)
+        (printf "file #%lld: '%s'\n" i (cstring (pref filelist 0)))))))
+
+
+        (cond ((equal (pref filelist i) (Str "null"))
+                (printf "file #%lld: null\n" i)
+                void)
+          (else 
+            (printf "file #%lld: %s.\n" i (cstring (pref filelist i)))
+            void))))))
+
+(bind-func compile_all
+  (lambda ()
+    (let ((i 0))
+      (dotimes (i 10)
+        (if (equal (pref filelist i) (Str "null"))
+          (printf "file %lld is not defined, skipping.\n" i)
+          (begin
+            (printf "reading file %s ...\n" (cstring (cat2 workpath (cat2 (pref filelist i) (Str ".xml")))))
+            (read_music_xml2 0 (cat2 workpath (cat2 (pref filelist i) (Str ".xml")))
+                               (cat2 workpath (cat2 (pref filelist i) (Str ".xtm"))))
+            (printf "ok.\n")))))))
+
+($ (init))
+($ (print_filelist))
+($ (compile_all))

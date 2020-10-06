@@ -750,13 +750,10 @@
                     void)
                     ; check for more notes in this measure:
                     (parse_tree (get_sibling tree) data))
-
-                  ; check for notes
                   ; check for 'directions'
                   (else
                     (parse_tree (get_child tree) data)
                     (parse_tree (get_sibling tree) data)))))))
-
 
 (bind-func check_divisions:[void,XMLTree*,i8*,i64*]*
   (lambda (tree data res)
@@ -780,7 +777,7 @@
 (bind-func test
   (lambda ()
     (letz ((tree:XMLTree* (cXMLTree null 0))
-           (data:i8* (sys_slurp_file "/home/johannes/Coding/extempore/arcilab/scores/labor01/Arciorgano_Aufnahmen_Clustergissandi.xml")))
+           (data:i8* (sys_slurp_file "/home/johannes/Coding/extempore/arcilab/scores/labor01/vicentino_soave_modern_1-3Komma.xml")))
       (cond ((null? data) (printf "no file found.\n") void)
             (else
               (printf "\nreading test tree.\n")
