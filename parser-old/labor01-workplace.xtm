@@ -1,43 +1,27 @@
 (sys:load "/home/johannes/Coding/extempore/arcilab/parser-old/xml-parser.xtm")
 (sys:load "/home/johannes/Coding/extempore/arcilab/parser-old/arciorgano-comm.xtm")
 
-(bind-val workpath String* (Str "/home/johannes/Coding/extempore/arcilab/parser-old/labor01/"))
-(bind-val filelist String** (halloc 10))
-
-(bind-func init
-  (lambda ()
-    (let ((i 0))
-      (dotimes (i 10)
-        (pset! filelist i (Str "null"))))
-    (pset! filelist 0 (Str "Arciorgano_Aufnahmen_Helmholtz-Fahrrad3"))
-    (printf "file list loaded.\n")))
-
-(bind-func print_filelist
-  (lambda ()
-    (let ((i 0))
-      (dotimes (i 10)
-        (printf "file #%lld: '%s'\n" i (cstring (pref filelist 0)))))))
-
-
-        (cond ((equal (pref filelist i) (Str "null"))
-                (printf "file #%lld: null\n" i)
-                void)
-          (else 
-            (printf "file #%lld: %s.\n" i (cstring (pref filelist i)))
-            void))))))
-
 (bind-func compile_all
   (lambda ()
-    (let ((i 0))
-      (dotimes (i 10)
-        (if (equal (pref filelist i) (Str "null"))
-          (printf "file %lld is not defined, skipping.\n" i)
-          (begin
-            (printf "reading file %s ...\n" (cstring (cat2 workpath (cat2 (pref filelist i) (Str ".xml")))))
-            (read_music_xml2 0 (cat2 workpath (cat2 (pref filelist i) (Str ".xml")))
-                               (cat2 workpath (cat2 (pref filelist i) (Str ".xtm"))))
-            (printf "ok.\n")))))))
+    (let ((i 0)
+          (workpath (Str "/home/johannes/Coding/extempore/arcilab/parser-old/labor01/"))
+          (filelist:String** (alloc 30)))
+      (pset! filelist 0 (Str "aufnahmen_3komma"))
+      (pset! filelist 1 (Str "aufnahmen_4komma"))
+      (pset! filelist 2 (Str "clusterglissandi_3komma"))
+      (pset! filelist 3 (Str "dolce1_3Komma"))
+      (pset! filelist 4 (Str "fahrrad2_4komma"))
+      (pset! filelist 5 (Str "fahrrad3_3komma"))
+      (pset! filelist 6 (Str "fahrrad3besser_3komma"))
+      (pset! filelist 7 (Str "fahrrad_3komma"))
+      (pset! filelist 8 (Str "intonationspraxis2_3komma"))
+      (pset! filelist 9 (Str "intonationspraxis2_4komma"))
+      (pset! filelist 10 (Str "musica1_3komma"))
+      (pset! filelist 11 (Str "soave1_3komma"))
+      (dotimes (i 12)
+        (printf "reading file %s ...\n" (cstring (cat2 workpath (cat2 (pref filelist i) (Str ".xml")))))
+        (read_music_xml2 0 (cat2 workpath (cat2 (pref filelist i) (Str ".xml")))
+                           (cat2 workpath (cat2 (pref filelist i) (Str ".xtm"))))
+        (printf "ok.\n")))))
 
-($ (init))
-($ (print_filelist))
 ($ (compile_all))
