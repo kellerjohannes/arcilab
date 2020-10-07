@@ -32,7 +32,7 @@
             (pset! buf 1 0)
             (pset! buf 1 200))
         (comWrite 0 buf 2)
-        (printf "k=%lld,v=%lld,remap=%lld " index state (- (pref remap (- index 1)) 1))
+        ;(printf "k=%lld,v=%lld,remap=%lld " index state (- (pref remap (- index 1)) 1))
         void))))
 
 (define init-port

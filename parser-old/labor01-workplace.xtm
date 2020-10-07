@@ -16,6 +16,7 @@
 ($ (convert (Str "1_3Komma/vicentino_soave_modern_1_3Komma_verkuerzt")))
 ($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Clustergissandi_ab_breit")))
 ($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Clustergissandi_Gitbi")))
+($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Clustergissandi_Gi")))
 ($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Clusterglissandi_Sinusnachbildung")))
 ($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Helmholtz-Fahrrad")))
 ($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Helmholtz-Fahrrad3_besser")))
