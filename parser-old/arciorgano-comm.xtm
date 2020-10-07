@@ -99,11 +99,11 @@
 
 (define testglissando
   (lambda (key time delta)
-    (cond ((and (<= key 1) (< delta 0)) (set! delta (* delta -1)))
-          ((and (>= key 138) (> delta 0)) (set! delta (* delta -1)))
+    (cond ((and (<= key 0) (< delta 0)) (set! delta (* delta -1)))
+          ((and (>= key 139) (> delta 0)) (set! delta (* delta -1)))
           (else (pln time key 9000)))
     (print key " | ")
-    (callback (+ time 1000) 'testglissando (+ key delta) (+ time 6300) delta)))
+    (callback (+ time 1000) 'testglissando (+ key delta) (+ time 7300) delta)))
 
 ;(testglissando 0 (now) 1)
 
