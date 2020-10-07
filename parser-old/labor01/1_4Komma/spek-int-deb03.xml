@@ -14701,6 +14701,7 @@ Skizzen für Arciorgano in adaptiv reiner Stimmung (2017(2020) </credit-words>
     <instrument id="P1-I1" />
     <voice>6</voice>
     <type>quarter</type>
+    <accidental>flat</accidental>
     <stem>down</stem>
     <staff>6</staff>
    </note>
@@ -18865,16 +18866,12 @@ Skizzen für Arciorgano in adaptiv reiner Stimmung (2017(2020) </credit-words>
      <octave>3</octave>
     </pitch>
     <duration>256</duration>
-    <tie type="start" />
     <instrument id="P7-I1" />
     <voice>1</voice>
     <type>quarter</type>
     <accidental>flat</accidental>
     <stem>down</stem>
     <staff>1</staff>
-    <notations>
-     <tied type="start" />
-    </notations>
    </note>
    <note color="#000000" default-x="104" default-y="-40">
     <pitch>
@@ -18883,15 +18880,12 @@ Skizzen für Arciorgano in adaptiv reiner Stimmung (2017(2020) </credit-words>
      <octave>3</octave>
     </pitch>
     <duration>256</duration>
-    <tie type="stop" />
     <instrument id="P7-I1" />
     <voice>1</voice>
     <type>quarter</type>
+    <accidental>flat</accidental>
     <stem>down</stem>
     <staff>1</staff>
-    <notations>
-     <tied type="stop" />
-    </notations>
    </note>
    <note color="#000000" default-x="140" default-y="-45">
     <pitch>
