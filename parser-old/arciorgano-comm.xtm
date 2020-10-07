@@ -97,7 +97,7 @@
 ;(reset-system)
 ;(shutdown-system)
 
-(define testglissando)
+(define testglissando
   (lambda (key time delta)
     (cond ((and (<= key 1) (< delta 0)) (set! delta (* delta -1)))
           ((and (>= key 138) (> delta 0)) (set! delta (* delta -1)))

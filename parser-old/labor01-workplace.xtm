@@ -1,9 +1,32 @@
 (sys:load "/home/johannes/Coding/extempore/arcilab/parser-old/xml-parser.xtm")
 (sys:load "/home/johannes/Coding/extempore/arcilab/parser-old/arciorgano-comm.xtm")
 
+(bind-func convert
+  (let ((workpath (Str "/home/johannes/Coding/extempore/arcilab/parser-old/labor01/")))
+    (lambda (filename:String*)
+      (read_music_xml2 0 (cat2 workpath (cat2 filename (Str ".xml")))
+                         (cat2 workpath (cat2 filename (Str ".xtm"))))
+      (printf "file '%s' read.\n\n" (cstring filename))
+      void)))
+
+($ (convert (Str "1_3Komma/Arciorgano_Aufnahmen_1_3_Komma")))
+($ (convert (Str "1_3Komma/vicentino_dolce1_3_Komma")))
+($ (convert (Str "1_3Komma/vicentino_musica_1_3_Komma")))
+($ (convert (Str "1_3Komma/vicentino_soave_modern_1_3Komma_lang")))
+($ (convert (Str "1_3Komma/vicentino_soave_modern_1_3Komma_verkuerzt")))
+($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Clustergissandi_ab_breit")))
+($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Clustergissandi_Gitbi")))
+($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Clustergissandi_Sinusnachbildung")))
+($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Clustergissandi")))
+($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Helmholtz-Fahrrad")))
+($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Helmholtz-Fahrrad3_besser")))
+($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Helmholtz-Fahrrad3")))
+($ (convert (Str "1_4Komma/Arciorgano_Aufnahmen_1_4_Komma")))
+($ (convert (Str "1_4Komma/Arciorgano_Aufnahmen_Helmholtz-Fahrrad2")))
+($ (convert (Str "1_4Komma/Spekulative_Intonationspraxis2_1_4Komma_nicht_transp")))
 
 
-
+($ (convert (Str "1_4Komma/spek-int-2-4")))
 
 
 
