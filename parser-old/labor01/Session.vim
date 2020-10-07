@@ -230,11 +230,11 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 11 - ((10 * winheight(0) + 29) / 59)
+let s:l = 22 - ((21 * winheight(0) + 29) / 59)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-11
+22
 normal! 0
 tabedit 1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Clustergissandi_Gi.xtm
 set splitbelow splitright
@@ -528,12 +528,12 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 29) / 59)
+let s:l = 117 - ((53 * winheight(0) + 29) / 59)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 09|
+117
+normal! 021|
 tabedit 1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Clustergissandi_deb01.xtm
 set splitbelow splitright
 set nosplitbelow
@@ -677,12 +677,12 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 29) / 59)
+let s:l = 288 - ((2 * winheight(0) + 29) / 59)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
+288
+normal! 02|
 tabedit 1_4Komma/spek-int-deb03.xtm
 set splitbelow splitright
 set nosplitbelow
@@ -1720,11 +1720,11 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 29) / 59)
+let s:l = 3 - ((2 * winheight(0) + 29) / 59)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
+3
 normal! 0
 tabedit 1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Clustergissandi_Gitbi.xtm
 set splitbelow splitright

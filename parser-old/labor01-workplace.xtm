@@ -9,6 +9,13 @@
       (printf "file '%s' read.\n\n" (cstring filename))
       void)))
 
+
+; labor, 7th of october 2020, klasse caspar johannes walter
+
+; all files are in working condition. unresolved problems while parsing:
+; - ties are confusing
+; - all notes are stopped at bar lines
+
 ($ (convert (Str "1_3Komma/Arciorgano_Aufnahmen_1_3_Komma")))
 ($ (convert (Str "1_3Komma/vicentino_dolce1_3_Komma")))
 ($ (convert (Str "1_3Komma/vicentino_musica_1_3_Komma")))
