@@ -24,18 +24,15 @@
   (let ((remap:i8* (halloc 138)))
     (pfill! remap 1 2 3 4 6 5 7 8 9 77 10 11 78 79 12 80 13 14 81 82 15 83 17 16 85 84 18 86 19 20 87 21 22 88 89 23 90 25 24 92 91 26 93 27 28 94 29 30 95 96 31 97 32 33 98 99 34 100 36 35 102 101 37 103 38 39 104 40 41 105 106 42 107 44 43 109 108 45 110 46 47 111 48 49 112 113 50 114 51 52 115 116 53 117 55 54 119 118 56 120 57 58 121 59 60 122 123 61 124 63 62 126 125 64 127 65 66 128 67 68 129 130 69 131 70 71 132 133 72 134 74 73 136 135 75 137 76 138)
     (lambda (index state)
-      (let ((buf:i8* (salloc 3))
-            (eol:String* (Str "\n")))
+      (let ((buf:i8* (salloc 2)))
         (if (and (> index 0) (< index 139))
-          (pset! buf 0 (- (pref remap (- (i64toi8 index) 1:i8)) 1))
+          (pset! buf 0 (- (pref remap (- index 1)) 1))
           (pset! buf 0 (i64toi8 index)))
         (if (= state 0)
-            (pset! buf 1 0:i8)
-            (pset! buf 1 200:i8))
-        (pset! buf 2 (pref (cstring eol) 0))
-        (comWrite 0 buf 3)
+            (pset! buf 1 0)
+            (pset! buf 1 200))
+        (comWrite 0 buf 2)
         void))))
-
 
 (define init-port
   (lambda ()
@@ -96,11 +93,11 @@
 
 
 (init-system)
-;(swipe-zero 0 (now))
+(swipe-zero 0 (now))
 ;(reset-system)
 ;(shutdown-system)
 
-(define testglissando
+(define testglissando)
   (lambda (key time delta)
     (cond ((and (<= key 1) (< delta 0)) (set! delta (* delta -1)))
           ((and (>= key 138) (> delta 0)) (set! delta (* delta -1)))
@@ -108,10 +105,5 @@
     (print key " | ")
     (callback (+ time 1000) 'testglissando (+ key delta) (+ time 6300) delta)))
 
-;(testglissando 30 (now) 1)
+;(testglissando 0 (now) 1)
 
-
-
-;(define key 2)
-;(prn key)
-;(rln key)

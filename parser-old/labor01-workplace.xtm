@@ -1,6 +1,12 @@
 (sys:load "/home/johannes/Coding/extempore/arcilab/parser-old/xml-parser.xtm")
 (sys:load "/home/johannes/Coding/extempore/arcilab/parser-old/arciorgano-comm.xtm")
 
+
+
+
+
+
+
 (bind-func compile_all
   (lambda ()
     (let ((i 0)
