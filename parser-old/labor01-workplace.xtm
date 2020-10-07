@@ -17,6 +17,7 @@
 ($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Clustergissandi_ab_breit")))
 ($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Clustergissandi_Gitbi")))
 ($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Clustergissandi_Sinusnachbildung")))
+; problem unbekannte alteration:
 ($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Clustergissandi")))
 ($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Helmholtz-Fahrrad")))
 ($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Helmholtz-Fahrrad3_besser")))
