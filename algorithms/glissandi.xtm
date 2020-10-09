@@ -11,34 +11,42 @@
 (testglissando 0 (now) 1)
 
 
+
+
 (define glissando1
   (lambda (first last delta time)
-    (pln time first (* 11 *second*))
+    (pln time first (* 8 *second*))
     (cond 
       ((= first last) 0)
-      (else (callback (+ time 500) 'glissando1 (+ first delta) last delta (+ time (* 0.3 *second*)))))))
+      (else (callback (+ time 500) 'glissando1 (+ first delta) last delta (+ time (* 0.35 *second*)))))))
 
-
-; 'glissando 1' in the recording
 (glissando1 138 62 -1 (now))
 (glissando1 138 98 -1 (now))
 
-; 'glissando 2' in the recording
 (glissando1 98 62 -1 (now))
 
-; glissando 3
 (glissando1 62 1 -1 (now))
+(glissando1 15 51 1 (now))
+(glissando1 123 89 -1 (now))
+(glissando1 89 123 1 (now))
+(glissando1 123 87 -1 (now))
+(glissando1 123 51 -1 (now))
+(glissando1 87 24 -1 (now))
+
+(define clusterale
+  (lambda (first last time)
+    (let ((i 0))
+      (pln time 87 (* 12 *second*))
+      (dotimes (i (- last first))
+        (pln (+ (* 3 i) time) (+ i first) (+ 0.5 (* (random) 8 *second*)))))))
+
+(clusterale 16 51 (now))
+(clusterale 88 123 (now))
 
 (glissando2 66 100 1 *second* (* 0.1 *second*) (now))
 
-(- 98 36)
-(/ 26 61.0)
-
-(pln (now) 2 (* 15 *second*))
-(pln (now) 3 (* 15 *second*))
-
-(pln (now) 138 *second*)
-
+(pln (now) 24 (* 15 *second*))
+(pln (now) 26 (* 15 *second*))
 
 (define clusterblock
   (lambda (first last duration time)
@@ -46,8 +54,7 @@
       (dotimes (i (- last first))
         (pln time (+ first i) duration)))))
 
-(clusterblock 1 5 *second* (now))
-
+(clusterblock 1 50 *second* (now))
 
 (define glissando2
   (lambda (first last delta duration durationdelta time)
@@ -61,3 +68,8 @@
             (+ duration durationdelta) 
             durationdelta 
             (+ time (* 0.5 *second*)))))))
+
+
+
+
+

@@ -40,3 +40,7 @@
 ;($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Clustergissandi")))
 ($ (convert (Str "1_3Komma/Clusterglissandi/Arciorgano_Aufnahmen_Clustergissandi_deb01")))
 
+; revised version, after labor01 meeting
+($ (convert (Str "1_4Komma/Spekulative_Intonationspraxis_2_1_4Komma_nicht_transp_I")))
+($ (convert (Str "1_4Komma/vicentino_madonna_1_4_Komma_trans_rev")))
+($ (convert (Str "1_4Komma/vicentino_soave_1_4_Komma_trans_rev")))
