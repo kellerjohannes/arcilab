@@ -116,7 +116,7 @@
           ((and (>= key 139) (> delta 0)) (set! delta (* delta -1)))
           (else (pln time key 9000)))
     (print key " | ")
-    (callback (+ time 1000) 'testglissando (+ key delta) (+ time 1300) delta)))
+    (callback (+ time 1000) 'testglissando (+ key delta) (+ time 3330) delta)))
 
 ;(testglissando 0 (now) 1)
 
