@@ -44,3 +44,6 @@
 ($ (convert (Str "1_4Komma/Spekulative_Intonationspraxis_2_1_4Komma_nicht_transp_I")))
 ($ (convert (Str "1_4Komma/vicentino_madonna_1_4_Komma_trans_rev")))
 ($ (convert (Str "1_4Komma/vicentino_soave_1_4_Komma_trans_rev")))
+
+; new version of Spekulative Intonationspraxis
+($ (convert (Str "1_4Komma/Spek_Int_I_v1")))
