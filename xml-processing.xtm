@@ -650,44 +650,101 @@
           (else
             (resolve_path_loop (get_child tree) data path)))))
 
-(bind-func parse_tree:[void,XMLTree*,i8*]*
-  (lambda (tree data)
+(bind-type ScoreCounters <i64,i64,i64,i64,i64>)
+; 0 parts
+; 1 measures
+; 2 notes
+; 3 rests
+; 4 metronome marks
+
+(bind-func add_part_counter:[void,ScoreCounters*]*
+  (lambda (sc)
+    (tset! sc 0 (+ 1 (tref sc 0)))
+    void))
+
+(bind-func add_measure_counter:[void,ScoreCounters*]*
+  (lambda (sc)
+    (tset! sc 1 (+ 1 (tref sc 1)))
+    void))
+
+(bind-func add_note_counter:[void,ScoreCounters*]*
+  (lambda (sc)
+    (tset! sc 2 (+ 1 (tref sc 2)))
+    void))
+
+(bind-func add_rest_counter:[void,ScoreCounters*]*
+  (lambda (sc)
+    (tset! sc 3 (+ 1 (tref sc 3)))
+    void))
+
+(bind-func add_metronome_counter:[void,ScoreCounters*]*
+  (lambda (sc)
+    (tset! sc 4 (+ 1 (tref sc 4)))
+    void))
+
+(bind-func print_counters:[void,ScoreCounters*]*
+  (lambda (sc)
+    (printf "Score counters:\n# parts = %lld\n# measures = %lld\n# notes = %lld\n# rests = %lld\nmetronome marks = %lld\n" 
+            (tref sc 0)
+            (tref sc 1)
+            (tref sc 2)
+            (tref sc 3)
+            (tref sc 4))
+    void))
+      
+(bind-func cScoreCounters:[ScoreCounters*]*
+  (lambda ()
+    (let ((res:ScoreCounters* (ScoreCounters:[ScoreCounters*,i64,i64,i64,i64,i64]* 0 0 0 0 0)))
+      res)))
+
+(bind-func parse_tree:[void,XMLTree*,i8*,ScoreCounters*]*
+  (lambda (tree data counters)
     (cond ((null? tree) void)
           (else
             (cond ((equal_name tree data "score-partwise") 
                     (printf "score-partwise:\n")
-                    (parse_tree (get_child tree) data))
+                    (parse_tree (get_child tree) data counters))
                   ((equal_name tree data "part")
                     (printf " part:\n")
-                    (parse_tree (get_child tree) data)
-                    (parse_tree (get_sibling tree) data))
+                    (add_part_counter counters)
+                    (letz ((partId (read_attribute_i8 tree data "id")))
+                      (printf "  id = %s\n" partId)
+                      void)
+                    (parse_tree (get_child tree) data counters)
+                    (parse_tree (get_sibling tree) data counters))
                   ((equal_name tree data "measure")
                     (printf "  measure:\n")
+                    (add_measure_counter counters)
                     (letz ((beats (resolve_path tree data "/attributes/time/beats"))
-                           (beatType (resolve_path tree data "/attributes/time/beat-type")))
+                           (beatType (resolve_path tree data "/attributes/time/beat-type"))
+                           (division (resolve_path tree data "/attributes/divisions")))
                       (if (and (null? beats) (null? beatType)) 0:i32
                         (printf "  signature = %lld/%lld\n" (read_body_i64 beats data)
                                                             (read_body_i64 beatType data)))
+                      (if (null? division) 0:i32
+                        (printf "  divisions = %lld\n" (read_body_i64 division data)))
                       void)
                     ; check all children for notes etc.:
-                    (parse_tree (get_child tree) data)
+                    (parse_tree (get_child tree) data counters)
                     ; close measure reading:
                     ; ...
                     ; check for more measures in this part:
-                    (parse_tree (get_sibling tree) data))
+                    (parse_tree (get_sibling tree) data counters))
                   ((equal_name tree data "direction")
                     (printf "  direction:\n")
                     (letz ((beatUnit (resolve_path tree data "/direction-type/metronome/beat-unit"))
                            (perMinute (resolve_path tree data "/direction-type/metronome/per-minute"))
                            (words (resolve_path tree data "/direction-type/words")))
                       (if (or (null? beatUnit) (null? perMinute)) 0:i32
-                        (printf "   metronome mark: '%s' = %lld\n" (read_body_i8 beatUnit data)
-                                                                   (read_body_i64 perMinute data)))
+                        (begin
+                          (add_metronome_counter counters)
+                          (printf "   metronome mark: '%s' = %lld\n" (read_body_i8 beatUnit data)
+                                                                     (read_body_i64 perMinute data))))
                       (if (null? words) 0:i32
                         (printf "   words: '%s'\n" (read_body_i8 words data)))
                       void)
                     ; check for more directions in this measure:
-                    (parse_tree (get_sibling tree) data))
+                    (parse_tree (get_sibling tree) data counters))
                   ((equal_name tree data "forward")
                     (printf "  forward:\n")
                     (letz ((duration (resolve_path tree data "/duration")))
@@ -695,7 +752,7 @@
                         (printf "   duration: %lld\n" (read_body_i64 duration data)))
                       void)
                     ; check for more stuff in this measure
-                    (parse_tree (get_sibling tree) data))
+                    (parse_tree (get_sibling tree) data counters))
                   ((equal_name tree data "backup")
                     (printf "  backup:\n")
                     (letz ((duration (resolve_path tree data "/duration")))
@@ -703,13 +760,14 @@
                         (printf "   duration: %lld\n" (read_body_i64 duration data)))
                       void)
                     ; check for more stuff in this measure
-                    (parse_tree (get_sibling tree) data))
+                    (parse_tree (get_sibling tree) data counters))
                   ((equal_name tree data "note")
                     (printf "  note:\n")
                     ; missing: articulation, color, notehead, lyrics
                     (letz ((step (resolve_path tree data "/pitch/step"))
                            (octave (resolve_path tree data "/pitch/octave"))
                            (alter (resolve_path tree data "/pitch/alter"))
+                           (accidental (resolve_path tree data "/accidental"))
                            (rest (resolve_path tree data "/rest"))
                            (chord (resolve_path tree data "/chord"))
                            (tie (resolve_path tree data "/tie"))
@@ -720,8 +778,7 @@
                            (color (read_attribute_i8 tree data "color"))
                            (accent (resolve_path tree data "/notations/articulations/accent"))
                            (staccato (resolve_path tree data "/notations/articulations/staccato"))
-                           (tenuto (resolve_path tree data "/notations/articulations/tenuto"))
-                           (accidental (resolve_path tree data "/accidental")))
+                           (tenuto (resolve_path tree data "/notations/articulations/tenuto")))
                       (printf "   rest: %s\n" (if (null? rest) "no" "yes"))
                       (printf "   chord: %s\n" (if (null? chord) "no" "yes"))
                       (printf "   accent: %s\n" (if (null? accent) "no" "yes"))
@@ -747,13 +804,14 @@
                         (printf "   lyric: '%s'\n" (read_body_i8 lyric data)))
                       (if (null? notehead) 0:i32
                         (printf "   notehead: '%s'\n" (read_body_i8 notehead data)))
+                      (if (null? rest) (add_note_counter counters) (add_rest_counter counters))
                     void)
                     ; check for more notes in this measure:
-                    (parse_tree (get_sibling tree) data))
+                    (parse_tree (get_sibling tree) data counters))
                   ; check for 'directions'
                   (else
-                    (parse_tree (get_child tree) data)
-                    (parse_tree (get_sibling tree) data)))))))
+                    (parse_tree (get_child tree) data counters)
+                    (parse_tree (get_sibling tree) data counters)))))))
 
 (bind-func check_divisions:[void,XMLTree*,i8*,i64*]*
   (lambda (tree data res)
@@ -774,10 +832,14 @@
       (check_divisions tree data res)
       (pref res 0))))
 
+;(data:i8* (sys_slurp_file "/home/johannes/Coding/extempore/arcilab/parser-old/labor01/1_3Komma/vicentino_dolce1_3_Komma.xml")))
+
 (bind-func test
   (lambda ()
     (letz ((tree:XMLTree* (cXMLTree null 0))
-           (data:i8* (sys_slurp_file "/home/johannes/Coding/extempore/arcilab/scores/labor01/vicentino_soave_modern_1-3Komma.xml")))
+           (counters:ScoreCounters* (cScoreCounters))
+           (data:i8* (sys_slurp_file
+           "/home/johannes/Coding/extempore/arcilab/scores/guinea02/guinea02sibelius.xml")))
       (cond ((null? data) (printf "no file found.\n") void)
             (else
               (printf "\nreading test tree.\n")
@@ -785,10 +847,11 @@
               (xml_grow_tree tree data)
               ;(printf "\ntree grown. this is the tree:\n")
               ;(xml_print_tree tree data 0)
-              (printf "max. division: %lld.\n" (highest_division tree data))
-              (parse_tree tree data)
+              (parse_tree tree data counters)
               ;(xml_print_tree tree data 0)
               (xml_delete_tree tree)
+              (printf "max. division: %lld.\n" (highest_division tree data))
+              (print_counters counters)
               void)))
      (printf "tree memory freed.\n")
      void))

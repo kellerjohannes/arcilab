@@ -118,5 +118,5 @@
     (print key " | ")
     (callback (+ time 1000) 'testglissando (+ key delta) (+ time 1300) delta)))
 
-;(testglissando 0 (now) 1)
+(testglissando 0 (now) 1)
 
