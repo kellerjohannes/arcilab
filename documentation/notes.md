@@ -3,6 +3,32 @@
 
 key signatures are ignored, scores need to be notated in c major exclusively
 
+The following elements are copied into the tree memory:
+
+- score-partwise
+- part (with ID)
+- measure (with beats, beat-type and divisions)
+- direction/metronome (with beat-unit and per-minute)
+- direction/words
+- forward (with duration)
+- backup (with duration)
+- note with:
+  - step (string)
+  - octave (i64)
+  - alter (float)
+  - accidental (string)
+  - rest (bool)
+  - chord (bool)
+  - tie (i64)
+  - duration (i64)
+  - voice (i64)
+  - lyric/text (string)
+  - notehead (string)
+  - color (string)
+  - accent (bool)
+  - staccato (bool)
+  - tenuto (bool)
+
 
 ## configuration files
 
@@ -32,3 +58,6 @@ to xml notes. Possible values:
 ## to do
 
 create keyboard mapping file for adaptive-just-mode
+
+
+
