@@ -48,3 +48,6 @@
 ; new version of Spekulative Intonationspraxis
 ($ (convert (Str "1_4Komma/Spek_Int_I_v1")))
 ($ (convert (Str "1_4Komma/Spek_Int_I_v2")))
+
+; Kadenzvarianten
+($ (convert (Str "../kadenzen/kadenzvarianten")))

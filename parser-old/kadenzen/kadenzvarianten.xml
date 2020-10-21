@@ -152,7 +152,7 @@
    <direction>
     <direction-type>
      <metronome default-y="18" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="10.2313" font-weight="normal">
-      <beat-unit>half</beat-unit>
+      <beat-unit>quarter</beat-unit>
       <per-minute>50</per-minute>
      </metronome>
     </direction-type>
