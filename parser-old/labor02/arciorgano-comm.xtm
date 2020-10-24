@@ -1,0 +1,142 @@
+(sys:load "libs/contrib/librs232.xtm")
+;
+(bind-func countNumPorts
+  (lambda ()
+    (let ((n:i64 (i32toi64 (comEnumerate))))
+      n)))
+
+(bind-func listAllPorts
+  (lambda ()
+    (let ((i 0))
+      (dotimes (i (countNumPorts))
+        (printf "Port #%d: %s\n" i (comGetPortName (i64toi32 i)))))))
+
+(bind-func openSerialPort
+  (lambda (index:i32 rate:i32)
+    (comOpen index rate)))
+
+(bind-func initPortConnection
+  (lambda ()
+    (listAllPorts)
+    (openSerialPort 0 11250)))
+
+(bind-func writeToPort2:[void,i64,i64]*
+  (let ((remap:i8* (zalloc 146)))
+    (pfill! remap 0 -1 1 -1 2 -1 3 -1 5 -1 4 -1 6 -1 7 8 76 9 77 10 78 11 79 12 80 13 81 14 82 16 84 15 83 17 85 18 19 86 20 87 21 88 22 89 24 91 23 90 25 92 26 27 93 28 94 29 95 30 96 31 97 32 98 33 99 35 101 34 100 36 102 37 38 103 39 104 40 105 41 106 43 108 42 107 44 109 45 46 110 47 111 48 112 49 113 50 114 51 115 52 116 54 118 53 117 55 119 56 57 120 58 121 59 122 60 123 62 125 61 124 63 126 64 65 127 66 128 67 129 68 130 69 131 70 132 71 133 73 135 72 134 74 136 -1 75 137)
+    (lambda (index state)
+      (let ((buf:i8* (salloc 6)))
+        (if (and (> index 0) (< index 147))
+          (begin
+            (pset! buf 0 (pref remap (- index 1)))
+            )
+          (pset! buf 0 (i64toi8 index)))
+        (if (= state 0)
+          (begin
+            (pset! buf 1 0))
+          (begin
+            (pset! buf 1 200)))
+        (comWrite 0 buf 2)
+        ;(printf "k=%lld,v=%lld,remap=%lld " index state (- (pref remap (- index 1)) 1))
+        void))))
+
+(bind-func writeToPort:[void,i64,i64]*
+  (let ((remap:i8* (zalloc 138)))
+    (pfill! remap 1 2 3 4 6 5 7 8 9 77 10 11 78 79 12 80 13 14 81 82 15 83 17 16 85 84 18 86 19 20 87 21 22 88 89 23 90 25 24 92 91 26 93 27 28 94 29 30 95 96 31 97 32 33 98 99 34 100 36 35 102 101 37 103 38 39 104 40 41 105 106 42 107 44 43 109 108 45 110 46 47 111 48 49 112 113 50 114 51 52 115 116 53 117 55 54 119 118 56 120 57 58 121 59 60 122 123 61 124 63 62 126 125 64 127 65 66 128 67 68 129 130 69 131 70 71 132 133 72 134 74 73 136 135 75 137 76 138)
+    (lambda (index state)
+      (let ((buf:i8* (salloc 6)))
+        (if (and (> index 0) (< index 139))
+          (begin
+            (pset! buf 0 (- (pref remap (- index 1)) 1))
+            ; number of keys for organa:
+            (pset! buf 2 (- (pref remap (- index 37)) 1))
+            (pset! buf 4 (- (pref remap (+ index 35)) 1))
+            )
+          (pset! buf 0 (i64toi8 index)))
+        (if (= state 0)
+          (begin
+            (pset! buf 1 0)
+            (pset! buf 3 0)
+            (pset! buf 5 0))
+          (begin
+            (pset! buf 1 200)
+            (pset! buf 3 200)
+            (pset! buf 5 200)))
+        ;change last argument to 2 to remove organa
+        (comWrite 0 buf 2)
+        ;(printf "k=%lld,v=%lld,remap=%lld " index state (- (pref remap (- index 1)) 1))
+        void))))
+
+(define init-port
+  (lambda ()
+    (initPortConnection)))
+
+(define prn
+  (lambda (nr)
+    ; change write procedure here for alternative key numbering systems
+    (writeToPort2 nr 1)))
+
+(define rln
+  (lambda (nr)
+    ; change write procedure here for alternative key numbering systems
+    (writeToPort2 nr 0)))
+
+(define pln
+  (lambda (t nr d)
+    (callback t 'prn nr)
+    (callback (+ t d) 'rln nr)))
+
+(define prnt
+  (lambda (t nr)
+    (callback t 'prn nr)))
+
+(define rlnt
+  (lambda (t nr)
+    (callback t 'rln nr)))
+
+(define lamp
+  (lambda (state)
+    (writeToPort 200 state)))
+
+(define motor
+  (lambda (state)
+    (writeToPort 201 state)))
+
+
+(define init-system
+  (lambda ()
+    (init-port)
+    (lamp 1)
+    (motor 1)))
+
+(define reset-system
+  (lambda ()
+    (init-system)
+    (swipe-zero 0 (now))))
+
+(define shutdown-system
+  (lambda ()
+    (lamp 0)
+    (motor 0)))
+
+(define swipe-zero
+  (lambda (s t)
+    (cond ((> s 138) 9)
+    (else
+      (rln s)
+      (callback (+ t 10) 'swipe-zero (+ s 1) (+ t 20))))))
+
+
+(init-system)
+(swipe-zero 0 (now))
+;(reset-system)
+;(shutdown-system)
+
+(define testglissando
+  (lambda (key time delta)
+    (cond ((and (<= key 0) (< delta 0)) (set! delta (* delta -1)))
+          ((and (>= key 147) (> delta 0)) (set! delta (* delta -1)))
+          (else (pln time key 5000)))
+    (print key " | ")
+    (callback (+ time 1000) 'testglissando (+ key delta) (+ time 1300) delta)))
+
+(testglissando 1 (now) 1)
