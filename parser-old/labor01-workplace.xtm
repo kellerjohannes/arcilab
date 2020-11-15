@@ -51,3 +51,29 @@
 
 ; Kadenzvarianten
 ($ (convert (Str "../kadenzen/kadenzvarianten")))
+
+
+
+
+;;;;;; for labor03:
+
+(bind-func convert
+  (let ((workpath (Str "/home/johannes/Coding/extempore/arcilab/parser-old/labor03/")))
+    (lambda (filename:String*)
+      (read_music_xml2 0 (cat2 workpath (cat2 filename (Str ".xml")))
+                         (cat2 workpath (cat2 filename (Str ".xtm"))))
+      (printf "file '%s' read.\n\n" (cstring filename))
+      void)))
+
+
+; data from CJW, version 15th of November 2020, causing no parsing problems:
+($ (convert (Str "durakkorde-mollakkorde-mode3")))
+($ (convert (Str "fluxe-mode3")))
+($ (convert (Str "fox-strangeways-paradoxon")))
+($ (convert (Str "frescobaldi")))
+($ (convert (Str "rossi-mode3-normal")))
+($ (convert (Str "rossi-mode3-umgestimmt")))
+($ (convert (Str "wagner-tristan")))
+
+
+
