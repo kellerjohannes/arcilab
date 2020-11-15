@@ -3,32 +3,97 @@
 
 (sys:load "/home/johannes/Coding/extempore/arcilab/parser-old/labor02/arciorgano-comm.xtm")
 
+
+; play note now
+(define plnn
+  (lambda (n dur)
+    (pln (now) n dur)))
+
+; play list of note now
+(define bloc
+  (lambda (l dur)
+    (cond ((null? l) 0)
+          (else (plnn (car l) dur)
+                (bloc (cdr l) dur)))))
+
+; start playing a chord, holding
+(define ped
+  (lambda (l)
+    (cond ((null? l) 0)
+          (else (prn (car l))
+                (pedale (cdr l))))))
+
+; release notes of chord
+(define ped-off
+  (lambda (l)
+    (cond ((null? l) 0)
+          (else (rln (car l))
+                (ped-off (cdr l))))))
+
+; helper: add keys below the listed keys, in octaves
+(define append-lower-octaves
+  (lambda (n)
+    (let ((nn (- n 36)))
+      (cond ((< nn 1) '())
+            (else (cons nn (append-lower-octaves nn)))))))
+
+; helper
+(define append-upper-octaves
+  (lambda (n)
+    (let ((nn (+ n 36)))
+      (cond ((> nn 147) '())
+            (else (cons nn (append-upper-octaves nn)))))))
+
+; explode chord to all octaves on the keyboard
+(define bighand
+  (lambda (l)
+    (cond ((null? l) '())
+          (else (cons (car l) (append (append-upper-octaves (car l)) (append-lower-octaves (car l)) (bighand (cdr l))))))))
+
+; transpose by keynumber (tabulature transposition, not interval transposition)
+(define transp
+  (lambda (l n)
+    (map (lambda (x) (+ x n)) l)))
+
+; shift around big chords
+(define swipe
+  (lambda (l n)
+    (bloc (bighand (transp l n)) medium)
+    (callback (+ (now) medium) 'swipe l (+ n 1))))
+
+; play a melody, based on a list
+(define play-line
+  (lambda (l dur)
+    (cond ((null? l) 0)
+          (else (plnn (car l) dur)
+                (callback (+ (now) dur) 'play-line (cdr l) dur)))))
+
+; play a progression of chords, based on a list
+(define play-series
+  (lambda (l dur)
+    (cond ((null? l) 0)
+          (else (callback (now) 'bloc (eval (car l)) (* 1.0 dur))
+                (callback (+ (now) dur) 'play-series (cdr l) dur)))))
+
+; helper: perform tremolo
+(define perf-loop
+  (lambda (n endtime int)
+    (cond ((> (now) endtime) 0)
+          (else (plnn n (* 0.8 int))
+                (callback (+ (now) int) 'perf-loop n endtime int)))))
+
+; alternative to plnn: play note in tremolo
+(define plperf
+  (lambda (n dur int)
+    (perf-loop n (+ (now) dur) int)))
+
+
+
 (define stacc (* 0.1 *second*))
 (define short (* 0.3 *second*))
 (define medium (* 1.0 *second*))
 (define long (* 3.0 *second*))
 (define eternal (* 20.0 *second*))
-
-(define c1 '(49 60 71))
-(prn 73)
-(rln 73)
-
-(prn 74)
-(rln 74)
-
-(pln (now) 89 long)
-(pln (now) 69 long)
-
-(pln (now) 16 long)
-(pln (now) 1 long)
-
-(pln (now) 22 long)
-(pln (now) 44 long)
-(pln (now) 73 long)
-(pln (now) 88 long)
-
-(pln (now) (- 95 36) long)
-
 
 (define l1 '(73 80 85 88 94 101 106 109))  ; c maj
 (define l2 '(73 80 85 88 94 101 106 109 109 106 100 94 88 85 79 73)) ; c maj up and down
@@ -39,7 +104,7 @@
 (define l6 '(75 82 87 90 96 104 108 111)) ; sharp 2nd and 6th degree
 (define l7 '(75 83 87 90 96 105 108 111)) ; extreme 2nd and 6th degree
 
-(play-line l7 medium)
+;(play-line l7 medium)
 
 (define c1 '(74 89 101 118))
 (define c2 '(91 73 98 119))
@@ -58,118 +123,38 @@
 (define c9 '(116 96 92 68))
 (define c10 '(115 104 88 64))
 
-(bloc c9 long)
-(play-series '(c5 c6 c7) long)
-(play-series '(c8 c9 c10) long)
-(play-series '(c5 c6 c7 c8 c9 c10) long)
+;(bloc c9 long)
+
+;(play-series '(c5 c6 c7) long)
+;(play-series '(c8 c9 c10) long)
+;(play-series '(c5 c6 c7 c8 c9 c10) long)
 
 ; end of jossi chords
 
 
-(bloc (transp c1 -36) eternal)
-(bloc (transp c2 -36) eternal)
-(bloc (transp c2 0) eternal)
+;(bloc (transp c1 -36) eternal)
+;(bloc (transp c2 -36) eternal)
+;(bloc (transp c2 0) eternal)
 
-(bloc (transp c1 0) eternal)
-(bloc (transp c2 -36) eternal)
+;(bloc (transp c1 0) eternal)
+;(bloc (transp c2 -36) eternal)
 
-(bloc c3 long)
-(bloc c4 long)
-
-
-(play-series '(c1 c2) medium)
-(play-line l3 medium)
+;(bloc c3 long)
+;(bloc c4 long)
 
 
+;(play-series '(c1 c2) medium)
+;(play-line l3 medium)
 
-(define c2 '(15 16 17))
+(define mstoas
+  (lambda (t)
+    (* t 44.1)))
 
-(/ (log 128/125) (log (expt 2 1/1200)))
-
-
-(define plnn
-  (lambda (n dur)
-    (pln (now) n dur)))
-
-(define bloc
-  (lambda (l dur)
-    (cond ((null? l) 0)
-          (else (plnn (car l) dur)
-                (bloc (cdr l) dur)))))
-
-(define ped
-  (lambda (l)
-    (cond ((null? l) 0)
-          (else (prn (car l))
-                (pedale (cdr l))))))
-
-(define ped-off
-  (lambda (l)
-    (cond ((null? l) 0)
-          (else (rln (car l))
-                (ped-off (cdr l))))))
-
-(define append-lower-octaves
-  (lambda (n)
-    (let ((nn (- n 36)))
-      (cond ((< nn 1) '())
-            (else (cons nn (append-lower-octaves nn)))))))
-
-(define append-upper-octaves
-  (lambda (n)
-    (let ((nn (+ n 36)))
-      (cond ((> nn 147) '())
-            (else (cons nn (append-upper-octaves nn)))))))
-
-(define bighand
-  (lambda (l)
-    (cond ((null? l) '())
-          (else (cons (car l) (append (append-upper-octaves (car l)) (append-lower-octaves (car l)) (bighand (cdr l))))))))
-
-(define transp
-  (lambda (l n)
-    (map (lambda (x) (+ x n)) l)))
-
-(define swipe
-  (lambda (l n)
-    (bloc (bighand (transp l n)) medium)
-    (callback (+ (now) medium) 'swipe l (+ n 1))))
-
-(define play-line
-  (lambda (l dur)
-    (cond ((null? l) 0)
-          (else (plnn (car l) dur)
-                (callback (+ (now) dur) 'play-line (cdr l) dur)))))
-
-(play-line '(15 16 17) short)
-
-(define play-series
-  (lambda (l dur)
-    (cond ((null? l) 0)
-          (else (callback (now) 'bloc (eval (car l)) (* 1.0 dur))
-                (callback (+ (now) dur) 'play-series (cdr l) dur)))))
-
-(play-series '((23 74) (24 72 83) (25 63 84)) short)
-
-(define perf-loop
-  (lambda (n endtime int)
-    (cond ((> (now) endtime) 0)
-          (else (plnn n (* 0.8 int))
-                (callback (+ (now) int) 'perf-loop n endtime int)))))
-
-(define plperf
-  (lambda (n dur int)
-    (perf-loop n (+ (now) dur) int)))
-
-(define print-loop
-  (lambda (n)
-    (cond ((> n 10000) 0)
+(define play-progression
+  (let ((currentTime 0)
+        (currentDuration 0))
+  (lambda (time chords times)
+    (cond ((null? chords) 0)
           (else 
-          (print n)
-          (callback (+ (now) 500) 'print-loop (+ n 1))))))
-
-(let ((p 0))
-(plperf 80 eternal 9000)
-(plperf 85 eternal 7000))
-
+            (uZZ
 
