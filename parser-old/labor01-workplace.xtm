@@ -56,7 +56,22 @@
 
 
 ;;;;;; for labor03:
-t
+
+;; attention: two key numbering systems in use:
+;  1. old system, according to mechanical numbering of the pipes
+;  2. new system, according to the pitch order
+
+; this is dealt with in the writeToPort procedure in arciorgano-comm.xtm
+; the old system has a remap array starting with 1 2 3 4 6 5 ...
+; the new system has a remap array starting with 0 -1 1 -1 2 -1 3 -1 4 ..., new named
+; writetoPort2. 
+
+; prn / rln / pln are the only higher order procedures that use writeToPort, adapt there
+; to writeToPort or writeToPort2 accordingly (old parser data uses old system, app export
+; reader uses new system
+
+
+
 ; adapt work path for parsing the xml files of labor03
 (bind-func convert
   (let ((workpath (Str "/home/johannes/Coding/extempore/arcilab/parser-old/labor03/")))
