@@ -9,7 +9,6 @@
       (printf "file '%s' read.\n\n" (cstring filename))
       void)))
 
-
 ; labor, 7th of october 2020, klasse caspar johannes walter
 
 ; all files are in working condition. unresolved problems while parsing:
@@ -55,7 +54,7 @@
 
 
 
-;;;;;; for labor03:
+;;;;;; for labor03, 16th of November 2020
 
 ;; attention: two key numbering systems in use:
 ;  1. old system, according to mechanical numbering of the pipes
@@ -82,15 +81,26 @@
       void)))
 
 ; data from CJW, version 15th of November 2020, causing no parsing problems:
-($ (convert (Str "durakkorde-mollakkorde-mode3")))
-($ (convert (Str "fluxe-mode3")))
+; ($ (convert (Str "durakkorde-mollakkorde-mode3")))   ; replaced
+; ($ (convert (Str "fluxe-mode3")))   ; replaced by new version
 ($ (convert (Str "fox-strangeways-paradoxon")))
 ($ (convert (Str "frescobaldi")))
-($ (convert (Str "rossi-mode3-normal")))
+; ($ (convert (Str "rossi-mode3-normal")))  ; replaced by individual files
 ($ (convert (Str "rossi-mode3-umgestimmt")))
 ($ (convert (Str "wagner-tristan")))
 
+($ (convert (Str "Rossi-I-10")))
+($ (convert (Str "Rossi-I-11")))
+($ (convert (Str "Rossi-I-15")))
+($ (convert (Str "Rossi-I-3")))
+($ (convert (Str "Rossi-I-4")))
+($ (convert (Str "Rossi-I-5")))
+($ (convert (Str "Rossi-I-8")))
+($ (convert (Str "Rossi-II-2")))
+($ (convert (Str "Rossi-II-3")))
+($ (convert (Str "Rossi-II-6")))
 
+($ (convert (Str "fluxe-mode-3")))
 
 
 ; algorithm to parse app export data (.txt files)
