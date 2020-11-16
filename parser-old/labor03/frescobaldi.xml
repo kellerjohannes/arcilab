@@ -7,7 +7,7 @@
  <identification>
   <rights>Copyright © </rights>
   <encoding>
-   <encoding-date>2020-11-15</encoding-date>
+   <encoding-date>2020-11-16</encoding-date>
    <encoder>johke</encoder>
    <software>Sibelius 7.1.3</software>
    <software>Direct export, not from Dolet</software>
@@ -466,6 +466,16 @@
    <backup>
     <duration>2048</duration>
    </backup>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>70</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>2</voice>
+    <staff>2</staff>
+   </direction>
    <note color="#000000" default-x="76" default-y="-50">
     <pitch>
      <step>C</step>
@@ -480,6 +490,17 @@
     <stem>down</stem>
     <staff>2</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>60</per-minute>
+     </metronome>
+    </direction-type>
+    <offset sound="no">256</offset>
+    <voice>2</voice>
+    <staff>2</staff>
+   </direction>
    <note default-x="247">
     <rest />
     <duration>512</duration>
@@ -488,6 +509,16 @@
     <type>half</type>
     <staff>2</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>70</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>2</voice>
+    <staff>2</staff>
+   </direction>
    <note default-x="548">
     <rest />
     <duration>128</duration>
@@ -510,6 +541,16 @@
     <stem>up</stem>
     <staff>2</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>80</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>2</voice>
+    <staff>2</staff>
+   </direction>
    <note color="#000000" default-x="639">
     <pitch>
      <step>E</step>
@@ -572,6 +613,16 @@
    <backup>
     <duration>2048</duration>
    </backup>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>70</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>3</voice>
+    <staff>3</staff>
+   </direction>
    <note default-x="76">
     <rest />
     <duration>256</duration>
@@ -594,6 +645,16 @@
     <stem>down</stem>
     <staff>3</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>60</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>3</voice>
+    <staff>3</staff>
+   </direction>
    <note color="#000000" default-x="361" default-y="-20">
     <pitch>
      <step>D</step>
@@ -608,6 +669,27 @@
     <stem>down</stem>
     <staff>3</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>70</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>3</voice>
+    <staff>3</staff>
+   </direction>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>80</per-minute>
+     </metronome>
+    </direction-type>
+    <offset sound="no">256</offset>
+    <voice>3</voice>
+    <staff>3</staff>
+   </direction>
    <note color="#000000" default-x="548" default-y="-25">
     <pitch>
      <step>C</step>
@@ -633,6 +715,16 @@
    <backup>
     <duration>2048</duration>
    </backup>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>70</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>4</voice>
+    <staff>4</staff>
+   </direction>
    <note color="#000000" default-x="76" default-y="-35">
     <pitch>
      <step>A</step>
@@ -647,6 +739,17 @@
     <stem>down</stem>
     <staff>4</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>60</per-minute>
+     </metronome>
+    </direction-type>
+    <offset sound="no">256</offset>
+    <voice>4</voice>
+    <staff>4</staff>
+   </direction>
    <note color="#000000" default-x="247" default-y="-40">
     <pitch>
      <step>G</step>
@@ -661,6 +764,27 @@
     <stem>down</stem>
     <staff>4</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>70</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>4</voice>
+    <staff>4</staff>
+   </direction>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>80</per-minute>
+     </metronome>
+    </direction-type>
+    <offset sound="no">256</offset>
+    <voice>4</voice>
+    <staff>4</staff>
+   </direction>
    <note color="#000000" default-x="548" default-y="-35">
     <pitch>
      <step>A</step>
@@ -1149,6 +1273,16 @@
    <backup>
     <duration>2048</duration>
    </backup>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>70</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>2</voice>
+    <staff>2</staff>
+   </direction>
    <note color="#000000" default-x="57" default-y="-50">
     <pitch>
      <step>C</step>
@@ -1163,6 +1297,17 @@
     <stem>down</stem>
     <staff>2</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>60</per-minute>
+     </metronome>
+    </direction-type>
+    <offset sound="no">256</offset>
+    <voice>2</voice>
+    <staff>2</staff>
+   </direction>
    <note default-x="223">
     <rest />
     <duration>512</duration>
@@ -1171,6 +1316,16 @@
     <type>half</type>
     <staff>2</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>70</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>2</voice>
+    <staff>2</staff>
+   </direction>
    <note default-x="530">
     <rest />
     <duration>128</duration>
@@ -1193,6 +1348,16 @@
     <stem>up</stem>
     <staff>2</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>80</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>2</voice>
+    <staff>2</staff>
+   </direction>
    <note color="#000000" default-x="624">
     <pitch>
      <step>E</step>
@@ -1255,6 +1420,16 @@
    <backup>
     <duration>2048</duration>
    </backup>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>70</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>3</voice>
+    <staff>3</staff>
+   </direction>
    <note default-x="57">
     <rest />
     <duration>256</duration>
@@ -1277,6 +1452,16 @@
     <stem>down</stem>
     <staff>3</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>60</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>3</voice>
+    <staff>3</staff>
+   </direction>
    <note color="#000000" default-x="340" default-y="-20">
     <pitch>
      <step>D</step>
@@ -1291,6 +1476,27 @@
     <stem>down</stem>
     <staff>3</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>70</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>3</voice>
+    <staff>3</staff>
+   </direction>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>80</per-minute>
+     </metronome>
+    </direction-type>
+    <offset sound="no">256</offset>
+    <voice>3</voice>
+    <staff>3</staff>
+   </direction>
    <note color="#000000" default-x="530" default-y="-25">
     <pitch>
      <step>C</step>
@@ -1316,6 +1522,16 @@
    <backup>
     <duration>2048</duration>
    </backup>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>70</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>4</voice>
+    <staff>4</staff>
+   </direction>
    <note color="#000000" default-x="57" default-y="-35">
     <pitch>
      <step>A</step>
@@ -1330,6 +1546,17 @@
     <stem>down</stem>
     <staff>4</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>60</per-minute>
+     </metronome>
+    </direction-type>
+    <offset sound="no">256</offset>
+    <voice>4</voice>
+    <staff>4</staff>
+   </direction>
    <note color="#000000" default-x="223" default-y="-40">
     <pitch>
      <step>G</step>
@@ -1344,6 +1571,27 @@
     <stem>down</stem>
     <staff>4</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>70</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>4</voice>
+    <staff>4</staff>
+   </direction>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>80</per-minute>
+     </metronome>
+    </direction-type>
+    <offset sound="no">256</offset>
+    <voice>4</voice>
+    <staff>4</staff>
+   </direction>
    <note color="#000000" default-x="530" default-y="-35">
     <pitch>
      <step>A</step>
@@ -1833,6 +2081,27 @@
     <type>half</type>
     <staff>2</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>80</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>2</voice>
+    <staff>2</staff>
+   </direction>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>70</per-minute>
+     </metronome>
+    </direction-type>
+    <offset sound="no">256</offset>
+    <voice>2</voice>
+    <staff>2</staff>
+   </direction>
    <note color="#000000" default-x="172" default-y="-10">
     <pitch>
      <step>D</step>
@@ -1847,6 +2116,17 @@
     <stem>up</stem>
     <staff>2</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>60</per-minute>
+     </metronome>
+    </direction-type>
+    <offset sound="no">256</offset>
+    <voice>2</voice>
+    <staff>2</staff>
+   </direction>
    <note color="#000000" default-x="367" default-y="-10">
     <pitch>
      <step>D</step>
@@ -1860,6 +2140,27 @@
     <stem>up</stem>
     <staff>2</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>70</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>2</voice>
+    <staff>2</staff>
+   </direction>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>80</per-minute>
+     </metronome>
+    </direction-type>
+    <offset sound="no">256</offset>
+    <voice>2</voice>
+    <staff>2</staff>
+   </direction>
    <note color="#000000" default-x="687" default-y="-5">
     <pitch>
      <step>E</step>
@@ -1884,6 +2185,27 @@
     <type>half</type>
     <staff>3</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>80</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>3</voice>
+    <staff>3</staff>
+   </direction>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>70</per-minute>
+     </metronome>
+    </direction-type>
+    <offset sound="no">256</offset>
+    <voice>3</voice>
+    <staff>3</staff>
+   </direction>
    <note color="#000000" default-x="172" default-y="-30">
     <pitch>
      <step>B</step>
@@ -1896,6 +2218,17 @@
     <stem>down</stem>
     <staff>3</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>60</per-minute>
+     </metronome>
+    </direction-type>
+    <offset sound="no">256</offset>
+    <voice>3</voice>
+    <staff>3</staff>
+   </direction>
    <note color="#000000" default-x="367" default-y="-35">
     <pitch>
      <step>A</step>
@@ -1908,6 +2241,27 @@
     <stem>down</stem>
     <staff>3</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>70</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>3</voice>
+    <staff>3</staff>
+   </direction>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>80</per-minute>
+     </metronome>
+    </direction-type>
+    <offset sound="no">256</offset>
+    <voice>3</voice>
+    <staff>3</staff>
+   </direction>
    <note color="#000000" default-x="687" default-y="-30">
     <pitch>
      <step>B</step>
@@ -1931,6 +2285,27 @@
     <type>half</type>
     <staff>4</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>80</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>4</voice>
+    <staff>4</staff>
+   </direction>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>70</per-minute>
+     </metronome>
+    </direction-type>
+    <offset sound="no">256</offset>
+    <voice>4</voice>
+    <staff>4</staff>
+   </direction>
    <note color="#000000" default-x="172" default-y="-40">
     <pitch>
      <step>G</step>
@@ -1944,6 +2319,17 @@
     <stem>down</stem>
     <staff>4</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>60</per-minute>
+     </metronome>
+    </direction-type>
+    <offset sound="no">256</offset>
+    <voice>4</voice>
+    <staff>4</staff>
+   </direction>
    <note color="#000000" default-x="367" default-y="-45">
     <pitch>
      <step>F</step>
@@ -1956,6 +2342,27 @@
     <stem>down</stem>
     <staff>4</staff>
    </note>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>70</per-minute>
+     </metronome>
+    </direction-type>
+    <voice>4</voice>
+    <staff>4</staff>
+   </direction>
+   <direction>
+    <direction-type>
+     <metronome default-y="30" color="#000000" font-family="Opus Text Std" font-style="normal" font-size="9.5492" font-weight="normal">
+      <beat-unit>quarter</beat-unit>
+      <per-minute>80</per-minute>
+     </metronome>
+    </direction-type>
+    <offset sound="no">256</offset>
+    <voice>4</voice>
+    <staff>4</staff>
+   </direction>
    <note color="#000000" default-x="687" default-y="-50">
     <pitch>
      <step>E</step>

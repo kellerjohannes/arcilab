@@ -1,0 +1,15 @@
+{
+	"preset_data" : [ 		{
+			"number" : 1,
+			"data" : [ 5, "obj-182", "number", "int", 27, 5, "obj-181", "number", "int", 28 ]
+		}
+, 		{
+			"number" : 2,
+			"data" : [ 5, "obj-182", "number", "int", 1, 5, "obj-181", "number", "int", 52 ]
+		}
+, 		{
+			"number" : 3,
+			"data" : [ 5, "obj-182", "number", "int", 50, 5, "obj-181", "number", "int", 14 ]
+		}
+ ]
+}
