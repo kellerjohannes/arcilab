@@ -89,26 +89,21 @@
 ($ (convert (Str "rossi-mode3-umgestimmt")))
 ($ (convert (Str "wagner-tristan")))
 
-; errors in these files (metronome markings only for top instrument)
-($ (convert (Str "Rossi-I-10")))
-($ (convert (Str "Rossi-I-11")))
-($ (convert (Str "Rossi-I-15")))
-($ (convert (Str "Rossi-I-3")))
-($ (convert (Str "Rossi-I-4")))
-($ (convert (Str "Rossi-I-5")))
-($ (convert (Str "Rossi-I-8")))
-($ (convert (Str "Rossi-II-2")))
-($ (convert (Str "Rossi-II-3")))
-($ (convert (Str "Rossi-II-6")))
-
-; parser kill, needs to be split in smaller files
-($ (convert (Str "fluxe-mode-3")))
-
 ; new rossi version, with one global instrument:
 ($ (convert (Str "rossi-mode3-normal")))
+($ (convert (Str "rossi-II-2-umgestimmt")))
 
 ; new version dur/mollakkorde
 ($ (convert (Str "dur-mollakkorde-mode-3")))
+
+; split version of flux, still extempore kill problem with fluxe-mode-3-a
+($ (convert (Str "fluxe-mode-3-a")))
+($ (convert (Str "fluxe-mode-3-b")))
+
+
+
+
+
 
 ; algorithm to parse app export data (.txt files)
 
