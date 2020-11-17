@@ -508,14 +508,12 @@
    <note color="#000000" default-x="71" default-y="5">
     <pitch>
      <step>G</step>
-     <alter>0</alter>
      <octave>4</octave>
     </pitch>
     <duration>256</duration>
     <instrument id="P1-I1" />
     <voice>1</voice>
     <type>quarter</type>
-    <accidental>quarter-sharp</accidental>
     <stem>up</stem>
     <staff>1</staff>
     <lyric default-y="-80" number="part1verse1" color="#000000">
@@ -549,7 +547,6 @@
     <instrument id="P1-I1" />
     <voice>1</voice>
     <type>half</type>
-    <accidental>natural</accidental>
     <stem>up</stem>
     <staff>1</staff>
     <lyric default-y="-80" number="part1verse1" color="#000000">
