@@ -92,6 +92,7 @@
 ($ (convert (Str "fox-strangeways-paradoxon")))
 ($ (convert (Str "frescobaldi")))
 ($ (convert (Str "frescobaldi2")))
+($ (convert (Str "gesualdo-mode3")))
 ($ (convert (Str "madonna-poco-dolce_gut")))
 ($ (convert (Str "rossi-II-2-umgestimmt")))
 ($ (convert (Str "rossi-mode3-normal")))
@@ -120,11 +121,11 @@
     (cond ((null? l) 0)
           (else
             (let* ((int (mstoas (car (car l))))
-                   (dur (+ int (mstoas (car (cdr (car l)))))))
+                   (dur (+ -2 int (mstoas (car (cdr (car l)))))))
             (plc time dur (cdr (cdr (car l))))
             (callback (+ time 100) 'plapp (cdr l) (+ time int)))))))
 
-(plapp yossi (now))
+; CJW material, 16th of November 2020
 (plapp come-sian (now))
 (plapp dur-32zu27 (now)) 
 (plapp dur-5zu4 (now))
@@ -135,9 +136,24 @@
 (plapp konstrukt (now))
 (plapp overlap (now))
 (plapp overlap2 (now))
+
+; choral yossi, composed for arciorgano tuning 'mode 4', therefore full of mistakes
+(plapp yossi (now))
+
+; German material, 16th of November 2020
 (plapp german-a (now))
 (plapp german-b (now))
 (plapp german-c (now))
+
+; Mauricio material, 17th of November 2020
+(plapp mauricio-f-gb (now))
+(plapp mauricio-e-f (now))
+(plapp mauricio-c-db (now))
+(plapp mauricio-melody (now))
+(plapp mauricio-clusters (now))
+(plapp mauricio-code1 (now))
+(plapp mauricio-code2 (now))
+
 
 (define come-sian '((2000 -50 37 58 83 73) 
                     (1000 -50 28 52 83 73)
@@ -667,3 +683,53 @@
                    (2000 0 1 22 37 95 85 94 121 145)
                    (6000 0 38 1 37 74 37 73)
                    (2000 0 1)))
+
+(define mauricio-f-gb '((5000 0 20 74 41 68 89 101 110)))
+
+(define mauricio-e-f '((3000 0 16 37 71 64 86 95 107)
+                       (3000 0 16 37 64 70 85 94 106)))
+
+
+(define mauricio-c-db '((2000 0 5 26 52 58 73 85 94)
+                        (2000 0 5 26 59 52 74 86 95)
+                        (2000 0 5 26 52 58 73 85 94)
+                        (2000 0 3 24 51 58 73 85 94)
+                        (2000 0 5 26 52 58 73 85 94)
+                        (2000 0 3 24 59 51 74 86 95)
+                        (2000 0 5 26 59 52 74 86 95)
+                        (2000 0 3 24 59 51 74 86 95)))
+
+(define mauricio-melody '((2000 0 1 22 72 43)
+                          (2000 0 1 22 43 64)
+                          (2000 0 1 22 43 70)
+                          (2000 0 1 22 43 70 80)
+                          (2000 0 1 22 43 70 76)
+                          (2000 0 1 22 55 43 70)
+                          (2000 0 1 22 65 43 70)
+                          (2000 0 1 22 43 70)
+                          (2000 0 1 22 43 70)
+                          (2000 0 1 22 43 70)))
+
+(define mauricio-clusters '((2000 0 7 51 52 64)
+                            (2000 0 22 51 52 64)
+                            (2000 0 22 50 52 64)
+                            (2000 0 1 50 56 54 49)
+                            (2000 0 1 50 59 49 58)
+                            (2000 0 1 50 59 71 49 58)
+                            (2000 0 1 50 59 71 49 58 77)
+                            (2000 0 1 50 59 71 49 58 80)
+                            (5000 0 1 50 59 71 49 58 80 92)))
+
+(define mauricio-code1 '((3000 0 7 63 51)
+                         (3000 0 22 51 72)
+                         (3000 0 1 71 49)
+                         (3000 0 1 49 64)
+                         (3000 0 1 49 64)
+                         (3000 0 1 49 64)))
+
+(define mauricio-code2 '((2000 0 7 52 64)
+                         (2000 0 22 51 70)
+                         (2000 0 1 49 70)
+                         (2000 0 1 72 49)
+                         (2000 0 1 49 73)
+                         (1000 0 1 49 73)))
