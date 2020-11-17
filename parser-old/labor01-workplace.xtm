@@ -99,6 +99,22 @@
 ($ (convert (Str "rossi_mode3_umgestimmt")))
 ($ (convert (Str "wagner-tristan")))
 
+; recording journal:
+;; rossi-mode3-normal                     15:27 minor corrections necessary
+;; madonna-poco-dolce_gut                 15:44 part 1: nonsense
+;;                                              part 2: 2 mistakes to be corrected 
+;;                                              part 3: nonsense
+;; gesualdo-mode3                         15:46 OK
+;; frescobaldi2                           15:47 OK
+;; fox-strangeways-paradoxon              15:48 OK
+;; bsp-chiyoko                            15:50 OK
+;; dur-mollakkorde-mode-3                 15:51 new version necessary
+;; fluxe-mode-3-a                         15:52 OK
+;; fluxe-mode-3-b                         15:58 OK
+;; fluxe-mode-3-c                         16:03 OK
+;; 
+
+
 
 
 ; algorithm to parse app export data (.txt files)
@@ -153,6 +169,7 @@
 (plapp mauricio-clusters (now))
 (plapp mauricio-code1 (now))
 (plapp mauricio-code2 (now))
+
 
 
 (define come-sian '((2000 -50 37 58 83 73) 
