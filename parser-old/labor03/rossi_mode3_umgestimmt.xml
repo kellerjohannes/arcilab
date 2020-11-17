@@ -2710,7 +2710,7 @@
    </attributes>
    <direction>
     <direction-type>
-     <words default-x="101" default-y="51" justify="left" valign="middle" font-family="Times New Roman" font-style="normal" font-size="7.6735" font-weight="normal">ces0</words>
+     <words default-x="101" default-y="50" justify="left" valign="middle" font-family="Times New Roman" font-style="normal" font-size="7.6735" font-weight="normal">ces0</words>
      <words justify="left" valign="middle" font-family="Times New Roman" font-style="normal" font-size="7.6735" font-weight="normal">umgestimmt</words>
     </direction-type>
     <offset sound="no">128</offset>
@@ -2738,6 +2738,7 @@
    <note color="#000000" default-x="155" default-y="-20">
     <pitch>
      <step>B</step>
+     <alter>0</alter>
      <octave>3</octave>
     </pitch>
     <duration>224</duration>
@@ -2746,7 +2747,7 @@
     <type>eighth</type>
     <dot />
     <dot />
-    <accidental>natural</accidental>
+    <accidental>quarter-sharp</accidental>
     <stem>down</stem>
     <staff>1</staff>
     <lyric default-y="-80" number="part3verse1" color="#000000">
