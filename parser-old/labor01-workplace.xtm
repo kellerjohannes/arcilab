@@ -93,26 +93,24 @@
 ($ (convert (Str "frescobaldi")))
 ($ (convert (Str "frescobaldi2")))
 ($ (convert (Str "gesualdo-mode3")))
-($ (convert (Str "madonna-poco-dolce_gut")))
+($ (convert (Str "vicentino_madonna_mode3")))
 ($ (convert (Str "rossi-II-2-umgestimmt")))
 ($ (convert (Str "rossi-mode3-normal")))
 ($ (convert (Str "rossi_mode3_umgestimmt")))
 ($ (convert (Str "wagner-tristan")))
 
 ; recording journal:
-;; rossi-mode3-normal                     15:27 minor corrections necessary
-;; madonna-poco-dolce_gut                 15:44 part 1: nonsense
-;;                                              part 2: 2 mistakes to be corrected 
-;;                                              part 3: nonsense
-;; gesualdo-mode3                         15:46 OK
-;; frescobaldi2                           15:47 OK
-;; fox-strangeways-paradoxon              15:48 OK
-;; bsp-chiyoko                            15:50 OK
-;; dur-mollakkorde-mode-3                 15:51 new version necessary
-;; fluxe-mode-3-a                         15:52 OK
-;; fluxe-mode-3-b                         15:58 OK
-;; fluxe-mode-3-c                         16:03 OK
-;; 
+;; bsp-chiyoko                 16:21 OK
+;; dur-mollakkorde-mode-3      16:22 OK
+;; fox-strangeways-paradoxon   16:24 OK
+;; frescobali                  16:26 nonsense (replaced by frescobaldi2)
+;; frescobaldi2                16:27 OK
+;; gesualdo-mode3              16:28 OK
+;; vicentino_madonna_mode3     16:29 one error to correct
+;; rossi-mode3-normal          16:30 OK
+;; fluxe-mode-3-a              16:
+;; fluxe-mode-3-b              16:
+;; fluxe-mode-3-c              16:
 
 
 
