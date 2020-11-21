@@ -95,9 +95,9 @@
 ($ (convert (Str "gesualdo-mode3")))
 ($ (convert (Str "vicentino_madonna_mode3")))
 ($ (convert (Str "rossi-II-2-umgestimmt")))
-($ (convert (Str "rossi-mode3-normal")))
-($ (convert (Str "rossi_mode3_umgestimmt")))
-($ (convert (Str "wagner-tristan")))
+($ (convert (Str "rossi-mode3-normal2")))
+($ (convert (Str "rossi_mode3_umgestimmt2")))
+($ (convert (Str "wagner_tristan_2")))
 
 ; recording journal:
 ;; bsp-chiyoko                 16:21 OK
