@@ -775,9 +775,17 @@
 
 ; adapt work path for parsing the xml files of labor03
 (bind-func convert
-  (let ((workpath (Str "/home/johannes/Coding/extempore/arcilab/parser-old/labor05/")))
+  (let ((workpath (Str "/home/johannes/Coding/extempore/arcilab/parser-old/labor05/Noten-Arciorgano/")))
     (lambda (filename:String*)
       (read_music_xml2 0 (cat2 workpath (cat2 filename (Str ".xml")))
                          (cat2 workpath (cat2 filename (Str ".xtm"))))
       (printf "file '%s' read.\n\n" (cstring filename))
       void)))
+
+($ (convert (Str "Multiphonics_nurArc")))
+($ (convert (Str "Tetrachorde_Dimension0_nurArc")))
+($ (convert (Str "Tetrachorde_Dimension1_nurArc")))
+($ (convert (Str "Tetrachorde_Dimension2_nurArc")))
+($ (convert (Str "Tetrachorde_Dimension3_nurArc")))
+($ (convert (Str "Tetrachorde_Dimension4_nurArc")))
+($ (convert (Str "Tetrachorde_Dimension5_nurArc")))
