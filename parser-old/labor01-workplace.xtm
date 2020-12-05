@@ -761,3 +761,23 @@
                       (500 0 44 73)
                       (500 0 44 70)
                       (1500 0 37 73)))
+
+
+
+
+
+
+
+
+
+
+; labor05, recordings for david eggert, CERN
+
+; adapt work path for parsing the xml files of labor03
+(bind-func convert
+  (let ((workpath (Str "/home/johannes/Coding/extempore/arcilab/parser-old/labor05/")))
+    (lambda (filename:String*)
+      (read_music_xml2 0 (cat2 workpath (cat2 filename (Str ".xml")))
+                         (cat2 workpath (cat2 filename (Str ".xtm"))))
+      (printf "file '%s' read.\n\n" (cstring filename))
+      void)))
