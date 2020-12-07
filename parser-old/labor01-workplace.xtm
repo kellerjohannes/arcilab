@@ -786,6 +786,9 @@
 ($ (convert (Str "Tetrachorde_Dimension0_nurArc")))
 ($ (convert (Str "Tetrachorde_Dimension1_nurArc")))
 ($ (convert (Str "Tetrachorde_Dimension2_nurArc")))
-($ (convert (Str "Tetrachorde_Dimension3_nurArc")))
+($ (convert (Str "Tetrachorde_Dimension3neu_nurArc")))
 ($ (convert (Str "Tetrachorde_Dimension4_nurArc")))
-($ (convert (Str "Tetrachorde_Dimension5_nurArc")))
+($ (convert (Str "Tetrachorde_Dimension5neu_nurArc")))
+
+
+(motor 1)
