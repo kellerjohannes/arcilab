@@ -791,4 +791,113 @@
 ($ (convert (Str "Tetrachorde_Dimension5neu_nurArc")))
 
 
-(motor 1)
+
+; labor06, session with Chiyoko, December 2020
+
+; various things that CJW wants to record in mode8
+
+(bind-func convert
+  (let ((workpath (Str "/home/johannes/Coding/extempore/arcilab/parser-old/labor06/mode8/")))
+    (lambda (filename:String*)
+      (read_music_xml2 0 (cat2 workpath (cat2 filename (Str ".xml")))
+                         (cat2 workpath (cat2 filename (Str ".xtm"))))
+      (printf "file '%s' read.\n\n" (cstring filename))
+      void)))
+
+($ (convert (Str "mode-8-beispiele")))
+
+(plapp belta (now))
+(plapp madonna (now))
+(plapp tristan (now))
+(plapp tristan2 (now))
+
+; late night recording session:
+; 1. compile arciorgano comm (top of file)
+; 2. recompile old numbering system
+; 3. execute mode-8-beispiele from xtm file
+; 4. recompile new numbering system
+; 5. execute four plapps above
+
+
+(define belta '((1000 0 53 65 74 89)
+          (2000 -20 44 65 91 80)
+          (2000 -50 38 60 74 86 96)
+          (500 -20 38 60 74 86 96)
+          (500 -20 53 74 89 101)
+          (1000 -20 50 60 74 96 110)
+          (1000 0 50 71 107 98)))
+
+
+(define madonna '((1600 0 53 65 74 89)
+          (1600 0 63 53 74 89)
+          (1600 0 61 39 87 75)
+          (1600 0 49 70 85)
+          (800 0 33 69 80 89)
+          (800 0 48 69 84 95)
+          (1200 0 63 53 74 89)
+          (400 0 63 53 89 81)
+          (1600 0 48 69 84 95)
+          (3200 0 39 97 87 75)
+          (800 0 53 99)
+          (800 0 53 99 74)
+          (2400 0 78 99 89)
+          (800 0 69 78 105 89)
+          (3200 0 54 102 90)
+          (1600 0 44 91 80 101)
+          (1600 0 54 102 90)
+          (800 0 44 105 89)
+          (1200 0 48 59 84 105)
+          (400 0 48 59 76 105)
+          (800 0 63 53 99 74)
+          (1600 0 63 53 78 89)
+          (1600 0 48 60 74 96)))
+
+
+(define tristan2 '((600 0 59)
+          (3000 0 84)
+          (600 0 80)
+          (3000 0 48 65 76 91)
+          (600 0 48 65 76 94)
+          (600 0 55 44 98 73)
+          (4200 -2400 55 44 101 73)
+          (600 0 65)
+          (3000 0 91)
+          (600 0 89)
+          (3000 0 57 74 86 101)
+          (600 0 57 74 86 104)
+          (600 0 53 65 107 83)
+          (4200 -1800 53 65 83 110)
+          (600 0 74)
+          (2400 0 101)
+          (1800 0 99)
+          (1200 0 96)
+          (2400 0 69 93 84 111)
+          (600 0 69 93 84 114)
+          (600 0 69 93 81 117)
+          (600 0 65 76 94 120)
+          (1800 0 65 76 94 122)))
+
+
+(define tristan '((600 0 59)
+          (3000 0 84)
+          (600 0 80)
+          (3000 0 48 65 76 91)
+          (600 0 48 65 76 95)
+          (600 0 55 44 98 73)
+          (4200 -2400 55 44 101 73)
+          (600 0 65)
+          (3000 0 91)
+          (600 0 89)
+          (3000 0 57 74 86 101)
+          (600 0 57 105 74 86)
+          (600 0 53 65 107 83)
+          (4200 -1800 53 65 83 110)
+          (600 0 74)
+          (2400 0 101)
+          (1800 0 99)
+          (1200 0 95)
+          (2400 0 69 93 84 111)
+          (600 0 69 93 84 114)
+          (600 0 69 93 80 116)
+          (600 0 65 76 94 120)
+          (1800 0 65 76 94 122)))
