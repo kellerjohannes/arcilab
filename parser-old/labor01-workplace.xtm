@@ -310,4 +310,4 @@
 (plapp haydna (now))
 (plapp shortspace (now))
 (plapp circles (now))
-(plapp triangles (now))
+(plapp triangle (now))
