@@ -246,7 +246,7 @@
 
 ; convert ms to audio samples
 (define mstoas
-  (lambda (ms)
+ (lambda (ms)
     (* 44100 (/ ms 1000))))
 
 ; play a chord
@@ -311,5 +311,16 @@
 (plapp shortspace (now))
 (plapp circles (now))
 (plapp triangle (now))
+
+
+
+
+;labor08
+
+; material benediktas
+
+(plapp tartini (now))
+(plapp undertone (now))
+
 
 
